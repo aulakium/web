@@ -1,26 +1,108 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ============================================================
+   Colequium — Design tokens
+   Estilo: claro y aireado, todo en paneles flotando sobre un mismo
+   lienzo (ref: social.png). Mismos colores de marca (navy/celeste/naranja).
+   ============================================================ */
+@theme {
+  /* Superficies */
+  --color-mist: #f0f9ff; /* lavado celeste (chips suaves) */
+  --color-cloud: #e0f2fe; /* celeste muy claro (hovers) */
+  --color-canvas: #eef3fb; /* lienzo de fondo (claro, neutro) */
+  --color-cream: #fdf4ec; /* tarjeta cálida alterna */
+
+  /* ESTRUCTURA: navy + blanco (menú, fondos, texto) */
+  --color-ink: #0c4a6e; /* navy de texto/encabezados */
+  --color-navy: #0b3a59; /* navy del sidebar */
+  --color-navy-deep: #082a42; /* navy más oscuro (gradiente) */
+
+  /* Acento primario interactivo (links, foco, estado seleccionado) */
+  --color-brand: #688db9;
+  --color-brand-soft: #789dca;
+  --color-brand-wash: #e8f0fa;
+
+  /* 6 TONALIDADES DE CATEGORÍA (icon-first: el ícono identifica, el color refuerza;
+     cada categoría usa SIEMPRE el mismo color, en todos lados). */
+  --color-news: #ff9800; /* Novedades */
+  --color-requests: #ec8800; /* Trámites */
+  --color-docs: #ffa424; /* Documentos */
+  --color-sky: #789dca; /* Mensajes (azul claro) */
+  --color-transport: #c4dafa; /* Transporte (celeste claro) */
+  /* Calendario usa --color-brand (#688db9) */
+
+  /* Acción primaria (botones CTA) — naranja */
+  --color-cta: #ff9800;
+  --color-cta-soft: #ffa424;
+  --color-cta-deep: #ec8800;
+
+  /* Radios y sombras (suaves, para look flotante) */
+  --radius-4xl: 1.75rem;
+  --shadow-card: 0 12px 34px -16px rgba(12, 74, 110, 0.20);
+  --shadow-soft: 0 10px 40px -14px rgba(14, 165, 233, 0.30);
+  --shadow-pop: 0 22px 60px -22px rgba(12, 74, 110, 0.40);
 }
 
+/* Fuentes: sans limpia tipo referencia — Poppins (títulos) + Inter (texto). */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-poppins), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Pesos numéricos como utilidades reales (Tailwind v4 no genera font-700/800).
+   Así toda la app respeta el peso correcto con la nueva tipografía. */
+.font-500 { font-weight: 500; }
+.font-600 { font-weight: 600; }
+.font-700 { font-weight: 700; }
+.font-800 { font-weight: 800; }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(12, 74, 110, 0.18) transparent;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Lienzo claro y unificado: todo flota sobre este fondo */
+  background-color: var(--color-canvas);
+  background-image: linear-gradient(160deg, #eef4fc 0%, #f3f0fb 100%);
+  background-attachment: fixed;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Animación sutil de entrada para tarjetas del feed */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-rise {
+  animation: rise 0.4s ease-out both;
+}
+
+/* Utilidad: ocultar scrollbar (carruseles, nav móvil) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
