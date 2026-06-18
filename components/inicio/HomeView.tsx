@@ -31,7 +31,7 @@ const QUICK = [
   { key: "nav.transport", href: "/transporte", icon: "Bus", color: "transport" },
 ] as const;
 
-export function HomeView() {
+export function HomeView({ unreadPosts: unreadPostsReal }: { unreadPosts?: number }) {
   const { t, locale } = useLocale();
   const me = useIdentity();
   const firstName = me?.firstName ?? DEMO_USER.name.split(" ")[0];
@@ -42,7 +42,7 @@ export function HomeView() {
     DEMO_TODAY.day,
   ).toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" });
 
-  const unreadPosts = DEMO_POSTS.filter((p) => p.unread).length;
+  const unreadPosts = unreadPostsReal ?? DEMO_POSTS.filter((p) => p.unread).length;
   const eventsThisWeek = DEMO_CAL_EVENTS.filter(
     (e) => e.kind === "event" && e.day >= 8 && e.day <= 14,
   ).length;
