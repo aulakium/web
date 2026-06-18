@@ -256,3 +256,23 @@ where u.email='familia@laslomas.demo' and mo.community_id=:COMM::uuid
 on conflict (id) do nothing;
 
 select 'tramites: ' || count(*) from requests where community_id = :COMM::uuid;
+
+-- ════════════════════════════════════════════════════════════════════════
+-- DOCUMENTOS — carpetas + archivos (file_url = path en el bucket 'documents')
+-- ════════════════════════════════════════════════════════════════════════
+insert into document_folders (id, community_id, name) values
+  ('cccc0000-0000-0000-0000-000000000001'::uuid, :COMM::uuid, 'Institucional'),
+  ('cccc0000-0000-0000-0000-000000000002'::uuid, :COMM::uuid, 'Circulares'),
+  ('cccc0000-0000-0000-0000-000000000003'::uuid, :COMM::uuid, '6°B')
+on conflict (id) do nothing;
+
+insert into documents (id, community_id, folder_id, title, file_url, created_at) values
+  ('dddd0000-0000-0000-0000-000000000001'::uuid, :COMM::uuid, 'cccc0000-0000-0000-0000-000000000001'::uuid,
+    'Reglamento interno 2026', '11111111-1111-1111-1111-111111111111/reglamento-interno-2026.pdf', now() - interval '20 days'),
+  ('dddd0000-0000-0000-0000-000000000002'::uuid, :COMM::uuid, 'cccc0000-0000-0000-0000-000000000002'::uuid,
+    'Circular — Junio 2026', '11111111-1111-1111-1111-111111111111/circular-junio-2026.pdf', now() - interval '4 days'),
+  ('dddd0000-0000-0000-0000-000000000003'::uuid, :COMM::uuid, 'cccc0000-0000-0000-0000-000000000003'::uuid,
+    'Calendario 6°B — Junio', '11111111-1111-1111-1111-111111111111/calendario-6b-junio.pdf', now() - interval '6 days')
+on conflict (id) do nothing;
+
+select 'documentos: ' || count(*) from documents where community_id = :COMM::uuid;
