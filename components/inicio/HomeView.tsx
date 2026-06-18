@@ -35,10 +35,12 @@ export function HomeView({
   unreadPosts: unreadPostsReal,
   events: eventsReal,
   unreadMessages: unreadMessagesReal,
+  pendingRequests: pendingRequestsReal,
 }: {
   unreadPosts?: number;
   events?: import("@/lib/domain").CalEvent[];
   unreadMessages?: number;
+  pendingRequests?: number;
 }) {
   const { t, locale } = useLocale();
   const me = useIdentity();
@@ -55,7 +57,8 @@ export function HomeView({
   const eventsThisWeek = calEvents.filter(
     (e) => e.kind === "event" && e.day >= 8 && e.day <= 14,
   ).length;
-  const pendingRequests = DEMO_REQUESTS.filter((r) => r.status === "submitted").length;
+  const pendingRequests =
+    pendingRequestsReal ?? DEMO_REQUESTS.filter((r) => r.status === "submitted").length;
   const unreadMessages =
     unreadMessagesReal ?? DEMO_CONVERSATIONS.reduce((s, c) => s + c.unread, 0);
 

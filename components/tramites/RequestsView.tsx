@@ -7,6 +7,7 @@ import {
   REQUEST_TYPES,
   DEMO_REQUESTS,
   type RequestStatus,
+  type RequestItem,
 } from "@/lib/domain";
 import {
   ACCENT_ON,
@@ -31,11 +32,12 @@ const FILTERS = [
   { id: "resolved", key: "req.filter.resolved" },
 ] as const;
 
-export function RequestsView() {
+export function RequestsView({ items }: { items?: RequestItem[] }) {
   const { t } = useLocale();
   const [filter, setFilter] = useState<"all" | "pending" | "resolved">("all");
+  const data = items ?? DEMO_REQUESTS;
 
-  const requests = DEMO_REQUESTS.filter((r) => {
+  const requests = data.filter((r) => {
     if (filter === "pending") return r.status === "submitted";
     if (filter === "resolved") return r.status !== "submitted";
     return true;

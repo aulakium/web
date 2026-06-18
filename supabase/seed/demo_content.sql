@@ -229,3 +229,30 @@ from memberships ms join users u on u.id=ms.user_id where u.email='admin@lasloma
 on conflict (id) do nothing;
 
 select 'conversaciones: ' || count(*) from conversations where community_id = :COMM::uuid;
+
+-- ════════════════════════════════════════════════════════════════════════
+-- TRÁMITES (requests) — abiertos por la familia para Tomás (6°B)
+-- ════════════════════════════════════════════════════════════════════════
+insert into requests (id, community_id, type, opener_membership_id, student_id, status, payload, handled_by_membership_id, created_at)
+select 'bbbb0000-0000-0000-0000-000000000001'::uuid, :COMM::uuid, 'absence', mo.id, :TOMAS::uuid,
+  'submitted', '{"summary":"Ausente por consulta médica"}'::jsonb, null, now() - interval '3 hours'
+from memberships mo join users u on u.id=mo.user_id where u.email='familia@laslomas.demo' and mo.community_id=:COMM::uuid
+on conflict (id) do nothing;
+
+insert into requests (id, community_id, type, opener_membership_id, student_id, status, payload, handled_by_membership_id, created_at)
+select 'bbbb0000-0000-0000-0000-000000000002'::uuid, :COMM::uuid, 'exit', mo.id, :TOMAS::uuid,
+  'approved', '{"summary":"Retira la abuela a las 12:30"}'::jsonb, md.id, now() - interval '1 day'
+from memberships mo join users u on u.id=mo.user_id, memberships md join users ud on ud.id=md.user_id
+where u.email='familia@laslomas.demo' and mo.community_id=:COMM::uuid
+  and ud.email='docente@laslomas.demo' and md.community_id=:COMM::uuid
+on conflict (id) do nothing;
+
+insert into requests (id, community_id, type, opener_membership_id, student_id, status, payload, handled_by_membership_id, created_at)
+select 'bbbb0000-0000-0000-0000-000000000003'::uuid, :COMM::uuid, 'payment', mo.id, :TOMAS::uuid,
+  'resolved', '{"summary":"Comprobante cuota junio"}'::jsonb, ma.id, now() - interval '2 days'
+from memberships mo join users u on u.id=mo.user_id, memberships ma join users ua on ua.id=ma.user_id
+where u.email='familia@laslomas.demo' and mo.community_id=:COMM::uuid
+  and ua.email='admin@laslomas.demo' and ma.community_id=:COMM::uuid
+on conflict (id) do nothing;
+
+select 'tramites: ' || count(*) from requests where community_id = :COMM::uuid;
