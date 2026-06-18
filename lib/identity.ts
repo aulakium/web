@@ -19,6 +19,9 @@ function one<T>(rel: T | T[] | null | undefined): T | undefined {
 
 /** Resuelve la identidad del usuario actual. `null` si no hay sesión. */
 export async function getIdentity(): Promise<Identity | null> {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return null; // sin env → modo demo (fallback al mock)
+  }
   const supabase = await createClient();
   const {
     data: { user },

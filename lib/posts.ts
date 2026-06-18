@@ -70,6 +70,9 @@ function audienceLabel(target: string | null, raw: string | null): string {
 
 /** Muro del usuario logueado (ya filtrado por audiencia/rol en la DB). */
 export async function getFeed(): Promise<Post[]> {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return []; // sin env → muro vacío en vez de romper
+  }
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("feed");
   if (error || !data) return [];
