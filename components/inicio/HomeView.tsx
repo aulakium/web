@@ -31,7 +31,13 @@ const QUICK = [
   { key: "nav.transport", href: "/transporte", icon: "Bus", color: "transport" },
 ] as const;
 
-export function HomeView({ unreadPosts: unreadPostsReal }: { unreadPosts?: number }) {
+export function HomeView({
+  unreadPosts: unreadPostsReal,
+  events: eventsReal,
+}: {
+  unreadPosts?: number;
+  events?: import("@/lib/domain").CalEvent[];
+}) {
   const { t, locale } = useLocale();
   const me = useIdentity();
   const firstName = me?.firstName ?? DEMO_USER.name.split(" ")[0];
@@ -42,8 +48,9 @@ export function HomeView({ unreadPosts: unreadPostsReal }: { unreadPosts?: numbe
     DEMO_TODAY.day,
   ).toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" });
 
+  const calEvents = eventsReal ?? DEMO_CAL_EVENTS;
   const unreadPosts = unreadPostsReal ?? DEMO_POSTS.filter((p) => p.unread).length;
-  const eventsThisWeek = DEMO_CAL_EVENTS.filter(
+  const eventsThisWeek = calEvents.filter(
     (e) => e.kind === "event" && e.day >= 8 && e.day <= 14,
   ).length;
   const pendingRequests = DEMO_REQUESTS.filter((r) => r.status === "submitted").length;
@@ -57,7 +64,7 @@ export function HomeView({ unreadPosts: unreadPostsReal }: { unreadPosts?: numbe
   ];
 
   const todayEvents = sortDayEvents(
-    DEMO_CAL_EVENTS.filter((e) => e.day === DEMO_TODAY.day),
+    calEvents.filter((e) => e.day === DEMO_TODAY.day),
   );
 
   return (
