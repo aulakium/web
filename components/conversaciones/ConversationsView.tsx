@@ -12,15 +12,20 @@ const FILTERS = [
   { id: "closed", key: "conv.filter.closed" },
 ] as const;
 
-export function ConversationsView() {
+export function ConversationsView({
+  conversations,
+}: {
+  conversations?: Conversation[];
+}) {
   const { t } = useLocale();
+  const data = conversations ?? DEMO_CONVERSATIONS;
   const [filter, setFilter] = useState<"open" | "closed">("open");
-  const [selectedId, setSelectedId] = useState<string>(DEMO_CONVERSATIONS[0].id);
+  const [selectedId, setSelectedId] = useState<string>(data[0]?.id ?? "");
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const list = DEMO_CONVERSATIONS.filter((c) => c.status === filter);
+  const list = data.filter((c) => c.status === filter);
   const selected =
-    DEMO_CONVERSATIONS.find((c) => c.id === selectedId) ?? list[0] ?? null;
+    data.find((c) => c.id === selectedId && c.status === filter) ?? list[0] ?? null;
 
   function openConversation(id: string) {
     setSelectedId(id);
@@ -28,6 +33,22 @@ export function ConversationsView() {
   }
 
   return (
+    <>
+    <div className="mb-5">
+      <h1 className="font-display text-2xl font-700 text-ink">{t("conv.title")}</h1>
+      <p className="text-sm font-500 text-ink/55">{t("conv.subtitle")}</p>
+    </div>
+    {data.length === 0 ? (
+      <div className="rounded-[1.75rem] border border-dashed border-ink/15 bg-white px-6 py-16 text-center">
+        <span className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-mist text-ink/40">
+          <Icon name="MessagesSquare" className="h-6 w-6" />
+        </span>
+        <p className="font-display text-base font-700 text-ink">No tenés conversaciones</p>
+        <p className="mt-1 text-sm font-500 text-ink/55">
+          Cuando inicies o te sumen a un hilo con el colegio o las familias, aparece acá.
+        </p>
+      </div>
+    ) : (
     <div className="grid gap-4 lg:h-[calc(100dvh-7.5rem)] lg:grid-cols-[360px_minmax(0,1fr)]">
       {/* LISTA */}
       <div
@@ -82,6 +103,8 @@ export function ConversationsView() {
         )}
       </div>
     </div>
+    )}
+    </>
   );
 }
 

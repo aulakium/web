@@ -158,3 +158,74 @@ on conflict (id) do nothing;
 
 select 'posts: ' || count(*) from posts where community_id = :COMM::uuid;
 select 'events: ' || count(*) from events where community_id = :COMM::uuid;
+
+-- ════════════════════════════════════════════════════════════════════════
+-- CONVERSACIONES: hilos entre participantes (privacidad por participación)
+-- ════════════════════════════════════════════════════════════════════════
+-- Helper inline: membership por email → función temporal no; usamos subconsultas.
+
+-- cv1 — Familia ↔ Docente (autorización museo)
+insert into conversations (id, community_id, subject, status, created_at) values
+  ('99999999-0000-0000-0000-000000000001'::uuid, :COMM::uuid, 'Autorización salida al museo', 'open', now() - interval '1 day')
+on conflict (id) do nothing;
+insert into conversation_labels (conversation_id, label)
+select '99999999-0000-0000-0000-000000000001'::uuid, 'Salidas'
+where not exists (select 1 from conversation_labels where conversation_id='99999999-0000-0000-0000-000000000001'::uuid and label='Salidas');
+insert into conversation_participants (conversation_id, membership_id)
+select '99999999-0000-0000-0000-000000000001'::uuid, ms.id
+from memberships ms join users u on u.id=ms.user_id
+where u.email in ('familia@laslomas.demo','docente@laslomas.demo') and ms.community_id=:COMM::uuid
+on conflict do nothing;
+insert into messages (id, conversation_id, sender_membership_id, body, created_at)
+select 'aaaa0000-0000-0000-0000-000000000001'::uuid, '99999999-0000-0000-0000-000000000001'::uuid, ms.id,
+  'Hola Marina, te recuerdo que el jueves es la salida al Museo. Necesito la autorización firmada antes del miércoles.', now() - interval '20 hours'
+from memberships ms join users u on u.id=ms.user_id where u.email='docente@laslomas.demo' and ms.community_id=:COMM::uuid
+on conflict (id) do nothing;
+insert into messages (id, conversation_id, sender_membership_id, body, created_at)
+select 'aaaa0000-0000-0000-0000-000000000002'::uuid, '99999999-0000-0000-0000-000000000001'::uuid, ms.id,
+  '¡Hola Valentina! Sí, la completo hoy y la subo.', now() - interval '6 hours'
+from memberships ms join users u on u.id=ms.user_id where u.email='familia@laslomas.demo' and ms.community_id=:COMM::uuid
+on conflict (id) do nothing;
+insert into messages (id, conversation_id, sender_membership_id, body, created_at)
+select 'aaaa0000-0000-0000-0000-000000000003'::uuid, '99999999-0000-0000-0000-000000000001'::uuid, ms.id,
+  'Perfecto, ya envié la autorización firmada. ¡Gracias!', now() - interval '2 hours'
+from memberships ms join users u on u.id=ms.user_id where u.email='familia@laslomas.demo' and ms.community_id=:COMM::uuid
+on conflict (id) do nothing;
+
+-- cv2 — Coordinación ↔ Docente (acto)
+insert into conversations (id, community_id, subject, status, created_at) values
+  ('99999999-0000-0000-0000-000000000002'::uuid, :COMM::uuid, 'Coordinación acto Día de la Bandera', 'open', now() - interval '3 days')
+on conflict (id) do nothing;
+insert into conversation_labels (conversation_id, label)
+select '99999999-0000-0000-0000-000000000002'::uuid, 'Eventos'
+where not exists (select 1 from conversation_labels where conversation_id='99999999-0000-0000-0000-000000000002'::uuid and label='Eventos');
+insert into conversation_participants (conversation_id, membership_id)
+select '99999999-0000-0000-0000-000000000002'::uuid, ms.id
+from memberships ms join users u on u.id=ms.user_id
+where u.email in ('coord@laslomas.demo','docente@laslomas.demo') and ms.community_id=:COMM::uuid
+on conflict do nothing;
+insert into messages (id, conversation_id, sender_membership_id, body, created_at)
+select 'aaaa0000-0000-0000-0000-000000000004'::uuid, '99999999-0000-0000-0000-000000000002'::uuid, ms.id,
+  'Equipo, recuerden que ensayamos el lunes en el SUM a las 10.', now() - interval '2 days'
+from memberships ms join users u on u.id=ms.user_id where u.email='coord@laslomas.demo' and ms.community_id=:COMM::uuid
+on conflict (id) do nothing;
+
+-- cv3 — Administración ↔ Familia (reintegro, cerrada)
+insert into conversations (id, community_id, subject, status, created_at) values
+  ('99999999-0000-0000-0000-000000000003'::uuid, :COMM::uuid, 'Reintegro viaje de estudios', 'closed', now() - interval '10 days')
+on conflict (id) do nothing;
+insert into conversation_labels (conversation_id, label)
+select '99999999-0000-0000-0000-000000000003'::uuid, 'Administrativo'
+where not exists (select 1 from conversation_labels where conversation_id='99999999-0000-0000-0000-000000000003'::uuid and label='Administrativo');
+insert into conversation_participants (conversation_id, membership_id)
+select '99999999-0000-0000-0000-000000000003'::uuid, ms.id
+from memberships ms join users u on u.id=ms.user_id
+where u.email in ('admin@laslomas.demo','familia@laslomas.demo') and ms.community_id=:COMM::uuid
+on conflict do nothing;
+insert into messages (id, conversation_id, sender_membership_id, body, created_at)
+select 'aaaa0000-0000-0000-0000-000000000005'::uuid, '99999999-0000-0000-0000-000000000003'::uuid, ms.id,
+  'Listo, el reintegro fue procesado. Cerramos el tema.', now() - interval '9 days'
+from memberships ms join users u on u.id=ms.user_id where u.email='admin@laslomas.demo' and ms.community_id=:COMM::uuid
+on conflict (id) do nothing;
+
+select 'conversaciones: ' || count(*) from conversations where community_id = :COMM::uuid;

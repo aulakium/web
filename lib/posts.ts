@@ -23,7 +23,7 @@ interface FeedRow {
   unread: boolean;
 }
 
-const ROLE_COLOR: Record<string, AccentColor> = {
+export const ROLE_COLOR: Record<string, AccentColor> = {
   board: "navy",
   manager: "navy",
   principal: "navy",
