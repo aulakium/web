@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Icon } from "../icons";
 import { Avatar } from "../Avatar";
 import { useLocale } from "../locale-context";
+import { useIdentity } from "../identity-context";
 import { NAV_ITEMS, DEMO_USER } from "@/lib/domain";
 import { logout } from "@/app/(auth)/login/actions";
 
@@ -12,6 +13,8 @@ import { logout } from "@/app/(auth)/login/actions";
 export function RailSidebar() {
   const pathname = usePathname();
   const { t } = useLocale();
+  const me = useIdentity();
+  const userName = me?.name ?? DEMO_USER.name;
 
   return (
     <aside className="sticky top-0 hidden h-dvh w-[84px] shrink-0 flex-col items-center border-r border-ink/8 bg-white py-5 lg:flex">
@@ -57,8 +60,8 @@ export function RailSidebar() {
         </button>
       </form>
 
-      <Link href="/perfil" className="mt-1" title={DEMO_USER.name}>
-        <Avatar name={DEMO_USER.name} color="navy" size="lg" />
+      <Link href="/perfil" className="mt-1" title={userName}>
+        <Avatar name={userName} color="navy" size="lg" />
       </Link>
     </aside>
   );

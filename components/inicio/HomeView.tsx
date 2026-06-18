@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Icon } from "../icons";
 import { useLocale } from "../locale-context";
+import { useIdentity } from "../identity-context";
 import {
   ACCENT_ON,
   ACCENT_SOFT_BG,
@@ -32,6 +33,8 @@ const QUICK = [
 
 export function HomeView() {
   const { t, locale } = useLocale();
+  const me = useIdentity();
+  const firstName = me?.firstName ?? DEMO_USER.name.split(" ")[0];
 
   const dateLabel = new Date(
     DEMO_TODAY.year,
@@ -68,7 +71,7 @@ export function HomeView() {
             {dateLabel}
           </p>
           <h2 className="mt-1 font-display text-2xl font-700 sm:text-3xl">
-            {t("home.greeting")}, {DEMO_USER.name.split(" ")[0]} 👋
+            {t("home.greeting")}, {firstName} 👋
           </h2>
           <p className="mt-1 max-w-md text-sm font-600 text-white/70">
             {t("home.subtitle")}
