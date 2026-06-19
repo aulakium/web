@@ -1,6 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Icon } from "@/components/icons";
 import { Reveal } from "@/components/landing/Reveal";
+import { HeroMessages } from "@/components/landing/HeroMessages";
 import { Wordmark } from "@/components/Wordmark";
 
 /* ── Marca (manzana naranja + wordmark cursivo) ── */
@@ -114,7 +116,11 @@ export default function LabHome() {
               <span className="h-2 w-2 rounded-full bg-cta" /> Plataforma de comunicación escolar
             </span>
             <h1 className="mt-6 text-4xl font-700 leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
-              La comunidad escolar, <span className="text-sky">conectada</span> en un solo lugar
+              La comunidad escolar,{" "}
+              <span className="font-hand inline-block px-1 text-[1.15em] font-700 text-sky">
+                conectada
+              </span>{" "}
+              en un solo lugar
             </h1>
             <p className="mt-5 max-w-lg text-lg font-400 leading-relaxed text-white/70">
               Novedades, calendario, mensajes y trámites entre el colegio, las
@@ -134,11 +140,18 @@ export default function LabHome() {
           </Reveal>
 
           <Reveal delay={120} className="relative">
-            <Ph className="aspect-[4/5] w-full border-4 border-white/10 shadow-pop" v={1} icon="GraduationCap" rounded="rounded-[2.5rem]" />
-            <div className="absolute -bottom-5 -left-4 flex items-center gap-3 rounded-2xl bg-white p-3 shadow-pop">
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand text-white"><Icon name="Megaphone" className="h-5 w-5" /></span>
-              <span className="text-xs font-700 leading-tight text-ink">Aviso publicado<br /><span className="font-500 text-ink/55">visto por 312 familias</span></span>
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[2.5rem] border-4 border-white/10 shadow-pop">
+              <Image
+                src="/hero-foto.webp"
+                alt="Una mamá revisa los avisos del colegio desde su teléfono"
+                fill
+                priority
+                sizes="(max-width: 1024px) 90vw, 45vw"
+                className="object-cover"
+              />
             </div>
+            {/* Mensajes que rotan sobre la foto */}
+            <HeroMessages className="absolute -left-4 bottom-8 w-[270px] sm:w-[300px]" />
           </Reveal>
         </div>
       </section>

@@ -39,7 +39,7 @@ export function Wordmark({
         width={2554}
         height={638}
         priority
-        className="h-6 w-auto"
+        className="h-9 w-auto"
       />
     </span>
   );

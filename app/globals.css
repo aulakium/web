@@ -51,6 +51,8 @@
 @theme inline {
   --font-display: var(--font-outfit), system-ui, sans-serif;
   --font-sans: var(--font-outfit), system-ui, sans-serif;
+  /* Manuscrita (Caveat) para palabras destacadas → genera la utilidad font-hand. */
+  --font-hand: var(--font-caveat), "Segoe Script", cursive;
 }
 
 /* Pesos numéricos como utilidades reales (Tailwind v4 no genera font-700/800).
