@@ -1,6 +1,10 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { rethrowNextControl } from "@/lib/supabase/safe";
 import { ROLE_LABELS, type RoleKey } from "@/lib/domain";
+
+/** Roles que pueden administrar el colegio (estructura + invitaciones). */
+export const ADMIN_ROLES: RoleKey[] = ["principal", "manager", "board"];
 
 /** Identidad del usuario logueado, resuelta desde Supabase (perfil + rol + colegio). */
 export interface Identity {
@@ -11,6 +15,7 @@ export interface Identity {
   roleLabel: string;
   schoolName: string;
   schoolShort: string;
+  isAdmin: boolean;
 }
 
 /** PostgREST a veces embebe la relación como objeto y a veces como array. */
@@ -71,10 +76,19 @@ export async function getIdentity(): Promise<Identity | null> {
     roleLabel: roleKey ? ROLE_LABELS[roleKey] : "",
     schoolName: community?.name ?? "Colegio",
     schoolShort: community?.short_name ?? "Colegio",
+    isAdmin: !!roleKey && ADMIN_ROLES.includes(roleKey),
   };
   } catch (e) {
     rethrowNextControl(e);
     console.error("[getIdentity] error, devuelvo null (modo demo):", e);
     return null;
   }
+}
+
+/** Exige rol de administrador del colegio; si no, redirige. Para layouts/páginas server. */
+export async function requireAdmin(): Promise<Identity> {
+  const me = await getIdentity();
+  if (!me) redirect("/login");
+  if (!me.isAdmin) redirect("/inicio");
+  return me;
 }

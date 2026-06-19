@@ -62,6 +62,24 @@ export function RailSidebar() {
         })}
       </nav>
 
+      {me?.isAdmin ? (
+        <Link
+          href="/configuracion"
+          title="Configuración"
+          aria-current={pathname.startsWith("/configuracion") ? "page" : undefined}
+          className={`group relative mt-3 grid h-12 w-12 place-items-center rounded-2xl transition-colors ${
+            pathname.startsWith("/configuracion")
+              ? "bg-brand text-white shadow-soft"
+              : "text-ink/40 hover:bg-mist hover:text-ink"
+          }`}
+        >
+          <Icon name="Settings" className="h-[22px] w-[22px]" />
+          <span className="pointer-events-none absolute left-14 z-30 whitespace-nowrap rounded-lg bg-ink px-2.5 py-1 text-xs font-600 text-white opacity-0 shadow-card transition-opacity group-hover:opacity-100">
+            Configuración
+          </span>
+        </Link>
+      ) : null}
+
       <form action={logout} className="mt-3">
         <button
           type="submit"

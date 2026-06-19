@@ -37,7 +37,7 @@ on conflict (id) do nothing;
 
 insert into grades (id, community_id, level_id, name) values
   ('22222222-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111',
-   '22222222-0000-0000-0000-000000000001', '6° grado')
+   '22222222-0000-0000-0000-000000000001', '6°')
 on conflict (id) do nothing;
 
 insert into groups (id, community_id, grade_id, name, type) values

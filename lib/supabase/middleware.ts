@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 /** Rutas internas que requieren sesión. */
 const PROTECTED = [
   "/inicio", "/muro", "/calendario", "/conversaciones", "/tramites",
-  "/documentos", "/transporte", "/comunidad", "/perfil",
+  "/documentos", "/transporte", "/comunidad", "/perfil", "/configuracion",
 ];
 
 /**
