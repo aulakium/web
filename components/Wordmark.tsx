@@ -29,7 +29,7 @@ export function Wordmark({
   theme?: "light" | "dark";
   className?: string;
 }) {
-  const src = theme === "dark" ? "/logo-colequium-white.png" : "/logo-colequium.png";
+  const src = theme === "dark" ? "/logo-colequium-white.webp" : "/logo-colequium.webp";
   return (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <BrandIcon />
