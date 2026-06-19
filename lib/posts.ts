@@ -22,6 +22,7 @@ interface FeedRow {
   comments: number;
   liked: boolean;
   unread: boolean;
+  bookmarked: boolean;
 }
 
 export const ROLE_COLOR: Record<string, AccentColor> = {
@@ -105,7 +106,7 @@ export async function getFeed(): Promise<Post[]> {
       likes: r.likes,
       comments: r.comments,
       liked: r.liked,
-      bookmarked: false,
+      bookmarked: r.bookmarked,
       unread: r.unread,
     } satisfies Post;
   });

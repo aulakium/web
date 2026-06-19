@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Composer } from "@/components/muro/Composer";
-import { Filters } from "@/components/muro/Filters";
+import { Filters, type WallFilter } from "@/components/muro/Filters";
 import { PostCard } from "@/components/muro/PostCard";
 import { RightRail } from "@/components/muro/RightRail";
 import { Icon } from "@/components/icons";
@@ -19,6 +20,11 @@ export function MuroView({
   audiences?: AudienceOptions;
 }) {
   const { t } = useLocale();
+  const [filter, setFilter] = useState<WallFilter>("all");
+
+  const shown = posts.filter((p) =>
+    filter === "unread" ? p.unread : filter === "saved" ? p.bookmarked : true,
+  );
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
@@ -31,9 +37,9 @@ export function MuroView({
         {/* Columna principal: feed */}
         <div className="flex flex-col gap-5">
           <Composer canPublish={canPublish} audiences={audiences} />
-          <Filters />
-          {posts.length > 0 ? (
-            posts.map((post, i) => <PostCard key={post.id} post={post} index={i} />)
+          <Filters active={filter} onChange={setFilter} />
+          {shown.length > 0 ? (
+            shown.map((post, i) => <PostCard key={post.id} post={post} index={i} />)
           ) : (
             <div className="rounded-[1.5rem] border border-dashed border-ink/15 bg-white px-6 py-12 text-center">
               <span className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-mist text-ink/40">
