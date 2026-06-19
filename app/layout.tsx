@@ -20,10 +20,30 @@ const caveat = Caveat({
   weight: ["500", "600", "700"],
 });
 
+const DESCRIPTION =
+  "La comunidad escolar, conectada en un solo lugar. Avisos, calendario, mensajes y trámites entre el colegio, las familias y los docentes. Para LatAm y Brasil.";
+
 export const metadata: Metadata = {
-  title: "Colequium — La comunidad escolar, conectada",
-  description:
-    "Plataforma de comunicación entre el colegio, las familias y los docentes.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://colequium.com"),
+  title: {
+    default: "Colequium — La comunidad escolar, conectada",
+    template: "%s · Colequium",
+  },
+  description: DESCRIPTION,
+  applicationName: "Colequium",
+  openGraph: {
+    type: "website",
+    siteName: "Colequium",
+    title: "Colequium — La comunidad escolar, conectada",
+    description: DESCRIPTION,
+    url: "/",
+    locale: "es_MX",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Colequium — La comunidad escolar, conectada",
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({
