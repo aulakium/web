@@ -150,8 +150,8 @@ export default function LabHome() {
                 className="object-cover"
               />
             </div>
-            {/* Mensajes que rotan sobre la foto */}
-            <HeroMessages className="absolute -left-4 bottom-8 w-[270px] sm:w-[300px]" />
+            {/* Mensajes que rotan por las esquinas de la foto */}
+            <HeroMessages />
           </Reveal>
         </div>
       </section>

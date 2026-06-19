@@ -124,10 +124,12 @@ export const COVER_ICONS: Record<string, LucideIcon> = {
 export function Icon({
   name,
   className,
+  strokeWidth,
 }: {
   name: string;
   className?: string;
+  strokeWidth?: number;
 }) {
   const Cmp = ICONS[name] ?? Megaphone;
-  return <Cmp className={className} aria-hidden />;
+  return <Cmp className={className} strokeWidth={strokeWidth} aria-hidden />;
 }

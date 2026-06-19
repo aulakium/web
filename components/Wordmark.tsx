@@ -16,7 +16,7 @@ export function BrandIcon({
     <span
       className={`grid shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#ffa424] to-[#f57c00] text-white shadow-soft ${className}`}
     >
-      <Icon name="Apple" className={iconClassName} />
+      <Icon name="Apple" className={iconClassName} strokeWidth={2.6} />
     </span>
   );
 }
