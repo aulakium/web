@@ -12,12 +12,15 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
+  // Destino tras validar (solo rutas internas, default /aceptar).
+  const nextParam = searchParams.get("next") || "/aceptar";
+  const next = nextParam.startsWith("/") ? nextParam : "/aceptar";
 
   if (tokenHash && type) {
     const supabase = await createClient();
     const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
     if (!error) {
-      return NextResponse.redirect(`${origin}/aceptar`);
+      return NextResponse.redirect(`${origin}${next}`);
     }
     console.error("[confirmar] verifyOtp falló:", error.message);
   }

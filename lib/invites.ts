@@ -45,11 +45,48 @@ export async function sendInvite(opts: {
   const type = res.data.properties.verification_type || "invite";
   const link = `${siteUrl()}/auth/confirmar?token_hash=${tokenHash}&type=${type}`;
 
-  const emailed = await sendEmail(opts.email, opts.communityName, link);
+  const emailed = await sendEmail(
+    opts.email,
+    `Te invitaron a ${opts.communityName} en Colequium`,
+    emailShell({
+      heading: `Te damos la bienvenida a ${opts.communityName}`,
+      lead: "Tu colegio usa <b>Colequium</b> para comunicarse. Para activar tu cuenta y crear tu contraseña, hacé clic en el botón:",
+      button: "Activar mi cuenta",
+      link,
+    }),
+  );
   return { ok: true, link, emailed };
 }
 
-async function sendEmail(to: string, communityName: string, link: string): Promise<boolean> {
+/** Envía el correo de recuperación de contraseña (vía Resend). */
+export async function sendPasswordReset(email: string): Promise<boolean> {
+  const admin = createAdminClient();
+  if (!admin) return false;
+  const res = await admin.auth.admin.generateLink({
+    type: "recovery",
+    email,
+    options: { redirectTo: `${siteUrl()}/recuperar/nueva` },
+  });
+  // Si el email no existe, generateLink falla: no revelamos nada, devolvemos true.
+  if (res.error || !res.data?.properties?.hashed_token) return true;
+
+  const tokenHash = res.data.properties.hashed_token;
+  const next = encodeURIComponent("/recuperar/nueva");
+  const link = `${siteUrl()}/auth/confirmar?token_hash=${tokenHash}&type=recovery&next=${next}`;
+
+  return await sendEmail(
+    email,
+    "Recuperá tu contraseña de Colequium",
+    emailShell({
+      heading: "Recuperá tu contraseña",
+      lead: "Recibimos un pedido para restablecer tu contraseña en <b>Colequium</b>. Hacé clic para crear una nueva. Si no fuiste vos, podés ignorar este correo.",
+      button: "Crear nueva contraseña",
+      link,
+    }),
+  );
+}
+
+async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
   const from = process.env.INVITE_FROM_EMAIL;
   if (!key || !from) return false;
@@ -57,12 +94,7 @@ async function sendEmail(to: string, communityName: string, link: string): Promi
     const r = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from,
-        to,
-        subject: `Te invitaron a ${communityName} en Colequium`,
-        html: emailHtml(communityName, link),
-      }),
+      body: JSON.stringify({ from, to, subject, html }),
     });
     if (!r.ok) console.error("[invites] Resend respondió", r.status, await r.text());
     return r.ok;
@@ -72,17 +104,24 @@ async function sendEmail(to: string, communityName: string, link: string): Promi
   }
 }
 
-function emailHtml(communityName: string, link: string) {
+function emailShell({
+  heading,
+  lead,
+  button,
+  link,
+}: {
+  heading: string;
+  lead: string;
+  button: string;
+  link: string;
+}) {
   return `
   <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#1f2a44">
-    <h1 style="font-size:20px;margin:0 0 8px">Te damos la bienvenida a ${communityName}</h1>
-    <p style="font-size:15px;line-height:1.5;color:#4a5568">
-      Tu colegio usa <b>Colequium</b> para comunicarse. Para activar tu cuenta y crear tu
-      contraseña, hacé clic en el botón:
-    </p>
+    <h1 style="font-size:20px;margin:0 0 8px">${heading}</h1>
+    <p style="font-size:15px;line-height:1.5;color:#4a5568">${lead}</p>
     <p style="margin:24px 0">
       <a href="${link}" style="background:#1f2a44;color:#fff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;display:inline-block">
-        Activar mi cuenta
+        ${button}
       </a>
     </p>
     <p style="font-size:13px;color:#94a3b8">

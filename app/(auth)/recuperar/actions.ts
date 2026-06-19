@@ -1,7 +1,6 @@
 "use server";
 
-import { headers } from "next/headers";
-import { createClient } from "@/lib/supabase/server";
+import { sendPasswordReset } from "@/lib/invites";
 
 export type ResetState = { sent: boolean };
 
@@ -9,18 +8,8 @@ export async function requestReset(
   _prev: ResetState,
   formData: FormData,
 ): Promise<ResetState> {
-  const email = String(formData.get("email") || "").trim();
-
-  const origin =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    (await headers()).get("origin") ||
-    "http://localhost:3100";
-
-  const supabase = await createClient();
+  const email = String(formData.get("email") || "").trim().toLowerCase();
   // No revelamos si el correo existe o no: siempre confirmamos.
-  await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/recuperar/nueva`,
-  });
-
+  if (email) await sendPasswordReset(email);
   return { sent: true };
 }
