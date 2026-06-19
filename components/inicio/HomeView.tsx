@@ -13,6 +13,7 @@ import {
 } from "../colors";
 import {
   DEMO_USER,
+  STUDENT_HIDDEN,
   DEMO_POSTS,
   DEMO_CAL_EVENTS,
   DEMO_REQUESTS,
@@ -67,7 +68,7 @@ export function HomeView({
     { label: t("home.summary.events"), value: eventsThisWeek, icon: "CalendarDays", color: "brand" as AccentColor, href: "/calendario" },
     { label: t("home.summary.requests"), value: pendingRequests, icon: "ClipboardList", color: "requests" as AccentColor, href: "/tramites" },
     { label: t("home.summary.messages"), value: unreadMessages, icon: "MessagesSquare", color: "sky" as AccentColor, href: "/conversaciones" },
-  ];
+  ].filter((s) => !(me?.isStudent && STUDENT_HIDDEN.includes(s.href)));
 
   const todayEvents = sortDayEvents(
     calEvents.filter((e) => e.day === DEMO_TODAY.day),
@@ -123,7 +124,7 @@ export function HomeView({
           {t("home.quick")}
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {QUICK.map((q) =>
+          {QUICK.filter((q) => !(me?.isStudent && STUDENT_HIDDEN.includes(q.href))).map((q) =>
             "disabled" in q && q.disabled ? (
               <div
                 key={q.href}

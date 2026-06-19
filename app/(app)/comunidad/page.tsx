@@ -2,6 +2,7 @@ import { Avatar } from "@/components/Avatar";
 import { Icon } from "@/components/icons";
 import { getPeople, type Person } from "@/lib/people";
 import { ROLE_COLOR } from "@/lib/posts";
+import { blockStudents } from "@/lib/identity";
 import type { RoleKey } from "@/lib/domain";
 
 /** Secciones del directorio, en orden de jerarquía. */
@@ -15,6 +16,7 @@ const GROUPS: { title: string; roles: RoleKey[] }[] = [
 ];
 
 export default async function ComunidadPage() {
+  await blockStudents();
   const people = await getPeople();
 
   const sections = GROUPS.map((g) => ({

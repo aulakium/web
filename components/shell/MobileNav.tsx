@@ -4,14 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "../icons";
 import { useLocale } from "../locale-context";
-import { NAV_ITEMS } from "@/lib/domain";
+import { useIdentity } from "../identity-context";
+import { NAV_ITEMS, STUDENT_HIDDEN } from "@/lib/domain";
 
 /** Bottom-nav para móvil (el rail slim se oculta < lg). */
 export function MobileNav() {
   const pathname = usePathname();
   const { t } = useLocale();
-  const items = NAV_ITEMS.filter((i) =>
-    ["nav.home", "nav.wall", "nav.calendar", "nav.conversations", "nav.requests"].includes(i.key),
+  const me = useIdentity();
+  const items = NAV_ITEMS.filter(
+    (i) =>
+      ["nav.home", "nav.wall", "nav.calendar", "nav.conversations", "nav.requests"].includes(i.key) &&
+      !(me?.isStudent && STUDENT_HIDDEN.includes(i.href)),
   );
 
   return (

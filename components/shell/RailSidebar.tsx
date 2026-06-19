@@ -7,7 +7,7 @@ import { Avatar } from "../Avatar";
 import { useLocale } from "../locale-context";
 import { useIdentity } from "../identity-context";
 import { BrandIcon } from "../Wordmark";
-import { NAV_ITEMS, DEMO_USER } from "@/lib/domain";
+import { NAV_ITEMS, STUDENT_HIDDEN, DEMO_USER } from "@/lib/domain";
 import { logout } from "@/app/(auth)/login/actions";
 
 /** Rail slim de íconos (estilo Alliance). Desktop. */
@@ -24,7 +24,9 @@ export function RailSidebar() {
       </Link>
 
       <nav className="mt-7 flex flex-1 flex-col items-center gap-2">
-        {NAV_ITEMS.map((it) => {
+        {NAV_ITEMS.filter(
+          (it) => !(me?.isStudent && STUDENT_HIDDEN.includes(it.href)),
+        ).map((it) => {
           if (it.disabled) {
             return (
               <div

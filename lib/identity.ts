@@ -16,6 +16,7 @@ export interface Identity {
   schoolName: string;
   schoolShort: string;
   isAdmin: boolean;
+  isStudent: boolean;
 }
 
 /** PostgREST a veces embebe la relación como objeto y a veces como array. */
@@ -89,6 +90,7 @@ export async function getIdentity(): Promise<Identity | null> {
     schoolName: community?.name ?? "Colegio",
     schoolShort: community?.short_name ?? "Colegio",
     isAdmin: !!roleKey && ADMIN_ROLES.includes(roleKey),
+    isStudent: roleKey === "student",
   };
   } catch (e) {
     rethrowNextControl(e);
@@ -103,4 +105,10 @@ export async function requireAdmin(): Promise<Identity> {
   if (!me) redirect("/login");
   if (!me.isAdmin) redirect("/inicio");
   return me;
+}
+
+/** Bloquea a los alumnos de las secciones que no les corresponden. */
+export async function blockStudents() {
+  const me = await getIdentity();
+  if (me?.isStudent) redirect("/inicio");
 }

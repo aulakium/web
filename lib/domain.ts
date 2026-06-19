@@ -124,6 +124,9 @@ export const DEMO_USER: CurrentUser = {
   color: "brand",
 };
 
+/** Rutas que el rol alumno NO ve (vista acotada). */
+export const STUDENT_HIDDEN = ["/conversaciones", "/tramites", "/comunidad"];
+
 export const NAV_ITEMS: NavItemDef[] = [
   { key: "nav.home", href: "/inicio", icon: "LayoutGrid" },
   { key: "nav.wall", href: "/muro", icon: "Megaphone", badge: 3 },
