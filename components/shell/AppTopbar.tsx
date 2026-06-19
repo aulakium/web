@@ -6,6 +6,7 @@ import { Avatar } from "../Avatar";
 import { useLocale } from "../locale-context";
 import { useIdentity } from "../identity-context";
 import { BrandIcon } from "../Wordmark";
+import { NotificationsBell } from "./NotificationsBell";
 import { LOCALES } from "@/lib/i18n";
 import { DEMO_USER, DEMO_SCHOOL, ROLE_LABELS } from "@/lib/domain";
 
@@ -79,10 +80,7 @@ export function AppTopbar() {
       </div>
 
       {/* Notificaciones */}
-      <button type="button" aria-label="Notificaciones" className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ink/10 text-ink/60 transition-colors hover:border-brand/40">
-        <Icon name="Bell" className="h-5 w-5" />
-        <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full border-2 border-white bg-cta" />
-      </button>
+      <NotificationsBell />
 
       {/* Perfil */}
       <div className="flex shrink-0 items-center gap-2.5">
