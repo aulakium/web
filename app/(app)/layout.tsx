@@ -4,6 +4,7 @@ import { RailSidebar } from "@/components/shell/RailSidebar";
 import { AppTopbar } from "@/components/shell/AppTopbar";
 import { MobileNav } from "@/components/shell/MobileNav";
 import { getIdentity } from "@/lib/identity";
+import { LOCALES, type Locale } from "@/lib/i18n";
 
 /**
  * Shell interno (estilo intranet Alliance): rail slim de íconos a la izquierda,
@@ -16,9 +17,14 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   const identity = await getIdentity();
+  const codes = LOCALES.map((l) => l.code) as string[];
+  const initialLocale: Locale =
+    identity?.uiLocale && codes.includes(identity.uiLocale)
+      ? (identity.uiLocale as Locale)
+      : "es-MX";
 
   return (
-    <LocaleProvider initial="es-MX">
+    <LocaleProvider initial={initialLocale}>
       <IdentityProvider value={identity}>
         <div className="flex min-h-dvh bg-[#f1f5fa]">
           <RailSidebar />

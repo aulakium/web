@@ -17,6 +17,7 @@ export interface Identity {
   schoolShort: string;
   isAdmin: boolean;
   isStudent: boolean;
+  uiLocale: string | null;
 }
 
 /** PostgREST a veces embebe la relación como objeto y a veces como array. */
@@ -38,7 +39,7 @@ export async function getIdentity(): Promise<Identity | null> {
 
   const { data: profile } = await supabase
     .from("users")
-    .select("full_name, email")
+    .select("full_name, email, ui_locale")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -91,6 +92,7 @@ export async function getIdentity(): Promise<Identity | null> {
     schoolShort: community?.short_name ?? "Colegio",
     isAdmin: !!roleKey && ADMIN_ROLES.includes(roleKey),
     isStudent: roleKey === "student",
+    uiLocale: (profile?.ui_locale as string) ?? null,
   };
   } catch (e) {
     rethrowNextControl(e);
