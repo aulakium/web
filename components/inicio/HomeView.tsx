@@ -28,7 +28,7 @@ const QUICK = [
   { key: "nav.conversations", href: "/conversaciones", icon: "MessagesSquare", color: "sky" },
   { key: "nav.requests", href: "/tramites", icon: "ClipboardList", color: "requests" },
   { key: "nav.documents", href: "/documentos", icon: "FolderClosed", color: "docs" },
-  { key: "nav.transport", href: "/transporte", icon: "Bus", color: "transport" },
+  { key: "nav.transport", href: "/transporte", icon: "Bus", color: "transport", disabled: true },
 ] as const;
 
 export function HomeView({
@@ -123,20 +123,34 @@ export function HomeView({
           {t("home.quick")}
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {QUICK.map((q) => (
-            <Link
-              key={q.href}
-              href={q.href}
-              className="flex flex-col items-center gap-2 rounded-[1.5rem] border border-ink/5 bg-white p-4 text-center shadow-card transition-transform hover:-translate-y-0.5"
-            >
-              <span
-                className={`grid h-12 w-12 place-items-center rounded-2xl ${ACCENT_ON[q.color as AccentColor]}`}
+          {QUICK.map((q) =>
+            "disabled" in q && q.disabled ? (
+              <div
+                key={q.href}
+                aria-disabled="true"
+                title={`${t(q.key)} — próximamente`}
+                className="flex cursor-not-allowed flex-col items-center gap-2 rounded-[1.5rem] border border-ink/5 bg-white/60 p-4 text-center opacity-50"
               >
-                <Icon name={q.icon} className="h-6 w-6" />
-              </span>
-              <span className="text-sm font-700 text-ink">{t(q.key)}</span>
-            </Link>
-          ))}
+                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-mist text-ink/35">
+                  <Icon name={q.icon} className="h-6 w-6" />
+                </span>
+                <span className="text-sm font-700 text-ink/40">{t(q.key)}</span>
+              </div>
+            ) : (
+              <Link
+                key={q.href}
+                href={q.href}
+                className="flex flex-col items-center gap-2 rounded-[1.5rem] border border-ink/5 bg-white p-4 text-center shadow-card transition-transform hover:-translate-y-0.5"
+              >
+                <span
+                  className={`grid h-12 w-12 place-items-center rounded-2xl ${ACCENT_ON[q.color as AccentColor]}`}
+                >
+                  <Icon name={q.icon} className="h-6 w-6" />
+                </span>
+                <span className="text-sm font-700 text-ink">{t(q.key)}</span>
+              </Link>
+            ),
+          )}
         </div>
       </section>
 

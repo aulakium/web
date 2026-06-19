@@ -8,7 +8,13 @@ import { Icon } from "@/components/icons";
 import { useLocale } from "@/components/locale-context";
 import type { Post } from "@/lib/domain";
 
-export function MuroView({ posts }: { posts: Post[] }) {
+export function MuroView({
+  posts,
+  canPublish = false,
+}: {
+  posts: Post[];
+  canPublish?: boolean;
+}) {
   const { t } = useLocale();
 
   return (
@@ -21,7 +27,7 @@ export function MuroView({ posts }: { posts: Post[] }) {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         {/* Columna principal: feed */}
         <div className="flex flex-col gap-5">
-          <Composer />
+          <Composer canPublish={canPublish} />
           <Filters />
           {posts.length > 0 ? (
             posts.map((post, i) => <PostCard key={post.id} post={post} index={i} />)

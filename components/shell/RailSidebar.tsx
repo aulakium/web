@@ -24,6 +24,21 @@ export function RailSidebar() {
 
       <nav className="mt-7 flex flex-1 flex-col items-center gap-2">
         {NAV_ITEMS.map((it) => {
+          if (it.disabled) {
+            return (
+              <div
+                key={it.href}
+                aria-disabled="true"
+                title={`${t(it.key)} — próximamente`}
+                className="group relative grid h-12 w-12 cursor-not-allowed place-items-center rounded-2xl text-ink/20"
+              >
+                <Icon name={it.icon} className="h-[22px] w-[22px]" />
+                <span className="pointer-events-none absolute left-14 z-30 whitespace-nowrap rounded-lg bg-ink px-2.5 py-1 text-xs font-600 text-white opacity-0 shadow-card transition-opacity group-hover:opacity-100">
+                  {t(it.key)} · próximamente
+                </span>
+              </div>
+            );
+          }
           const active = pathname.startsWith(it.href);
           return (
             <Link

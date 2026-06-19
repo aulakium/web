@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Icon, COVER_ICONS } from "../icons";
 import { Avatar } from "../Avatar";
 import { useLocale } from "../locale-context";
 import { ROLE_LABELS, type Post } from "@/lib/domain";
 import { type AccentColor } from "../colors";
+import { toggleLike } from "@/app/(app)/muro/actions";
 
 export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
   const { t } = useLocale();
   const [liked, setLiked] = useState(post.liked);
+  const [, startLike] = useTransition();
   const [saved, setSaved] = useState(post.bookmarked);
   const [expanded, setExpanded] = useState(false);
   const likes = post.likes + (liked && !post.liked ? 1 : 0) - (!liked && post.liked ? 1 : 0);
@@ -108,7 +110,10 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
         <div className="mt-4 flex items-center gap-1.5 border-t border-ink/5 pt-3">
           <button
             type="button"
-            onClick={() => setLiked((v) => !v)}
+            onClick={() => {
+              setLiked((v) => !v);
+              startLike(() => toggleLike(post.id));
+            }}
             className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-700 transition-colors ${
               liked
                 ? "bg-cta/10 text-cta"

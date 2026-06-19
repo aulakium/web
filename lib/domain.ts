@@ -76,6 +76,7 @@ export interface NavItemDef {
   href: string;
   icon: string; // nombre del icono lucide
   badge?: number;
+  disabled?: boolean; // se muestra en gris, no navegable (módulo aún no habilitado)
 }
 
 export interface CurrentUser {
@@ -130,7 +131,7 @@ export const NAV_ITEMS: NavItemDef[] = [
   { key: "nav.conversations", href: "/conversaciones", icon: "MessagesSquare", badge: 5 },
   { key: "nav.requests", href: "/tramites", icon: "ClipboardList" },
   { key: "nav.documents", href: "/documentos", icon: "FolderClosed" },
-  { key: "nav.transport", href: "/transporte", icon: "Bus" },
+  { key: "nav.transport", href: "/transporte", icon: "Bus", disabled: true },
   { key: "nav.people", href: "/comunidad", icon: "Users" },
 ];
 
