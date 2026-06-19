@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { Icon } from "../icons";
 import { Avatar } from "../Avatar";
 import { useIdentity } from "../identity-context";
@@ -21,13 +21,19 @@ export function Composer({
 }) {
   const me = useIdentity();
   const formRef = useRef<HTMLFormElement>(null);
+  const [pollMode, setPollMode] = useState(false);
+  const [optionCount, setOptionCount] = useState(2);
   const [state, formAction, pending] = useActionState<CreatePostState, FormData>(
     createPost,
     null,
   );
 
   useEffect(() => {
-    if (state?.ok) formRef.current?.reset();
+    if (state?.ok) {
+      formRef.current?.reset();
+      setPollMode(false);
+      setOptionCount(2);
+    }
   }, [state]);
 
   if (!canPublish) return null;
@@ -49,11 +55,35 @@ export function Composer({
           <textarea
             name="body"
             rows={2}
-            placeholder="Compartí un aviso con la comunidad…"
+            placeholder={pollMode ? "Escribí la pregunta de la encuesta…" : "Compartí un aviso con la comunidad…"}
             className="mt-2 w-full resize-none rounded-xl bg-mist px-4 py-2.5 text-sm font-600 text-ink outline-none placeholder:text-ink/45 focus:ring-2 focus:ring-brand/30"
           />
+
+          {pollMode ? (
+            <div className="mt-2 flex flex-col gap-2">
+              {Array.from({ length: optionCount }).map((_, i) => (
+                <input
+                  key={i}
+                  name="option"
+                  placeholder={`Opción ${i + 1}`}
+                  className="w-full rounded-xl border border-ink/10 bg-white px-4 py-2 text-sm font-600 text-ink outline-none placeholder:text-ink/40 focus:ring-2 focus:ring-brand/30"
+                />
+              ))}
+              {optionCount < 6 ? (
+                <button
+                  type="button"
+                  onClick={() => setOptionCount((c) => c + 1)}
+                  className="self-start text-xs font-700 text-brand hover:text-ink"
+                >
+                  + Agregar opción
+                </button>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </div>
+
+      <input type="hidden" name="isPoll" value={pollMode ? "1" : "0"} />
 
       {state?.error ? (
         <p role="alert" className="mt-2 pl-[52px] text-xs font-700 text-rose">
@@ -62,9 +92,18 @@ export function Composer({
       ) : null}
 
       <div className="mt-3 flex items-center gap-2 border-t border-ink/5 pt-3">
-        <span className="hidden text-ink/40 sm:block">
-          <Icon name="Users" className="h-[18px] w-[18px]" />
-        </span>
+        <button
+          type="button"
+          onClick={() => setPollMode((v) => !v)}
+          aria-pressed={pollMode}
+          title="Encuesta"
+          className={`flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-700 transition-colors ${
+            pollMode ? "bg-brand/10 text-brand" : "text-ink/45 hover:bg-mist hover:text-ink"
+          }`}
+        >
+          <Icon name="ClipboardList" className="h-[16px] w-[16px]" />
+          <span className="hidden sm:inline">Encuesta</span>
+        </button>
         <select
           name="audience"
           defaultValue={audiences?.community?.value}

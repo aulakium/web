@@ -103,6 +103,7 @@ export async function getFeed(): Promise<Post[]> {
       body: r.body ?? "",
       cover: look.cover,
       coverIcon: look.icon,
+      kind: r.type === "poll" ? "poll" : "announcement",
       likes: r.likes,
       comments: r.comments,
       liked: r.liked,

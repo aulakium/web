@@ -59,6 +59,13 @@ export async function createPost(
   const m = await myMembership(supabase);
   if (!m) return { error: "No pudimos identificar tu cuenta." };
 
+  // ¿Es encuesta? (opciones no vacías)
+  const options = formData
+    .getAll("option")
+    .map((o) => String(o).trim())
+    .filter(Boolean);
+  const isPoll = String(formData.get("isPoll") || "") === "1" && options.length >= 2;
+
   const { data: post, error } = await supabase
     .from("posts")
     .insert({
@@ -66,7 +73,7 @@ export async function createPost(
       author_membership_id: m.id,
       title: title || null,
       body,
-      type: "announcement",
+      type: isPoll ? "poll" : "announcement",
       published_at: new Date().toISOString(),
     })
     .select("id")
@@ -74,6 +81,12 @@ export async function createPost(
 
   // RLS bloquea a quien no tiene rol de gestión.
   if (error || !post) return { error: "No tenés permiso para publicar avisos." };
+
+  if (isPoll) {
+    await supabase.from("poll_options").insert(
+      options.map((label, i) => ({ post_id: post.id, label, position: i })),
+    );
+  }
 
   // Audiencia elegida ("type:id"); por defecto, toda la comunidad.
   const raw = String(formData.get("audience") || "");
@@ -165,6 +178,38 @@ export async function getComments(postId: string): Promise<PostComment[]> {
       minute: "2-digit",
     }),
   }));
+}
+
+export interface PollOption {
+  id: string;
+  label: string;
+  votes: number;
+  mine: boolean;
+}
+
+/** Opciones de una encuesta con conteos y si voté. */
+export async function getPollData(postId: string): Promise<PollOption[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("poll_data", { p_post: postId });
+  if (error || !data) return [];
+  return (data as { option_id: string; label: string; votes: number; mine: boolean }[]).map(
+    (o) => ({ id: o.option_id, label: o.label, votes: o.votes, mine: o.mine }),
+  );
+}
+
+/** Vota una opción (1 voto por encuesta; reemplaza el anterior). */
+export async function votePoll(postId: string, optionId: string) {
+  const supabase = await createClient();
+  const m = await myMembership(supabase);
+  if (!m) return;
+  // Quitar voto previo en cualquier opción de esta encuesta.
+  const { data: opts } = await supabase.from("poll_options").select("id").eq("post_id", postId);
+  const ids = (opts ?? []).map((o) => o.id as string);
+  if (ids.length) {
+    await supabase.from("poll_votes").delete().eq("membership_id", m.id).in("option_id", ids);
+  }
+  await supabase.from("poll_votes").insert({ option_id: optionId, membership_id: m.id });
+  revalidatePath("/muro");
 }
 
 export type CommentState = { error?: string; ok?: boolean } | null;

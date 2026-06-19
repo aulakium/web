@@ -16,6 +16,7 @@ import {
   type PostComment,
   type CommentState,
 } from "@/app/(app)/muro/actions";
+import { PollView } from "./PollView";
 
 export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
   const { t } = useLocale();
@@ -122,6 +123,8 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
             {t("wall.seeMore")}
           </button>
         ) : null}
+
+        {post.kind === "poll" ? <PollView postId={post.id} /> : null}
 
         {/* Acciones */}
         <div className="mt-4 flex items-center gap-1.5 border-t border-ink/5 pt-3">

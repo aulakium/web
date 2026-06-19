@@ -63,6 +63,7 @@ export interface Post {
   image?: string; // foto de portada (subida por quien publica); si falta, se usa el gradiente
   cover: string; // gradiente de portada (fallback cuando no hay foto)
   coverIcon: "calendar" | "megaphone" | "image" | "trophy" | "bus" | "heart";
+  kind?: "announcement" | "poll";
   likes: number;
   comments: number;
   liked: boolean;
