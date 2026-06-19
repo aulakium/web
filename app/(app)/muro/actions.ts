@@ -75,12 +75,19 @@ export async function createPost(
   // RLS bloquea a quien no tiene rol de gestión.
   if (error || !post) return { error: "No tenés permiso para publicar avisos." };
 
+  // Audiencia elegida ("type:id"); por defecto, toda la comunidad.
+  const raw = String(formData.get("audience") || "");
+  const [aType, aId] = raw.includes(":") ? raw.split(":") : ["community", m.community_id];
+  const allowed = ["community", "level", "grade", "group", "role"];
+  const targetType = allowed.includes(aType) ? aType : "community";
+  const targetId = targetType === "community" ? m.community_id : aId;
+
   await supabase.from("audiences").insert({
     community_id: m.community_id,
     content_type: "post",
     content_id: post.id,
-    target_type: "community",
-    target_id: m.community_id,
+    target_type: targetType,
+    target_id: targetId,
   });
 
   revalidatePath("/muro");

@@ -7,13 +7,16 @@ import { RightRail } from "@/components/muro/RightRail";
 import { Icon } from "@/components/icons";
 import { useLocale } from "@/components/locale-context";
 import type { Post } from "@/lib/domain";
+import type { AudienceOptions } from "@/lib/audiences";
 
 export function MuroView({
   posts,
   canPublish = false,
+  audiences,
 }: {
   posts: Post[];
   canPublish?: boolean;
+  audiences?: AudienceOptions;
 }) {
   const { t } = useLocale();
 
@@ -27,7 +30,7 @@ export function MuroView({
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         {/* Columna principal: feed */}
         <div className="flex flex-col gap-5">
-          <Composer canPublish={canPublish} />
+          <Composer canPublish={canPublish} audiences={audiences} />
           <Filters />
           {posts.length > 0 ? (
             posts.map((post, i) => <PostCard key={post.id} post={post} index={i} />)

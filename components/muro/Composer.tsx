@@ -6,12 +6,19 @@ import { Avatar } from "../Avatar";
 import { useIdentity } from "../identity-context";
 import { DEMO_USER } from "@/lib/domain";
 import { createPost, type CreatePostState } from "@/app/(app)/muro/actions";
+import type { AudienceOptions } from "@/lib/audiences";
 
 /**
  * Compositor del Muro. Solo lo ve quien puede publicar (roles de gestión).
- * v1: publica a TODA la comunidad. El reparto fino por audiencia llega después.
+ * Permite elegir la audiencia: comunidad / nivel / grado / salón / rol.
  */
-export function Composer({ canPublish = false }: { canPublish?: boolean }) {
+export function Composer({
+  canPublish = false,
+  audiences,
+}: {
+  canPublish?: boolean;
+  audiences?: AudienceOptions;
+}) {
   const me = useIdentity();
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, pending] = useActionState<CreatePostState, FormData>(
@@ -54,11 +61,48 @@ export function Composer({ canPublish = false }: { canPublish?: boolean }) {
         </p>
       ) : null}
 
-      <div className="mt-3 flex items-center gap-1 border-t border-ink/5 pt-3">
-        <span className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-600 text-ink/35">
-          <Icon name="Users" className="h-[16px] w-[16px]" />
-          Toda la comunidad
+      <div className="mt-3 flex items-center gap-2 border-t border-ink/5 pt-3">
+        <span className="hidden text-ink/40 sm:block">
+          <Icon name="Users" className="h-[18px] w-[18px]" />
         </span>
+        <select
+          name="audience"
+          defaultValue={audiences?.community?.value}
+          aria-label="¿A quién va dirigido?"
+          className="min-w-0 flex-1 rounded-xl bg-mist px-3 py-2 text-xs font-700 text-ink outline-none focus:ring-2 focus:ring-brand/30 sm:max-w-xs"
+        >
+          {audiences?.community ? (
+            <option value={audiences.community.value}>{audiences.community.label}</option>
+          ) : null}
+          {audiences?.levels.length ? (
+            <optgroup label="Niveles">
+              {audiences.levels.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </optgroup>
+          ) : null}
+          {audiences?.grades.length ? (
+            <optgroup label="Grados">
+              {audiences.grades.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </optgroup>
+          ) : null}
+          {audiences?.groups.length ? (
+            <optgroup label="Salones">
+              {audiences.groups.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </optgroup>
+          ) : null}
+          {audiences?.roles.length ? (
+            <optgroup label="Roles">
+              {audiences.roles.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </optgroup>
+          ) : null}
+        </select>
         <button
           type="submit"
           disabled={pending}
