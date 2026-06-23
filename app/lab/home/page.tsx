@@ -258,7 +258,7 @@ export default function LabHome() {
             {[
               { icon: "GraduationCap", title: "+30 años en educación", text: "Conocemos los tiempos, los roles y las necesidades reales de una institución." },
               { icon: "ShieldCheck", title: "Privacidad por diseño", text: "Cada familia ve solo lo de sus hijos. Cuidar los datos de menores es la base." },
-              { icon: "Globe", title: "Pensado para LatAm y Brasil", text: "Multi-idioma y multi-colegio desde el primer día, listo para crecer con vos." },
+              { icon: "Globe", title: "Pensado para LatAm y Brasil", text: "Multi-idioma y multi-colegio desde el primer día, listo para crecer contigo." },
             ].map((c, i) => (
               <Reveal key={c.title} delay={i * 80}>
                 <div className="h-full rounded-3xl border border-ink/8 bg-mist/40 p-7">

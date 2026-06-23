@@ -50,7 +50,7 @@ export async function inviteMember(
   const groupId = String(formData.get("groupId") || "") || null;
   const studentId = String(formData.get("studentId") || "") || null;
   const relationship = String(formData.get("relationship") || "").trim() || null;
-  if (!email || !roleKey) return { error: "Completá correo y rol." };
+  if (!email || !roleKey) return { error: "Completa el correo y el rol." };
 
   const supabase = await createClient();
   const ctx = await adminCtx(supabase);

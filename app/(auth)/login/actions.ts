@@ -10,7 +10,7 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
   const password = String(formData.get("password") || "");
 
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    return { error: "El servidor aún no tiene configurado el acceso. Avisá al equipo." };
+    return { error: "El servidor aún no tiene configurado el acceso. Avisa al equipo." };
   }
 
   const supabase = await createClient();

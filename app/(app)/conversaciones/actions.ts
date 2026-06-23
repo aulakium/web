@@ -70,8 +70,8 @@ export async function startConversation(
   const subject = String(formData.get("subject") || "").trim();
   const body = String(formData.get("body") || "").trim();
   const label = String(formData.get("label") || "").trim();
-  if (!targetId) return { error: "Elegí a quién querés escribir." };
-  if (!body) return { error: "Escribí tu mensaje." };
+  if (!targetId) return { error: "Elige a quién quieres escribir." };
+  if (!body) return { error: "Escribe tu mensaje." };
 
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("start_conversation", {

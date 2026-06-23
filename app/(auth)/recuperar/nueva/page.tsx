@@ -15,7 +15,7 @@ export default async function NuevaPasswordPage() {
       <Wordmark href="/" className="mb-8 lg:hidden" />
       {user ? (
         <>
-          <h1 className="font-display text-2xl font-700 text-ink">Creá tu nueva contraseña</h1>
+          <h1 className="font-display text-2xl font-700 text-ink">Crea tu nueva contraseña</h1>
           <p className="mt-1 text-sm font-500 text-ink/55">
             Para la cuenta <b>{user.email}</b>.
           </p>
@@ -28,7 +28,7 @@ export default async function NuevaPasswordPage() {
           </span>
           <h1 className="font-display text-2xl font-700 text-ink">Enlace inválido o vencido</h1>
           <p className="mt-2 text-sm font-500 text-ink/60">
-            El enlace de recuperación expiró o ya se usó. Pedí uno nuevo.
+            El enlace de recuperación expiró o ya se usó. Pide uno nuevo.
           </p>
           <Link
             href="/recuperar"

@@ -19,11 +19,11 @@ export async function setNewPassword(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return { error: "El enlace expiró o ya se usó. Pedí uno nuevo desde “¿La olvidaste?”." };
+    return { error: "El enlace expiró o ya se usó. Pide uno nuevo desde “¿La olvidaste?”." };
   }
 
   const { error } = await supabase.auth.updateUser({ password });
-  if (error) return { error: "No pudimos guardar la contraseña. Probá de nuevo." };
+  if (error) return { error: "No pudimos guardar la contraseña. Inténtalo de nuevo." };
 
   redirect("/inicio");
 }

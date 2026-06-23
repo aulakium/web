@@ -42,7 +42,7 @@ export default async function ComunidadPage() {
           </span>
           <p className="font-display text-base font-700 text-ink">Todavía no hay personas para mostrar</p>
           <p className="mt-1 text-sm font-500 text-ink/55">
-            Cuando se sumen miembros a tu comunidad, vas a verlos acá.
+            Cuando se sumen miembros a tu comunidad, los verás aquí.
           </p>
         </div>
       ) : (

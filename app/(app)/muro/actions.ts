@@ -54,7 +54,7 @@ export async function createPost(
 ): Promise<CreatePostState> {
   const title = String(formData.get("title") || "").trim();
   const body = String(formData.get("body") || "").trim();
-  if (!body) return { error: "Escribí el contenido del aviso." };
+  if (!body) return { error: "Escribe el contenido del aviso." };
 
   const supabase = await createClient();
   const m = await myMembership(supabase);
@@ -84,7 +84,7 @@ export async function createPost(
     .single();
 
   // RLS bloquea a quien no tiene rol de gestión.
-  if (error || !post) return { error: "No tenés permiso para publicar avisos." };
+  if (error || !post) return { error: "No tienes permiso para publicar avisos." };
 
   if (isPoll) {
     await supabase.from("poll_options").insert(
@@ -230,7 +230,7 @@ export type CommentState = { error?: string; ok?: boolean } | null;
 export async function addComment(_prev: CommentState, formData: FormData): Promise<CommentState> {
   const postId = String(formData.get("postId") || "");
   const body = String(formData.get("body") || "").trim();
-  if (!postId || !body) return { error: "Escribí un comentario." };
+  if (!postId || !body) return { error: "Escribe un comentario." };
   const supabase = await createClient();
   const m = await myMembership(supabase);
   if (!m) return { error: "No pudimos identificar tu cuenta." };

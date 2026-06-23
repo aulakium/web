@@ -66,7 +66,7 @@ export function CsvImporter() {
           value={csv}
           onChange={(e) => setCsv(e.target.value)}
           rows={6}
-          placeholder="Pegá acá el CSV…"
+          placeholder="Pega aquí el CSV…"
           className="w-full resize-y rounded-xl bg-mist px-3 py-2.5 font-mono text-xs text-ink outline-none placeholder:text-ink/40 focus:ring-2 focus:ring-brand/30"
         />
         {preview?.error ? (

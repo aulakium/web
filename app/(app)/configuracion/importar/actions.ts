@@ -94,7 +94,7 @@ function analyze(rows: string[][], groups: Map<string, string>): ParsedRow[] {
 
 export async function parseCsv(_prev: PreviewState | null, formData: FormData): Promise<PreviewState> {
   const csv = String(formData.get("csv") || "");
-  if (!csv.trim()) return { rows: [], valid: 0, invalid: 0, csv, error: "Pegá o subí un CSV." };
+  if (!csv.trim()) return { rows: [], valid: 0, invalid: 0, csv, error: "Pega o sube un CSV." };
   const supabase = await createClient();
   const groups = await groupMap(supabase);
   const rows = analyze(splitCsv(csv), groups);

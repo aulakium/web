@@ -52,7 +52,7 @@ export function ProfileEditor({
       <form action={setUiLocale} className="rounded-[1.5rem] border border-ink/8 bg-white p-5 shadow-card">
         <h2 className="mb-1 font-display text-base font-700 text-ink">Idioma</h2>
         <p className="mb-3 text-xs font-500 text-ink/50">
-          El idioma con el que abrís Colequium. Lo podés cambiar cuando quieras.
+          El idioma con el que abres Colequium. Lo puedes cambiar cuando quieras.
         </p>
         <div className="flex flex-wrap items-center gap-2">
           <select

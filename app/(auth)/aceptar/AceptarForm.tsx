@@ -23,7 +23,7 @@ export function AceptarForm({ email }: { email: string }) {
       </div>
       <div>
         <label htmlFor="password" className="mb-1.5 block text-sm font-700 text-ink">
-          Creá tu contraseña
+          Crea tu contraseña
         </label>
         <div className="relative">
           <input

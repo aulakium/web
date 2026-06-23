@@ -40,38 +40,38 @@ export const BLOG_POSTS: BlogPost[] = [
         heading: "1. Que el título diga lo esencial",
         paragraphs: [
           "La mayoría de las familias decide si abre o no un aviso solo con el título. Si dice “Comunicado N° 14”, compite con todo lo demás del día y pierde. Si dice “Mañana no hay clases por jornada docente”, ya cumplió su función incluso sin que lo abran.",
-          "Escribí el título como si fuera lo único que se va a leer: qué pasa, a quién afecta y cuándo.",
+          "Escribe el título como si fuera lo único que se va a leer: qué pasa, a quién afecta y cuándo.",
         ],
       },
       {
         heading: "2. Un solo canal oficial",
         paragraphs: [
           "Cuando la info importante vive en cinco lugares —el cuaderno, el mail, dos grupos de WhatsApp y la cartelera— las familias dejan de saber dónde mirar, y el colegio termina repitiendo todo en todos lados.",
-          "Definí un único canal oficial y comunicalo: “lo importante siempre está acá”. Menos esfuerzo para el colegio, menos excusas de “no me enteré”.",
+          "Define un único canal oficial y comunícalo: “lo importante siempre está aquí”. Menos esfuerzo para el colegio, menos excusas de “no me enteré”.",
         ],
       },
       {
         heading: "3. El mensaje correcto a la familia correcta",
         paragraphs: [
           "Un aviso de 3°B que le llega a todo el colegio entrena a la gente a ignorar los avisos. Cuando cada familia recibe solo lo que le corresponde, cada notificación vuelve a ser relevante y se abre.",
-          "Segmentá por nivel, grado, salón o rol. La regla es simple: si no es para esta familia, no se lo mandes.",
+          "Segmenta por nivel, grado, salón o rol. La regla es simple: si no es para esta familia, no se lo mandes.",
         ],
       },
       {
         heading: "4. El momento justo",
         paragraphs: [
-          "Un aviso de algo que es a las 8 de la mañana, enviado a las 7:50, ya llegó tarde para la mitad. Avisá con anticipación lo planificable y reservá el “ahora mismo” para lo urgente de verdad.",
+          "Un aviso de algo que es a las 8 de la mañana, enviado a las 7:50, ya llegó tarde para la mitad. Avisa con anticipación lo planificable y reserva el “ahora mismo” para lo urgente de verdad.",
         ],
       },
       {
-        heading: "5. Pedí una acción clara",
+        heading: "5. Pide una acción clara",
         paragraphs: [
-          "Si esperás algo de la familia —confirmar asistencia, firmar una autorización, mandar un dato— pedilo de forma explícita y dale un botón para hacerlo. Y usá los indicadores de leído para saber a quién recordarle, en vez de reenviar a todos.",
+          "Si esperas algo de la familia —confirmar asistencia, firmar una autorización, mandar un dato— pídelo de forma explícita y ofrécele un botón para hacerlo. Y usa los indicadores de leído para saber a quién recordarle, en vez de reenviar a todos.",
         ],
       },
       {
         paragraphs: [
-          "Ninguna de estas ideas requiere comunicar más: requieren comunicar mejor. Empezá por una sola —el título— y vas a ver el cambio en la primera semana.",
+          "Ninguna de estas ideas requiere comunicar más: requieren comunicar mejor. Empieza por una sola —el título— y vas a ver el cambio en la primera semana.",
         ],
       },
     ],
@@ -89,7 +89,7 @@ export const BLOG_POSTS: BlogPost[] = [
     lead: "El calendario es el corazón de la organización escolar, pero suele armarse a las apuradas y vivir en una planilla que pocos miran. Con un poco de método deja de ser una fuente de sorpresas de último momento.",
     sections: [
       {
-        heading: "Empezá por las fechas fijas",
+        heading: "Empieza por las fechas fijas",
         paragraphs: [
           "Antes de pensar en lo nuevo, cargá lo que ya está definido: feriados, vacaciones, actos institucionales y períodos de evaluación. Esas fechas son el esqueleto; todo lo demás se acomoda alrededor.",
         ],
@@ -106,7 +106,7 @@ export const BLOG_POSTS: BlogPost[] = [
         ],
       },
       {
-        heading: "Avisá con anticipación y recordá cerca",
+        heading: "Avisa con anticipación y recuerda cerca",
         paragraphs: [
           "Cada fecha importante necesita dos toques: uno cuando se publica (para que la familia se organice) y un recordatorio cerca del día (para que no se le pase). Un evento bien cargado puede disparar ambos solo.",
         ],

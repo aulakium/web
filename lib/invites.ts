@@ -50,7 +50,7 @@ export async function sendInvite(opts: {
     `Te invitaron a ${opts.communityName} en Colequium`,
     emailShell({
       heading: `Te damos la bienvenida a ${opts.communityName}`,
-      lead: "Tu colegio usa <b>Colequium</b> para comunicarse. Para activar tu cuenta y crear tu contraseña, hacé clic en el botón:",
+      lead: "Tu colegio usa <b>Colequium</b> para comunicarse. Para activar tu cuenta y crear tu contraseña, haz clic en el botón:",
       button: "Activar mi cuenta",
       link,
     }),
@@ -76,10 +76,10 @@ export async function sendPasswordReset(email: string): Promise<boolean> {
 
   return await sendEmail(
     email,
-    "Recuperá tu contraseña de Colequium",
+    "Recupera tu contraseña de Colequium",
     emailShell({
-      heading: "Recuperá tu contraseña",
-      lead: "Recibimos un pedido para restablecer tu contraseña en <b>Colequium</b>. Hacé clic para crear una nueva. Si no fuiste vos, podés ignorar este correo.",
+      heading: "Recupera tu contraseña",
+      lead: "Recibimos una solicitud para restablecer tu contraseña en <b>Colequium</b>. Haz clic para crear una nueva. Si no fuiste tú, puedes ignorar este correo.",
       button: "Crear nueva contraseña",
       link,
     }),
@@ -125,7 +125,7 @@ function emailShell({
       </a>
     </p>
     <p style="font-size:13px;color:#94a3b8">
-      Si el botón no funciona, copiá y pegá este enlace:<br>
+      Si el botón no funciona, copia y pega este enlace:<br>
       <a href="${link}" style="color:#688db9">${link}</a>
     </p>
   </div>`;

@@ -15,9 +15,9 @@ export default async function AceptarPage() {
       <Wordmark href="/" className="mb-8 lg:hidden" />
       {user ? (
         <>
-          <h1 className="font-display text-2xl font-700 text-ink">Activá tu cuenta</h1>
+          <h1 className="font-display text-2xl font-700 text-ink">Activa tu cuenta</h1>
           <p className="mt-1 text-sm font-500 text-ink/55">
-            Creá una contraseña para entrar a tu colegio en Colequium.
+            Crea una contraseña para entrar a tu colegio en Colequium.
           </p>
           <AceptarForm email={user.email ?? ""} />
         </>

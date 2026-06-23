@@ -11,7 +11,7 @@ export async function updateProfile(
   formData: FormData,
 ): Promise<ProfileState> {
   const fullName = String(formData.get("fullName") || "").trim();
-  if (fullName.length < 2) return { error: "Ingresá tu nombre." };
+  if (fullName.length < 2) return { error: "Ingresa tu nombre." };
   const supabase = await createClient();
   const {
     data: { user },

@@ -23,7 +23,7 @@ export default async function DocumentosPage() {
           </span>
           <p className="font-display text-base font-700 text-ink">Todavía no hay documentos</p>
           <p className="mt-1 text-sm font-500 text-ink/55">
-            Cuando el colegio publique circulares o reglamentos, aparecen acá.
+            Cuando el colegio publique circulares o reglamentos, aparecen aquí.
           </p>
         </div>
       ) : (

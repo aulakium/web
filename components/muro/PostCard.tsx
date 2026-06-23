@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
-import { Icon, COVER_ICONS } from "../icons";
+import { Icon } from "../icons";
 import { Avatar } from "../Avatar";
 import { useLocale } from "../locale-context";
 import { useIdentity } from "../identity-context";
@@ -35,7 +35,6 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
   const [cState, commentAction] = useActionState<CommentState, FormData>(addComment, null);
 
   const likes = post.likes + (liked && !post.liked ? 1 : 0) - (!liked && post.liked ? 1 : 0);
-  const CoverIcon = COVER_ICONS[post.coverIcon] ?? COVER_ICONS.megaphone;
 
   function loadComments() {
     startComments(() => {
@@ -65,37 +64,8 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
       }`}
       style={{ animationDelay: `${index * 60}ms` }}
     >
-      {/* Portada */}
-      <div className="relative h-40 overflow-hidden">
-        {post.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={post.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
-        ) : (
-          <div className={`absolute inset-0 bg-gradient-to-br ${post.cover}`}>
-            <CoverIcon className="absolute -bottom-4 right-4 h-28 w-28 text-white/25" aria-hidden />
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/5 to-ink/15" />
-        <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-xs font-700 text-ink shadow-sm backdrop-blur">
-          <Icon name="Users" className="h-3.5 w-3.5 text-brand" />
-          {post.audience.label}
-        </span>
-        <div className="absolute right-3 top-3 flex items-center gap-2">
-          {post.pinned ? (
-            <span className="grid h-8 w-8 place-items-center rounded-full bg-white/90 text-cta shadow-sm">
-              <Icon name="Pin" className="h-4 w-4" />
-            </span>
-          ) : null}
-          {post.unread && !readDone ? (
-            <span className="rounded-full bg-cta px-2.5 py-1 text-[11px] font-700 uppercase tracking-wide text-white shadow-sm">
-              {t("wall.unread")}
-            </span>
-          ) : null}
-        </div>
-      </div>
-
       <div className="p-5">
-        {/* Autor */}
+        {/* Autor + estado */}
         <div className="flex items-center gap-3">
           <Avatar name={post.author.name} color={post.author.color as AccentColor} />
           <div className="min-w-0 flex-1 leading-tight">
@@ -104,25 +74,53 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
               {ROLE_LABELS[post.author.role]} · {post.publishedAt}
             </p>
           </div>
+          {post.pinned ? (
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-cta/10 text-cta">
+              <Icon name="Pin" className="h-4 w-4" />
+            </span>
+          ) : null}
+          {post.unread && !readDone ? (
+            <span className="shrink-0 rounded-full bg-cta px-2.5 py-1 text-[11px] font-700 uppercase tracking-wide text-white">
+              {t("wall.unread")}
+            </span>
+          ) : null}
         </div>
 
-        {/* Contenido */}
-        <h3 className="mt-4 font-display text-lg font-700 leading-snug text-ink">{post.title}</h3>
-        <p className={`mt-1.5 text-[15px] leading-relaxed text-ink/70 ${expanded ? "" : "line-clamp-2"}`}>
-          {post.body}
-        </p>
-        {!expanded ? (
-          <button
-            type="button"
-            onClick={() => {
-              setExpanded(true);
-              read();
-            }}
-            className="mt-1 text-sm font-700 text-brand transition-colors hover:text-ink"
-          >
-            {t("wall.seeMore")}
-          </button>
-        ) : null}
+        {/* Audiencia */}
+        <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-3 py-1 text-xs font-700 text-brand">
+          <Icon name="Users" className="h-3.5 w-3.5" />
+          {post.audience.label}
+        </span>
+
+        {/* Contenido: imagen cuadrada (opcional) al costado del texto */}
+        <div className={`mt-3 ${post.image ? "flex gap-4" : ""}`}>
+          {post.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={post.image}
+              alt=""
+              className="h-28 w-28 shrink-0 rounded-2xl object-cover sm:h-32 sm:w-32"
+            />
+          ) : null}
+          <div className="min-w-0 flex-1">
+            <h3 className="font-display text-lg font-700 leading-snug text-ink">{post.title}</h3>
+            <p className={`mt-1.5 text-[15px] leading-relaxed text-ink/70 ${expanded ? "" : "line-clamp-2"}`}>
+              {post.body}
+            </p>
+            {!expanded ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setExpanded(true);
+                  read();
+                }}
+                className="mt-1 text-sm font-700 text-brand transition-colors hover:text-ink"
+              >
+                {t("wall.seeMore")}
+              </button>
+            ) : null}
+          </div>
+        </div>
 
         {post.kind === "poll" ? <PollView postId={post.id} /> : null}
 
@@ -221,7 +219,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
               <input
                 name="body"
                 required
-                placeholder="Escribí un comentario…"
+                placeholder="Escribe un comentario…"
                 className="min-w-0 flex-1 rounded-full bg-mist px-4 py-2 text-sm font-500 text-ink outline-none placeholder:text-ink/40 focus:ring-2 focus:ring-brand/30"
               />
               <button

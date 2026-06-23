@@ -48,11 +48,11 @@ where u.email = 'docente@laslomas.demo' and ms.community_id = :COMM::uuid
 
 -- ===== Posts (autor por email) =====
 -- P1 — Dirección → toda la comunidad
-insert into posts (id, community_id, author_membership_id, title, body, type, cover_url, published_at)
+insert into posts (id, community_id, author_membership_id, title, body, type, published_at)
 select '44444444-0000-0000-0000-000000000001'::uuid, :COMM::uuid, ms.id,
   'Jornada de puertas abiertas — Sábado 14 de junio',
   'Invitamos a todas las familias a recorrer el colegio, conocer los proyectos del año y compartir una mañana con los equipos docentes. Habrá actividades para los más chicos en el patio central.',
-  'announcement', '/momentos/feria-ciencias.webp', now() - interval '2 hours'
+  'announcement', now() - interval '2 hours'
 from memberships ms join users u on u.id = ms.user_id
 where u.email = 'principal@laslomas.demo' and ms.community_id = :COMM::uuid
 on conflict (id) do nothing;

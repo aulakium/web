@@ -37,7 +37,7 @@ export function ModulePlaceholder({
               Estamos construyendo esta sección
             </h2>
             <p className="mt-1 max-w-lg text-sm font-500 text-ink/60">
-              Va a estar disponible muy pronto. Esto es lo que vas a poder hacer acá:
+              Va a estar disponible muy pronto. Esto es lo que podrás hacer aquí:
             </p>
           </div>
 

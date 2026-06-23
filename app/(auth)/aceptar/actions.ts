@@ -23,7 +23,7 @@ export async function setPassword(
   }
 
   const { error } = await supabase.auth.updateUser({ password });
-  if (error) return { error: "No pudimos guardar la contraseña. Probá de nuevo." };
+  if (error) return { error: "No pudimos guardar la contraseña. Inténtalo de nuevo." };
 
   // Materializa membresía + rol + vínculos de las invitaciones pendientes.
   await supabase.rpc("claim_invitations");

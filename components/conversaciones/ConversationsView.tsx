@@ -66,9 +66,9 @@ export function ConversationsView({
         <span className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-mist text-ink/40">
           <Icon name="MessagesSquare" className="h-6 w-6" />
         </span>
-        <p className="font-display text-base font-700 text-ink">No tenés conversaciones</p>
+        <p className="font-display text-base font-700 text-ink">No tienes conversaciones</p>
         <p className="mt-1 text-sm font-500 text-ink/55">
-          Cuando inicies o te sumen a un hilo con el colegio o las familias, aparece acá.
+          Cuando te sumen a un hilo con el colegio o las familias, aparece aquí.
         </p>
       </div>
     ) : (
@@ -390,7 +390,7 @@ function ComposeModal({
             </button>
           ) : null}
           <h2 className="flex-1 font-display text-lg font-700 text-ink">
-            {picked ? "Nuevo mensaje" : "¿A quién le escribís?"}
+            {picked ? "Nuevo mensaje" : "¿A quién le escribes?"}
           </h2>
           <button
             type="button"
@@ -424,7 +424,7 @@ function ComposeModal({
               <textarea
                 name="body"
                 rows={5}
-                placeholder="Escribí tu mensaje…"
+                placeholder="Escribe tu mensaje…"
                 className="min-h-[7rem] flex-1 resize-none rounded-2xl bg-mist px-4 py-3 text-sm font-600 text-ink outline-none placeholder:text-ink/40 focus:ring-2 focus:ring-brand/30"
               />
               {state?.error ? (

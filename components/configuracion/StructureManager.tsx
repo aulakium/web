@@ -148,9 +148,9 @@ export function StructureManager({
 function PresetPicker({ presets }: { presets: SchoolPreset[] }) {
   return (
     <div className="rounded-[1.75rem] border border-ink/8 bg-white p-6 shadow-card sm:p-8">
-      <h2 className="font-display text-lg font-700 text-ink">Armá tu estructura</h2>
+      <h2 className="font-display text-lg font-700 text-ink">Arma tu estructura</h2>
       <p className="mt-1 text-sm font-500 text-ink/60">
-        Elegí una plantilla para empezar. Después podés agregar, quitar o renombrar
+        Elige una plantilla para empezar. Después puedes agregar, quitar o renombrar
         niveles y grados, y definir los salones de cada grado.
       </p>
       <div className="mt-5 grid gap-3 sm:grid-cols-3">

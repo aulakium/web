@@ -66,8 +66,3 @@ returns table(
   ) aud on true
   order by v.published_at desc nulls last, v.created_at desc;
 $$;
-
--- Portada para el aviso demo de Puertas Abiertas (Beatriz Salas).
-update public.posts
-  set cover_url = '/momentos/feria-ciencias.webp'
-  where id = '44444444-0000-0000-0000-000000000001';

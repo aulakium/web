@@ -57,7 +57,7 @@ export function Composer({
           <textarea
             name="body"
             rows={2}
-            placeholder={pollMode ? "Escribí la pregunta de la encuesta…" : "Compartí un aviso con la comunidad…"}
+            placeholder={pollMode ? "Escribe la pregunta de la encuesta…" : "Comparte un aviso con la comunidad…"}
             className="mt-2 w-full resize-none rounded-xl bg-mist px-4 py-2.5 text-sm font-600 text-ink outline-none placeholder:text-ink/45 focus:ring-2 focus:ring-brand/30"
           />
 

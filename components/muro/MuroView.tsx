@@ -46,10 +46,10 @@ export function MuroView({
                 <Icon name="Megaphone" className="h-6 w-6" />
               </span>
               <p className="font-display text-base font-700 text-ink">
-                Todavía no hay avisos para vos
+                Todavía no hay avisos para ti
               </p>
               <p className="mt-1 text-sm font-500 text-ink/55">
-                Cuando el colegio publique algo para tu comunidad o tus grupos, aparece acá.
+                Cuando el colegio publique algo para tu comunidad o tus grupos, aparece aquí.
               </p>
             </div>
           )}

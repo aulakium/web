@@ -90,7 +90,7 @@ export default async function PerfilPage() {
           </div>
           {communities.length === 1 ? (
             <p className="mt-3 text-xs font-500 text-ink/40">
-              Cuando pertenezcas a más de un colegio, vas a poder cambiar entre ellos desde acá.
+              Cuando pertenezcas a más de un colegio, podrás cambiar entre ellos desde aquí.
             </p>
           ) : null}
         </section>
