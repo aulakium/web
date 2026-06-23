@@ -67,21 +67,30 @@ const FEATURES = [
   { icon: "FolderClosed", title: "Documentos", text: "Boletines, circulares y protocolos ordenados y a un clic." },
   { icon: "Bus", title: "Transporte", text: "Seguimiento del camión escolar en vivo y avisos de subida y bajada." },
 ];
-const STATS = [
-  { n: "+120", l: "Colegios conectados" },
-  { n: "+30 mil", l: "Familias activas" },
-  { n: "98%", l: "Avisos leídos" },
-  { n: "4.9/5", l: "Satisfacción" },
-];
 const PLANES = [
   { name: "Demo", price: "$0", per: "para probar", feats: ["Hasta 1 salón", "Novedades y calendario", "Soporte por correo"] },
-  { name: "Escuela", price: "$XX", per: "por mes", feats: ["Salones ilimitados", "Mensajes y trámites", "Multi-idioma", "Soporte prioritario"], best: true },
+  { name: "Escuela", price: "$1", per: "por alumno / mes", feats: ["Salones ilimitados", "Mensajes y trámites", "Multi-idioma", "Soporte prioritario"], best: true },
   { name: "Institución", price: "A medida", per: "varios colegios", feats: ["Todo lo de Escuela", "Transporte en vivo", "Integraciones", "Gestor dedicado"] },
 ];
 const POSTS = [
-  { tag: "Comunidad", title: "5 ideas para que las familias lean tus avisos", date: "10 jun 2026" },
-  { tag: "Gestión", title: "Cómo organizar el calendario escolar del trimestre", date: "03 jun 2026" },
-  { tag: "Tecnología", title: "Adiós a los grupos de WhatsApp del colegio", date: "28 may 2026" },
+  {
+    tag: "Comunidad",
+    title: "5 ideas para que las familias lean (de verdad) tus avisos",
+    excerpt: "Títulos claros, un solo canal y el mensaje correcto a la familia correcta. Pequeños cambios que suben muchísimo la lectura.",
+    date: "10 jun 2026",
+  },
+  {
+    tag: "Gestión",
+    title: "Cómo armar el calendario del trimestre sin estrés",
+    excerpt: "Exámenes, actos y salidas en un solo calendario compartido, para que nadie se entere tarde de una fecha importante.",
+    date: "03 jun 2026",
+  },
+  {
+    tag: "Tecnología",
+    title: "Adiós a los grupos de WhatsApp del colegio",
+    excerpt: "Por qué el chat informal genera ruido y desigualdad, y cómo un canal oficial ordena la comunicación y cuida la privacidad.",
+    date: "28 may 2026",
+  },
 ];
 
 export default function LabHome() {
@@ -136,8 +145,8 @@ export default function LabHome() {
               </a>
             </div>
             <div className="mt-9 flex items-center gap-3">
-              <div className="flex gap-0.5 text-cta">{Array.from({ length: 5 }).map((_, i) => <Icon key={i} name="Star" className="h-4 w-4 fill-cta" />)}</div>
-              <p className="text-sm font-600 text-white/75"><span className="font-700 text-white">4.9/5</span> · 250+ familias y docentes</p>
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/10 text-cta"><Icon name="GraduationCap" className="h-5 w-5" /></span>
+              <p className="text-sm font-600 text-white/75">Creado por especialistas con <span className="font-700 text-white">+30 años</span> en la industria educativa</p>
             </div>
           </Reveal>
 
@@ -155,18 +164,6 @@ export default function LabHome() {
             {/* Mensajes que rotan por las esquinas de la foto */}
             <HeroMessages />
           </Reveal>
-        </div>
-      </section>
-
-      {/* ===== Logos ===== */}
-      <section className="border-b border-ink/5 bg-white py-8">
-        <div className="mx-auto max-w-6xl px-5">
-          <p className="text-center text-sm font-600 text-ink/40">Colegios de toda Latinoamérica confían en Colequium</p>
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
-            {["Colegio Las Lomas", "Instituto del Sol", "Colegio San Marcos", "Liceo Norte", "Escuela Río"].map((n) => (
-              <span key={n} className="text-lg font-700 text-ink/25">{n}</span>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -191,18 +188,6 @@ export default function LabHome() {
               </Reveal>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ===== Stats (banda navy) ===== */}
-      <section className="bg-gradient-to-br from-navy to-navy-deep py-16">
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-5 lg:grid-cols-4">
-          {STATS.map((s, i) => (
-            <Reveal key={s.l} delay={i * 80} className="text-center">
-              <p className="text-4xl font-700 tracking-tight text-white sm:text-5xl">{s.n}</p>
-              <p className="mt-1 text-sm font-500 text-white/60">{s.l}</p>
-            </Reveal>
-          ))}
         </div>
       </section>
 
@@ -241,7 +226,7 @@ export default function LabHome() {
           <Reveal className="mx-auto max-w-2xl text-center">
             <span className="rounded-full bg-white px-4 py-1.5 text-sm font-700 text-brand">Planes</span>
             <h2 className="mt-4 text-3xl font-700 tracking-tight text-ink sm:text-4xl">El plan ideal para tu colegio</h2>
-            <p className="mt-3 font-400 text-ink/60">Precios de referencia. El plan final se arma según el tamaño del colegio.</p>
+            <p className="mt-3 font-400 text-ink/60">Precios en dólares americanos (USD).</p>
           </Reveal>
           <div className="mt-14 grid items-start gap-6 lg:grid-cols-3">
             {PLANES.map((p, i) => (
@@ -270,22 +255,38 @@ export default function LabHome() {
         </div>
       </section>
 
-      {/* ===== Testimonio ===== */}
+      {/* ===== Credibilidad (experiencia del equipo) ===== */}
       <section className="bg-white py-20 sm:py-28">
-        <Reveal className="mx-auto max-w-3xl px-5 text-center">
-          <Icon name="Quote" className="mx-auto h-10 w-10 text-brand/25" />
-          <p className="mt-5 text-2xl font-600 leading-snug tracking-tight text-ink sm:text-3xl">
-            &ldquo;Desde que usamos Colequium, las familias se enteran de todo y dejamos
-            atrás el caos de los grupos de WhatsApp. La comunicación del colegio cambió por completo.&rdquo;
-          </p>
-          <div className="mt-8 flex items-center justify-center gap-3">
-            <span className="grid h-12 w-12 place-items-center rounded-full bg-brand text-sm font-700 text-white">MS</span>
-            <div className="text-left">
-              <p className="text-sm font-700 text-ink">Mariana Saldaña</p>
-              <p className="text-xs font-500 text-ink/55">Directora · Colegio Las Lomas</p>
-            </div>
+        <div className="mx-auto max-w-5xl px-5">
+          <Reveal className="mx-auto max-w-3xl text-center">
+            <span className="rounded-full bg-brand/10 px-4 py-1.5 text-sm font-700 text-brand">Quiénes lo hacemos</span>
+            <h2 className="mt-5 text-3xl font-700 tracking-tight text-ink sm:text-4xl">
+              Hecho por gente que conoce la escuela por dentro
+            </h2>
+            <p className="mt-4 text-lg font-400 leading-relaxed text-ink/65">
+              Detrás de Colequium hay un equipo con{" "}
+              <span className="font-700 text-ink">más de 30 años de experiencia en la industria educativa</span>.
+              No es software genérico: cada decisión está pensada desde cómo trabaja, de verdad, un colegio.
+            </p>
+          </Reveal>
+          <div className="mt-12 grid gap-5 sm:grid-cols-3">
+            {[
+              { icon: "GraduationCap", title: "+30 años en educación", text: "Conocemos los tiempos, los roles y las necesidades reales de una institución." },
+              { icon: "ShieldCheck", title: "Privacidad por diseño", text: "Cada familia ve solo lo de sus hijos. Cuidar los datos de menores es la base." },
+              { icon: "Globe", title: "Pensado para LatAm y Brasil", text: "Multi-idioma y multi-colegio desde el primer día, listo para crecer con vos." },
+            ].map((c, i) => (
+              <Reveal key={c.title} delay={i * 80}>
+                <div className="h-full rounded-3xl border border-ink/8 bg-mist/40 p-7">
+                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand/10 text-brand">
+                    <Icon name={c.icon} className="h-6 w-6" />
+                  </span>
+                  <h3 className="mt-5 text-lg font-700 text-ink">{c.title}</h3>
+                  <p className="mt-2 text-sm font-400 leading-relaxed text-ink/60">{c.text}</p>
+                </div>
+              </Reveal>
+            ))}
           </div>
-        </Reveal>
+        </div>
       </section>
 
       {/* ===== Recursos ===== */}
@@ -306,6 +307,7 @@ export default function LabHome() {
                   <div className="p-6">
                     <span className="text-xs font-700 text-cta">{p.tag}</span>
                     <h3 className="mt-2 text-lg font-700 leading-snug text-ink">{p.title}</h3>
+                    <p className="mt-2 text-sm font-400 leading-relaxed text-ink/60">{p.excerpt}</p>
                     <p className="mt-3 text-xs font-500 text-ink/45">{p.date}</p>
                   </div>
                 </article>
