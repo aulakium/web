@@ -44,8 +44,15 @@ export default function BlogIndex() {
                 className="group block h-full overflow-hidden rounded-3xl border border-ink/8 bg-white transition-all hover:shadow-pop"
               >
                 <div className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-navy via-ink to-brand">
-                  <div className="absolute inset-0 opacity-[0.12] [background:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:14px_14px]" />
-                  <Icon name="Sparkles" className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 text-white/30" />
+                  {p.hasCover ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={p.cover} alt={p.coverAlt} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                  ) : (
+                    <>
+                      <div className="absolute inset-0 opacity-[0.12] [background:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:14px_14px]" />
+                      <Icon name="Sparkles" className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 text-white/30" />
+                    </>
+                  )}
                 </div>
                 <div className="p-6">
                   <span className="text-xs font-700 text-cta">{p.tag}</span>

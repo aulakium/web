@@ -24,6 +24,7 @@ interface FeedRow {
   unread: boolean;
   bookmarked: boolean;
   comments_enabled: boolean;
+  cover_url: string | null;
 }
 
 export const ROLE_COLOR: Record<string, AccentColor> = {
@@ -102,6 +103,7 @@ export async function getFeed(): Promise<Post[]> {
       publishedAt: relativeLabel(r.published_at),
       title: r.title ?? "",
       body: r.body ?? "",
+      image: r.cover_url ?? undefined,
       cover: look.cover,
       coverIcon: look.icon,
       kind: r.type === "poll" ? "poll" : "announcement",

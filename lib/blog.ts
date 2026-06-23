@@ -15,7 +15,8 @@ export interface BlogPost {
   excerpt: string;
   date: string; // etiqueta visible
   readMins: number;
-  cover: string; // /blog/<slug>.webp (pendiente de foto real)
+  cover: string; // /blog/<slug>.webp
+  hasCover?: boolean; // true cuando ya existe la foto real (si no, gradiente)
   coverAlt: string;
   lead: string;
   sections: BlogSection[];
@@ -31,6 +32,7 @@ export const BLOG_POSTS: BlogPost[] = [
     date: "10 jun 2026",
     readMins: 4,
     cover: "/blog/que-las-familias-lean-tus-avisos.webp",
+    hasCover: true,
     coverAlt: "Una familia revisa el aviso del colegio desde el teléfono",
     lead: "Mandar el aviso es la mitad del trabajo. La otra mitad es que llegue, se entienda y alguien haga algo con él. Estas cinco ideas no cambian lo que comunicás, sino cómo lo comunicás, y mueven mucho la aguja.",
     sections: [
@@ -131,6 +133,7 @@ export const BLOG_POSTS: BlogPost[] = [
     date: "28 may 2026",
     readMins: 5,
     cover: "/blog/adios-a-los-grupos-de-whatsapp.webp",
+    hasCover: true,
     coverAlt: "Teléfono con muchos mensajes de un grupo de chat",
     lead: "Los grupos de WhatsApp aparecieron para resolver un problema real: comunicarse rápido. Pero con el tiempo crean otros más grandes. No se trata de prohibirlos, sino de devolverle al colegio un canal que sea suyo.",
     sections: [

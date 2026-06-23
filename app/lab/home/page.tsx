@@ -177,10 +177,13 @@ export default function LabHome() {
       <section className="bg-white py-20 sm:py-28">
         <div className="mx-auto grid max-w-6xl items-center gap-14 px-5 lg:grid-cols-2">
           <Reveal className="relative order-2 lg:order-1">
-            <Ph className="aspect-[6/5] w-full shadow-card" v={3} icon="Users" rounded="rounded-[2.5rem]" />
+            <div className="aspect-[6/5] w-full overflow-hidden rounded-[2.5rem] shadow-card">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/momentos/muestra-arte.webp" alt="Estudiantes y docente de la comunidad escolar" className="h-full w-full object-cover" />
+            </div>
             <div className="absolute -right-4 -top-4 rounded-2xl bg-cta px-5 py-4 text-white shadow-pop">
-              <p className="text-2xl font-700">+5 años</p>
-              <p className="text-xs font-500 text-white/85">con colegios</p>
+              <p className="text-2xl font-700">+30 años</p>
+              <p className="text-xs font-500 text-white/85">en educación</p>
             </div>
           </Reveal>
           <Reveal delay={100} className="order-1 lg:order-2">
@@ -285,7 +288,14 @@ export default function LabHome() {
             {POSTS.map((p, i) => (
               <Reveal key={p.slug} delay={i * 80}>
                 <Link href={`/blog/${p.slug}`} className="group block h-full overflow-hidden rounded-3xl border border-ink/8 bg-white transition-all hover:shadow-pop">
-                  <Ph className="aspect-[16/10] w-full" v={i + 1} icon="Sparkles" rounded="rounded-none" />
+                  {p.hasCover ? (
+                    <div className="aspect-[16/10] w-full overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={p.cover} alt={p.coverAlt} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                    </div>
+                  ) : (
+                    <Ph className="aspect-[16/10] w-full" v={i + 1} icon="Sparkles" rounded="rounded-none" />
+                  )}
                   <div className="p-6">
                     <span className="text-xs font-700 text-cta">{p.tag}</span>
                     <h3 className="mt-2 text-lg font-700 leading-snug text-ink group-hover:text-brand">{p.title}</h3>

@@ -64,14 +64,21 @@ export default async function BlogArticle({
           </p>
         </Reveal>
 
-        {/* Portada (placeholder con gradiente hasta tener la foto) */}
+        {/* Portada */}
         <Reveal delay={80}>
           <div className="relative mt-7 aspect-[16/9] w-full overflow-hidden rounded-3xl bg-gradient-to-br from-navy via-ink to-brand">
-            <div className="absolute inset-0 opacity-[0.12] [background:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:18px_18px]" />
-            <Icon name="Sparkles" className="absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 text-white/30" />
-            <span className="absolute bottom-3 right-3 rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-700 text-white/80 backdrop-blur">
-              Foto
-            </span>
+            {post.hasCover ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={post.cover} alt={post.coverAlt} className="absolute inset-0 h-full w-full object-cover" />
+            ) : (
+              <>
+                <div className="absolute inset-0 opacity-[0.12] [background:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:18px_18px]" />
+                <Icon name="Sparkles" className="absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 text-white/30" />
+                <span className="absolute bottom-3 right-3 rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-700 text-white/80 backdrop-blur">
+                  Foto
+                </span>
+              </>
+            )}
           </div>
         </Reveal>
 
