@@ -63,7 +63,14 @@ export interface Post {
   image?: string; // foto de portada (subida por quien publica); si falta, se usa el gradiente
   cover: string; // gradiente de portada (fallback cuando no hay foto)
   coverIcon: "calendar" | "megaphone" | "image" | "trophy" | "bus" | "heart";
-  kind?: "announcement" | "poll";
+  kind?: "announcement" | "poll" | "event" | "task";
+  // Invitación (kind="event"): lugar + fecha del evento.
+  eventLocation?: string;
+  eventAt?: string; // ISO
+  // Tarea (kind="task"): acción requerida + si ya la completé.
+  taskAction?: "sign" | "submit" | "complete";
+  taskDue?: string; // ISO, opcional
+  taskDone?: boolean;
   commentsEnabled?: boolean; // el colegio puede desactivar comentarios por aviso
   likes: number;
   comments: number;

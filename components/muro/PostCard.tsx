@@ -14,6 +14,7 @@ import {
   getComments,
   addComment,
   translatePost,
+  toggleTask,
   type PostComment,
   type CommentState,
 } from "@/app/(app)/muro/actions";
@@ -57,6 +58,15 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
   const [, startComments] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
   const [cState, commentAction] = useActionState<CommentState, FormData>(addComment, null);
+
+  // Tarea: marcar como hecha (sale de "mis pendientes").
+  const [taskDone, setTaskDone] = useState(!!post.taskDone);
+  const [, startTask] = useTransition();
+  function onToggleTask() {
+    const next = !taskDone;
+    setTaskDone(next);
+    startTask(() => toggleTask(post.id, next));
+  }
 
   const likes = post.likes + (liked && !post.liked ? 1 : 0) - (!liked && post.liked ? 1 : 0);
 
@@ -169,6 +179,57 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
             ) : null}
           </div>
         </div>
+
+        {/* Invitación: lugar + fecha del evento */}
+        {post.kind === "event" && (post.eventAt || post.eventLocation) ? (
+          <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl bg-brand/5 px-4 py-3">
+            {post.eventAt ? (
+              <span className="inline-flex items-center gap-2 text-sm font-700 text-ink">
+                <Icon name="CalendarDays" className="h-4 w-4 text-brand" />
+                {formatEventDate(post.eventAt)}
+              </span>
+            ) : null}
+            {post.eventLocation ? (
+              <span className="inline-flex items-center gap-2 text-sm font-600 text-ink/70">
+                <Icon name="MapPin" className="h-4 w-4 text-brand" />
+                {post.eventLocation}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
+
+        {/* Tarea: acción requerida + marcar como hecha */}
+        {post.kind === "task" ? (
+          <div
+            className={`mt-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-3 ${
+              taskDone ? "bg-leaf/10" : "bg-cta/5"
+            }`}
+          >
+            <span className="min-w-0">
+              <span className="block text-xs font-700 uppercase tracking-wide text-ink/40">
+                {taskDone ? "Completada" : "Acción requerida"}
+              </span>
+              <span className="block text-sm font-700 text-ink">
+                {TASK_LABELS[post.taskAction ?? "complete"].prompt}
+                {post.taskDue ? (
+                  <span className="font-600 text-ink/50"> · antes del {formatDueDate(post.taskDue)}</span>
+                ) : null}
+              </span>
+            </span>
+            <button
+              type="button"
+              onClick={onToggleTask}
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-sm font-700 transition-colors ${
+                taskDone
+                  ? "bg-leaf/15 text-leaf hover:bg-leaf/25"
+                  : "bg-cta text-white hover:bg-cta-deep"
+              }`}
+            >
+              <Icon name={taskDone ? "CircleCheck" : "Check"} className="h-4 w-4" />
+              {taskDone ? "Hecho" : TASK_LABELS[post.taskAction ?? "complete"].cta}
+            </button>
+          </div>
+        ) : null}
 
         {post.kind === "poll" ? <PollView postId={post.id} /> : null}
 
@@ -338,4 +399,28 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
       </div>
     </article>
   );
+}
+
+/** Texto del bloque de tarea según la acción pedida. */
+const TASK_LABELS: Record<string, { prompt: string; cta: string }> = {
+  sign: { prompt: "Hay que firmar este aviso", cta: "Firmar" },
+  submit: { prompt: "Hay que entregar algo", cta: "Marcar entregado" },
+  complete: { prompt: "Hay una tarea por completar", cta: "Marcar completada" },
+};
+
+/** Fecha del evento: "mié 9 jul · 18:30". */
+function formatEventDate(iso: string): string {
+  const d = new Date(iso);
+  const day = d.toLocaleDateString("es-MX", { weekday: "short", day: "numeric", month: "short" });
+  const time = d.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
+  return `${day} · ${time}`;
+}
+
+/** Fecha límite de tarea (fecha sola, sin hora): "10 jul". UTC para no correr el día. */
+function formatDueDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("es-MX", {
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  });
 }

@@ -25,6 +25,11 @@ interface FeedRow {
   bookmarked: boolean;
   comments_enabled: boolean;
   cover_url: string | null;
+  event_location: string | null;
+  event_at: string | null;
+  task_action: string | null;
+  task_due: string | null;
+  task_done: boolean;
 }
 
 export const ROLE_COLOR: Record<string, AccentColor> = {
@@ -106,7 +111,19 @@ export async function getFeed(): Promise<Post[]> {
       image: r.cover_url ?? undefined,
       cover: look.cover,
       coverIcon: look.icon,
-      kind: r.type === "poll" ? "poll" : "announcement",
+      kind:
+        r.type === "poll"
+          ? "poll"
+          : r.type === "event"
+            ? "event"
+            : r.type === "task"
+              ? "task"
+              : "announcement",
+      eventLocation: r.event_location ?? undefined,
+      eventAt: r.event_at ?? undefined,
+      taskAction: (r.task_action as Post["taskAction"]) ?? undefined,
+      taskDue: r.task_due ?? undefined,
+      taskDone: r.task_done,
       commentsEnabled: r.comments_enabled,
       likes: r.likes,
       comments: r.comments,

@@ -128,6 +128,31 @@ export async function createPost(
   // Por defecto los comentarios están habilitados; el autor puede apagarlos.
   const commentsEnabled = String(formData.get("commentsEnabled") || "1") !== "0";
 
+  // Tipo de novedad: comunicado (announcement) | invitación (event) | tarea (task).
+  // La encuesta tiene prioridad sobre el tipo (es un comunicado con votación).
+  const postType = String(formData.get("postType") || "comunicado");
+  let dbType = "announcement";
+  let eventLocation: string | null = null;
+  let eventAt: string | null = null;
+  let taskAction: string | null = null;
+  let taskDue: string | null = null;
+
+  if (isPoll) {
+    dbType = "poll";
+  } else if (postType === "invitacion") {
+    dbType = "event";
+    eventLocation = String(formData.get("eventLocation") || "").trim() || null;
+    const at = String(formData.get("eventAt") || "").trim();
+    eventAt = at ? new Date(at).toISOString() : null;
+    if (!eventAt) return { error: "Una invitación necesita fecha y hora." };
+  } else if (postType === "tarea") {
+    dbType = "task";
+    const action = String(formData.get("taskAction") || "complete");
+    taskAction = ["sign", "submit", "complete"].includes(action) ? action : "complete";
+    const due = String(formData.get("taskDue") || "").trim();
+    taskDue = due ? new Date(due).toISOString() : null;
+  }
+
   // Filtro de rol: docentes / padres / ambos (null = todos los de la audiencia).
   const roleChoice = String(formData.get("audienceRole") || "all");
   const audienceRoles =
@@ -146,7 +171,11 @@ export async function createPost(
       author_membership_id: m.id,
       title: title || null,
       body,
-      type: isPoll ? "poll" : "announcement",
+      type: dbType,
+      event_location: eventLocation,
+      event_at: eventAt,
+      task_action: taskAction,
+      task_due: taskDue,
       comments_enabled: commentsEnabled,
       audience_roles: audienceRoles,
       published_at: new Date().toISOString(),
@@ -244,6 +273,15 @@ export async function markRead(postId: string) {
   await supabase
     .from("post_reads")
     .upsert({ post_id: postId, membership_id: m.id }, { onConflict: "post_id,membership_id", ignoreDuplicates: true });
+  revalidatePath("/muro");
+  revalidatePath("/inicio");
+}
+
+/** Marca/desmarca una tarea como hecha. Al marcarla, sale de "mis pendientes". */
+export async function toggleTask(postId: string, done: boolean) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_task_done", { p_post: postId, p_done: done });
+  if (error) console.error("[toggleTask] rpc error:", error.message);
   revalidatePath("/muro");
   revalidatePath("/inicio");
 }

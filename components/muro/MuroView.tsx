@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Composer } from "@/components/muro/Composer";
 import { Filters, type WallFilter } from "@/components/muro/Filters";
 import { PostCard } from "@/components/muro/PostCard";
-import { RightRail } from "@/components/muro/RightRail";
+import { RightRail, type RailEvent, type RailTask } from "@/components/muro/RightRail";
 import { Icon } from "@/components/icons";
 import { useLocale } from "@/components/locale-context";
 import type { Post } from "@/lib/domain";
@@ -25,6 +25,39 @@ export function MuroView({
   const shown = posts.filter((p) =>
     filter === "unread" ? p.unread : filter === "saved" ? p.bookmarked : true,
   );
+
+  // Rail: próximos eventos (invitaciones) y mis tareas pendientes (sin completar).
+  const railEvents: RailEvent[] = posts
+    .filter((p) => p.kind === "event" && p.eventAt)
+    .sort((a, b) => (a.eventAt! < b.eventAt! ? -1 : 1))
+    .slice(0, 4)
+    .map((p) => {
+      const d = new Date(p.eventAt!);
+      return {
+        id: p.id,
+        day: String(d.getDate()),
+        month: d.toLocaleDateString("es-MX", { month: "short" }).replace(".", "").toUpperCase(),
+        title: p.title || p.body,
+        time: d.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" }),
+        accent: "brand",
+      };
+    });
+  const railTasks: RailTask[] = posts
+    .filter((p) => p.kind === "task" && !p.taskDone)
+    .slice(0, 5)
+    .map((p) => ({
+      id: p.id,
+      title: p.title || p.body,
+      due: p.taskDue
+        ? new Date(p.taskDue).toLocaleDateString("es-MX", {
+            day: "numeric",
+            month: "short",
+            timeZone: "UTC",
+          })
+        : "Sin fecha",
+      group: p.audience.label,
+      done: false,
+    }));
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
@@ -58,7 +91,7 @@ export function MuroView({
         {/* Rail derecho (desktop) */}
         <aside className="hidden lg:block">
           <div className="sticky top-24">
-            <RightRail />
+            <RightRail events={railEvents} tasks={railTasks} />
           </div>
         </aside>
       </div>

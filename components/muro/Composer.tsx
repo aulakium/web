@@ -22,6 +22,7 @@ export function Composer({
   const me = useIdentity();
   const formRef = useRef<HTMLFormElement>(null);
   const [pollMode, setPollMode] = useState(false);
+  const [postType, setPostType] = useState<"comunicado" | "invitacion" | "tarea">("comunicado");
   const [optionCount, setOptionCount] = useState(2);
   const [commentsOff, setCommentsOff] = useState(false);
   const [audOpen, setAudOpen] = useState(false);
@@ -51,6 +52,7 @@ export function Composer({
       setTitle("");
       setBody("");
       setPollMode(false);
+      setPostType("comunicado");
       setOptionCount(2);
       setCommentsOff(false);
       setAudOpen(false);
@@ -73,14 +75,46 @@ export function Composer({
       }}
       className="rounded-[1.75rem] border border-ink/5 bg-white p-4 shadow-card"
     >
+      <input type="hidden" name="postType" value={pollMode ? "comunicado" : postType} />
+
       <div className="flex items-start gap-3">
         <Avatar name={me?.name ?? DEMO_USER.name} color="brand" />
         <div className="min-w-0 flex-1">
+          {!pollMode ? (
+            <div className="mb-2 flex flex-wrap gap-1.5">
+              {[
+                { v: "comunicado", l: "Comunicado", icon: "Megaphone" },
+                { v: "invitacion", l: "Invitación", icon: "CalendarDays" },
+                { v: "tarea", l: "Tarea", icon: "ClipboardList" },
+              ].map((o) => (
+                <button
+                  key={o.v}
+                  type="button"
+                  onClick={() => setPostType(o.v as typeof postType)}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-700 ring-1 transition-colors ${
+                    postType === o.v
+                      ? "bg-ink text-white ring-ink"
+                      : "bg-white text-ink/55 ring-ink/10 hover:text-ink"
+                  }`}
+                >
+                  <Icon name={o.icon} className="h-3.5 w-3.5" />
+                  {o.l}
+                </button>
+              ))}
+            </div>
+          ) : null}
+
           <input
             name="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Título del aviso (opcional)"
+            placeholder={
+              postType === "invitacion"
+                ? "Título de la invitación (opcional)"
+                : postType === "tarea"
+                  ? "¿Qué tienen que hacer? (opcional)"
+                  : "Título del aviso (opcional)"
+            }
             className="w-full rounded-xl bg-mist px-4 py-2.5 text-sm font-700 text-ink outline-none placeholder:font-600 placeholder:text-ink/45 focus:ring-2 focus:ring-brand/30"
           />
           <textarea
@@ -111,6 +145,50 @@ export function Composer({
                   + Agregar opción
                 </button>
               ) : null}
+            </div>
+          ) : null}
+
+          {!pollMode && postType === "invitacion" ? (
+            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+              <div className="relative">
+                <Icon name="MapPin" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/40" />
+                <input
+                  name="eventLocation"
+                  placeholder="Lugar (ej. Patio central)"
+                  className="w-full rounded-xl bg-mist py-2.5 pl-9 pr-3 text-sm font-600 text-ink outline-none placeholder:text-ink/45 focus:ring-2 focus:ring-brand/30"
+                />
+              </div>
+              <div className="relative">
+                <Icon name="CalendarDays" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/40" />
+                <input
+                  name="eventAt"
+                  type="datetime-local"
+                  className="w-full rounded-xl bg-mist py-2.5 pl-9 pr-3 text-sm font-600 text-ink outline-none focus:ring-2 focus:ring-brand/30"
+                />
+              </div>
+            </div>
+          ) : null}
+
+          {!pollMode && postType === "tarea" ? (
+            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+              <select
+                name="taskAction"
+                defaultValue="complete"
+                className="rounded-xl bg-mist px-3 py-2.5 text-sm font-700 text-ink outline-none focus:ring-2 focus:ring-brand/30"
+              >
+                <option value="sign">Firmar</option>
+                <option value="submit">Entregar</option>
+                <option value="complete">Completar</option>
+              </select>
+              <div className="relative">
+                <Icon name="Clock" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/40" />
+                <input
+                  name="taskDue"
+                  type="date"
+                  title="Fecha límite (opcional)"
+                  className="w-full rounded-xl bg-mist py-2.5 pl-9 pr-3 text-sm font-600 text-ink outline-none focus:ring-2 focus:ring-brand/30"
+                />
+              </div>
             </div>
           ) : null}
         </div>

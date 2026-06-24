@@ -5,8 +5,33 @@ import { useLocale } from "../locale-context";
 import { ACCENT_ON, ACCENT_TEXT, type AccentColor } from "../colors";
 import { DEMO_EVENTS, DEMO_TASKS } from "@/lib/domain";
 
-export function RightRail() {
+export interface RailEvent {
+  id: string;
+  day: string;
+  month: string;
+  title: string;
+  time: string;
+  accent: AccentColor;
+}
+export interface RailTask {
+  id: string;
+  title: string;
+  due: string;
+  group: string;
+  done: boolean;
+}
+
+export function RightRail({
+  events,
+  tasks,
+}: {
+  events?: RailEvent[];
+  tasks?: RailTask[];
+} = {}) {
   const { t } = useLocale();
+  // Datos reales si los hay; si no, los de demostración.
+  const railEvents = events && events.length > 0 ? events : DEMO_EVENTS;
+  const railTasks = tasks && tasks.length > 0 ? tasks : DEMO_TASKS;
 
   const momentos = [
     { label: "Feria de ciencias", src: "/momentos/feria-ciencias.webp" },
@@ -59,7 +84,7 @@ export function RightRail() {
           <Icon name="CalendarDays" className="h-5 w-5 text-brand" />
         </div>
         <ul className="flex flex-col gap-1">
-          {DEMO_EVENTS.map((e) => (
+          {railEvents.map((e) => (
             <li key={e.id}>
               <button
                 type="button"
@@ -105,7 +130,7 @@ export function RightRail() {
           <Icon name="ClipboardList" className="h-5 w-5 text-cta" />
         </div>
         <ul className="flex flex-col gap-2">
-          {DEMO_TASKS.map((task) => (
+          {railTasks.map((task) => (
             <li key={task.id} className="flex items-start gap-3">
               <span
                 className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md border-2 ${
