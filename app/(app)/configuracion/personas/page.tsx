@@ -3,6 +3,7 @@ import { ROLE_LABELS, type RoleKey } from "@/lib/domain";
 import { InviteForm } from "@/components/configuracion/InviteForm";
 import { revokeInvitation, resendInvitation } from "./actions";
 import { Icon } from "@/components/icons";
+import { SubmitButton } from "@/components/SubmitButton";
 
 const INVITABLE: RoleKey[] = [
   "principal", "coordinator", "support_staff", "teacher", "guardian", "driver",
@@ -66,21 +67,21 @@ export default async function PersonasPage() {
                 </div>
                 <form action={resendInvitation}>
                   <input type="hidden" name="id" value={inv.id} />
-                  <button
-                    type="submit"
-                    className="rounded-lg px-2.5 py-1.5 text-xs font-700 text-brand transition-colors hover:bg-brand/10"
+                  <SubmitButton
+                    spinnerOnly
+                    className="flex items-center rounded-lg px-2.5 py-1.5 text-xs font-700 text-brand transition-colors hover:bg-brand/10"
                   >
                     Reenviar
-                  </button>
+                  </SubmitButton>
                 </form>
                 <form action={revokeInvitation}>
                   <input type="hidden" name="id" value={inv.id} />
-                  <button
-                    type="submit"
-                    className="rounded-lg px-2.5 py-1.5 text-xs font-700 text-ink/45 transition-colors hover:bg-rose/10 hover:text-rose"
+                  <SubmitButton
+                    spinnerOnly
+                    className="flex items-center rounded-lg px-2.5 py-1.5 text-xs font-700 text-ink/45 transition-colors hover:bg-rose/10 hover:text-rose"
                   >
                     Revocar
-                  </button>
+                  </SubmitButton>
                 </form>
               </div>
             ))}

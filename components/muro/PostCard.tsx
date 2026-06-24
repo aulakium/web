@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { Icon } from "../icons";
 import { Avatar } from "../Avatar";
+import { SubmitButton } from "../SubmitButton";
 import { useLocale } from "../locale-context";
 import { useIdentity } from "../identity-context";
 import { ROLE_LABELS, type Post, type RoleKey } from "@/lib/domain";
@@ -464,13 +465,13 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
                           placeholder={`Responde a ${c.authorName}…`}
                           className="min-w-0 flex-1 rounded-full bg-mist px-4 py-2 text-sm font-500 text-ink outline-none placeholder:text-ink/40 focus:ring-2 focus:ring-brand/30"
                         />
-                        <button
-                          type="submit"
+                        <SubmitButton
+                          spinnerOnly
                           className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-ink text-white transition-colors hover:bg-navy-deep"
                           aria-label="Responder"
                         >
                           <Icon name="Send" className="h-4 w-4" />
-                        </button>
+                        </SubmitButton>
                       </form>
                     ) : null}
                   </li>
@@ -487,13 +488,13 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
                 placeholder="Escribe un comentario…"
                 className="min-w-0 flex-1 rounded-full bg-mist px-4 py-2 text-sm font-500 text-ink outline-none placeholder:text-ink/40 focus:ring-2 focus:ring-brand/30"
               />
-              <button
-                type="submit"
+              <SubmitButton
+                spinnerOnly
                 className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink text-white transition-colors hover:bg-navy-deep"
                 aria-label="Comentar"
               >
                 <Icon name="Send" className="h-4 w-4" />
-              </button>
+              </SubmitButton>
             </form>
             {cState?.error ? (
               <p className="mt-1 pl-10 text-xs font-700 text-rose">{cState.error}</p>
