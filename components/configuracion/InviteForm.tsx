@@ -105,7 +105,7 @@ export function InviteForm({
           ) : (
             <>
               <span className="font-700 text-ink">Invitación creada.</span> No se envió el correo
-              (revisá Resend). Link para compartir:
+              (revisa Resend). Enlace para compartir:
               <br />
               <a href={state.link} className="break-all text-xs text-brand underline">
                 {state.link}
