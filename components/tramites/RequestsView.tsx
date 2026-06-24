@@ -32,7 +32,7 @@ const FILTERS = [
   { id: "resolved", key: "req.filter.resolved" },
 ] as const;
 
-export function RequestsView({ items }: { items?: RequestItem[] }) {
+export function RequestsView({ items, canCreate = true }: { items?: RequestItem[]; canCreate?: boolean }) {
   const { t } = useLocale();
   const [filter, setFilter] = useState<"all" | "pending" | "resolved">("all");
   const data = items ?? DEMO_REQUESTS;
@@ -45,7 +45,8 @@ export function RequestsView({ items }: { items?: RequestItem[] }) {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Crear nuevo trámite */}
+      {/* Crear nuevo trámite (no aplica para gestión/dirección) */}
+      {canCreate ? (
       <section>
         <h2 className="mb-3 font-display text-base font-700 text-ink">
           {t("req.new")}
@@ -78,6 +79,7 @@ export function RequestsView({ items }: { items?: RequestItem[] }) {
           ))}
         </div>
       </section>
+      ) : null}
 
       {/* Listado de trámites */}
       <section>
