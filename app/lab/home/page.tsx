@@ -61,12 +61,16 @@ function PillCTA({ href, children, tone = "cta" }: { href: string; children: Rea
 }
 
 const FEATURES = [
-  { icon: "Megaphone", title: "Novedades", text: "Avisos del colegio con foto, likes y comentarios, segmentados por curso." },
-  { icon: "CalendarDays", title: "Calendario", text: "Exámenes, eventos y vacaciones en un calendario claro y compartido." },
-  { icon: "MessagesSquare", title: "Mensajes", text: "Conversaciones entre familias y docentes, siempre dentro de cada salón." },
-  { icon: "ClipboardList", title: "Trámites", text: "Inasistencias, autorizaciones y comprobantes, sin papeles." },
-  { icon: "FolderClosed", title: "Documentos", text: "Boletines, circulares y protocolos ordenados y a un clic." },
-  { icon: "Bus", title: "Transporte", text: "Seguimiento del camión escolar en vivo y avisos de subida y bajada." },
+  { img: "/features/1-inicio.webp", title: "Inicio", text: "Un resumen de todo: avisos sin leer, eventos de la semana y trámites pendientes, apenas entras." },
+  { img: "/features/2-comunicados.webp", title: "Novedades", text: "Avisos del colegio con foto, me gusta y comentarios, segmentados por curso." },
+  { img: "/features/3-calendario.webp", title: "Calendario", text: "Exámenes, eventos y salidas en un calendario claro y compartido." },
+  { img: "/features/4-mensajes.webp", title: "Mensajes", text: "Conversaciones entre familias y docentes, siempre dentro de cada salón." },
+  { img: "/features/5-tramites.webp", title: "Trámites", text: "Inasistencias, autorizaciones y comprobantes, sin papeles." },
+  { img: "/features/6-documentos.webp", title: "Documentos", text: "Circulares, reglamentos y archivos del colegio, ordenados y a un clic." },
+];
+const UPCOMING = [
+  { icon: "Bus", title: "Transporte en vivo", text: "Sigue el transporte escolar en el mapa y recibe avisos de subida y bajada." },
+  { icon: "Languages", title: "Traducción automática", text: "Cada familia lee los avisos en su idioma, con un solo toque." },
 ];
 const PLANES = [
   { name: "Demo", price: "$0", per: "para probar", feats: ["Hasta 1 salón", "Novedades y calendario", "Soporte por correo"] },
@@ -160,16 +164,40 @@ export default function LabHome() {
           <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f, i) => (
               <Reveal key={f.title} delay={i * 70}>
-                <div className="group h-full rounded-3xl border border-ink/8 bg-white p-7 transition-all hover:border-brand/30 hover:shadow-pop">
-                  <span className="grid h-14 w-14 place-items-center rounded-2xl bg-brand/10 text-brand transition-colors group-hover:bg-brand group-hover:text-white">
-                    <Icon name={f.icon} className="h-7 w-7" />
-                  </span>
-                  <h3 className="mt-5 text-xl font-700 text-ink">{f.title}</h3>
-                  <p className="mt-2 text-sm font-400 leading-relaxed text-ink/60">{f.text}</p>
+                <div className="group h-full overflow-hidden rounded-3xl border border-ink/8 bg-white transition-all hover:border-brand/30 hover:shadow-pop">
+                  <div className="aspect-[4/3] w-full overflow-hidden bg-mist">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={f.img} alt={`Pantalla de ${f.title}`} className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-105" />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-lg font-700 text-ink">{f.title}</h3>
+                    <p className="mt-2 text-sm font-400 leading-relaxed text-ink/60">{f.text}</p>
+                  </div>
                 </div>
               </Reveal>
             ))}
           </div>
+
+          {/* Muy pronto: transporte + traducción */}
+          <Reveal className="mt-12">
+            <p className="text-center text-sm font-700 uppercase tracking-wide text-ink/40">Muy pronto</p>
+            <div className="mx-auto mt-5 grid max-w-3xl gap-5 sm:grid-cols-2">
+              {UPCOMING.map((u) => (
+                <div key={u.title} className="flex items-start gap-4 rounded-3xl border border-dashed border-ink/15 bg-mist/40 p-6">
+                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-ink/5 text-ink/60">
+                    <Icon name={u.icon} className="h-6 w-6" />
+                  </span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-700 text-ink">{u.title}</h3>
+                      <span className="rounded-full bg-cta/10 px-2 py-0.5 text-[10px] font-700 text-cta">Pronto</span>
+                    </div>
+                    <p className="mt-1 text-sm font-400 leading-relaxed text-ink/55">{u.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Reveal>
         </div>
       </section>
 

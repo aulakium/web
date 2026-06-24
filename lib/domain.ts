@@ -136,7 +136,7 @@ export const NAV_ITEMS: NavItemDef[] = [
   { key: "nav.conversations", href: "/conversaciones", icon: "MessagesSquare", badge: 5 },
   { key: "nav.requests", href: "/tramites", icon: "ClipboardList" },
   { key: "nav.documents", href: "/documentos", icon: "FolderClosed" },
-  { key: "nav.transport", href: "/transporte", icon: "Bus", disabled: true },
+  { key: "nav.transport", href: "/transporte", icon: "Bus" },
   { key: "nav.people", href: "/comunidad", icon: "Users" },
 ];
 

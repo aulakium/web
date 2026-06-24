@@ -6,6 +6,7 @@ import { Avatar } from "../Avatar";
 import { useLocale } from "../locale-context";
 import { useIdentity } from "../identity-context";
 import { ROLE_LABELS, type Post, type RoleKey } from "@/lib/domain";
+import { getTranslation } from "@/lib/translations";
 import { type AccentColor } from "../colors";
 import {
   toggleLike,
@@ -19,7 +20,7 @@ import {
 import { PollView } from "./PollView";
 
 export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const me = useIdentity();
   const [liked, setLiked] = useState(post.liked);
   const [, startLike] = useTransition();
@@ -27,6 +28,13 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
   const [, startSave] = useTransition();
   const [expanded, setExpanded] = useState(false);
   const [readDone, setReadDone] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(false);
+
+  // "Ver traducción": solo si el idioma de la interfaz no es español y hay traducción.
+  const translation = getTranslation(post.id, locale);
+  const isPt = locale.startsWith("pt");
+  const shownTitle = showTranslation && translation ? translation.title : post.title;
+  const shownBody = showTranslation && translation ? translation.body : post.body;
 
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState<PostComment[] | null>(null);
@@ -103,9 +111,9 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
             />
           ) : null}
           <div className="min-w-0 flex-1">
-            <h3 className="font-display text-lg font-700 leading-snug text-ink">{post.title}</h3>
+            <h3 className="font-display text-lg font-700 leading-snug text-ink">{shownTitle}</h3>
             <p className={`mt-1.5 text-[15px] leading-relaxed text-ink/70 ${expanded ? "" : "line-clamp-2"}`}>
-              {post.body}
+              {shownBody}
             </p>
             {!expanded ? (
               <button
@@ -118,6 +126,26 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
               >
                 {t("wall.seeMore")}
               </button>
+            ) : null}
+
+            {translation ? (
+              <div className="mt-2 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowTranslation((v) => !v)}
+                  className="inline-flex items-center gap-1.5 text-xs font-700 text-brand transition-colors hover:text-ink"
+                >
+                  <Icon name="Languages" className="h-3.5 w-3.5" />
+                  {showTranslation
+                    ? isPt ? "Ver original" : "See original"
+                    : isPt ? "Ver tradução" : "See translation"}
+                </button>
+                {showTranslation ? (
+                  <span className="text-[11px] font-600 text-ink/35">
+                    {isPt ? "traduzido automaticamente" : "translated automatically"}
+                  </span>
+                ) : null}
+              </div>
             ) : null}
           </div>
         </div>
