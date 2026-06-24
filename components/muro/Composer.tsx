@@ -24,9 +24,15 @@ export function Composer({
   const [pollMode, setPollMode] = useState(false);
   const [optionCount, setOptionCount] = useState(2);
   const [commentsOff, setCommentsOff] = useState(false);
+  const [audOpen, setAudOpen] = useState(false);
+  const [audCount, setAudCount] = useState(0);
   // Controlados: un error (p. ej. sin permiso) no borra lo escrito.
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+
+  function refreshAud(form: HTMLFormElement | null) {
+    if (form) setAudCount(form.querySelectorAll('input[name="audience"]:checked').length);
+  }
   const [state, formAction, pending] = useActionState<CreatePostState, FormData>(
     createPost,
     null,
@@ -40,6 +46,8 @@ export function Composer({
       setPollMode(false);
       setOptionCount(2);
       setCommentsOff(false);
+      setAudOpen(false);
+      setAudCount(0);
     }
   }, [state]);
 
@@ -103,6 +111,58 @@ export function Composer({
         </p>
       ) : null}
 
+      {audOpen ? (
+        <div className="mt-3 rounded-2xl border border-ink/10 bg-mist/40 p-3" onChange={() => refreshAud(formRef.current)}>
+          <p className="mb-1.5 text-[11px] font-700 uppercase tracking-wide text-ink/40">Enviar a</p>
+          <div className="flex flex-wrap gap-1.5">
+            {[
+              { v: "all", l: "Todos" },
+              { v: "teacher", l: "Docentes" },
+              { v: "guardian", l: "Padres" },
+              { v: "both", l: "Docentes y padres" },
+            ].map((o) => (
+              <label key={o.v} className="cursor-pointer">
+                <input type="radio" name="audienceRole" value={o.v} defaultChecked={o.v === "all"} className="peer sr-only" />
+                <span className="block rounded-full bg-white px-3 py-1.5 text-xs font-700 text-ink/55 ring-1 ring-ink/10 peer-checked:bg-ink peer-checked:text-white peer-checked:ring-ink">
+                  {o.l}
+                </span>
+              </label>
+            ))}
+          </div>
+
+          <p className="mb-1.5 mt-3 text-[11px] font-700 uppercase tracking-wide text-ink/40">
+            Destinos <span className="font-500 normal-case text-ink/35">· vacío = toda la comunidad</span>
+          </p>
+          <div className="flex max-h-56 flex-col gap-2.5 overflow-y-auto pr-1">
+            {audiences?.community ? (
+              <label className="flex items-center gap-2 text-xs font-700 text-ink/75">
+                <input type="checkbox" name="audience" value={audiences.community.value} className="h-4 w-4 accent-brand" />
+                {audiences.community.label}
+              </label>
+            ) : null}
+            {[
+              { title: "Niveles", opts: audiences?.levels ?? [] },
+              { title: "Grados", opts: audiences?.grades ?? [] },
+              { title: "Salones", opts: audiences?.groups ?? [] },
+            ]
+              .filter((s) => s.opts.length)
+              .map((s) => (
+                <div key={s.title}>
+                  <p className="mb-1 text-[10px] font-700 uppercase tracking-wide text-ink/35">{s.title}</p>
+                  <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4">
+                    {s.opts.map((o) => (
+                      <label key={o.value} className="flex items-center gap-1.5 rounded-lg bg-white px-2 py-1.5 text-xs font-600 text-ink/70 ring-1 ring-ink/5">
+                        <input type="checkbox" name="audience" value={o.value} className="h-3.5 w-3.5 accent-brand" />
+                        {o.label}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      ) : null}
+
       <div className="mt-3 flex items-center gap-2 border-t border-ink/5 pt-3">
         <button
           type="button"
@@ -128,44 +188,16 @@ export function Composer({
           <Icon name={commentsOff ? "MessageCircleOff" : "MessageCircle"} className="h-[16px] w-[16px]" />
           <span className="hidden sm:inline">{commentsOff ? "Sin comentarios" : "Comentarios"}</span>
         </button>
-        <select
-          name="audience"
-          defaultValue={audiences?.community?.value}
-          aria-label="¿A quién va dirigido?"
-          className="min-w-0 flex-1 rounded-xl bg-mist px-3 py-2 text-xs font-700 text-ink outline-none focus:ring-2 focus:ring-brand/30 sm:max-w-xs"
+        <button
+          type="button"
+          onClick={() => setAudOpen((v) => !v)}
+          aria-expanded={audOpen}
+          className="flex min-w-0 flex-1 items-center gap-1.5 rounded-xl bg-mist px-3 py-2 text-xs font-700 text-ink outline-none focus:ring-2 focus:ring-brand/30 sm:max-w-xs"
         >
-          {audiences?.community ? (
-            <option value={audiences.community.value}>{audiences.community.label}</option>
-          ) : null}
-          {audiences?.levels.length ? (
-            <optgroup label="Niveles">
-              {audiences.levels.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </optgroup>
-          ) : null}
-          {audiences?.grades.length ? (
-            <optgroup label="Grados">
-              {audiences.grades.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </optgroup>
-          ) : null}
-          {audiences?.groups.length ? (
-            <optgroup label="Salones">
-              {audiences.groups.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </optgroup>
-          ) : null}
-          {audiences?.roles.length ? (
-            <optgroup label="Roles">
-              {audiences.roles.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </optgroup>
-          ) : null}
-        </select>
+          <Icon name="Users" className="h-[15px] w-[15px] text-ink/50" />
+          <span className="truncate">{audCount > 0 ? `${audCount} destino${audCount > 1 ? "s" : ""}` : "Toda la comunidad"}</span>
+          <Icon name="ChevronDown" className="ml-auto h-4 w-4 text-ink/40" />
+        </button>
         <button
           type="submit"
           disabled={pending}

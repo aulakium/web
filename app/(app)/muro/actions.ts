@@ -128,6 +128,17 @@ export async function createPost(
   // Por defecto los comentarios están habilitados; el autor puede apagarlos.
   const commentsEnabled = String(formData.get("commentsEnabled") || "1") !== "0";
 
+  // Filtro de rol: docentes / padres / ambos (null = todos los de la audiencia).
+  const roleChoice = String(formData.get("audienceRole") || "all");
+  const audienceRoles =
+    roleChoice === "teacher"
+      ? ["teacher"]
+      : roleChoice === "guardian"
+        ? ["guardian"]
+        : roleChoice === "both"
+          ? ["teacher", "guardian"]
+          : null;
+
   const { data: post, error } = await supabase
     .from("posts")
     .insert({
@@ -137,6 +148,7 @@ export async function createPost(
       body,
       type: isPoll ? "poll" : "announcement",
       comments_enabled: commentsEnabled,
+      audience_roles: audienceRoles,
       published_at: new Date().toISOString(),
     })
     .select("id")
@@ -151,20 +163,32 @@ export async function createPost(
     );
   }
 
-  // Audiencia elegida ("type:id"); por defecto, toda la comunidad.
-  const raw = String(formData.get("audience") || "");
-  const [aType, aId] = raw.includes(":") ? raw.split(":") : ["community", m.community_id];
+  // Audiencias elegidas ("type:id", pueden ser varias); por defecto, comunidad.
   const allowed = ["community", "level", "grade", "group", "role"];
-  const targetType = allowed.includes(aType) ? aType : "community";
-  const targetId = targetType === "community" ? m.community_id : aId;
+  const raws = formData.getAll("audience").map(String).filter(Boolean);
+  const seen = new Set<string>();
+  const rows = (raws.length ? raws : [`community:${m.community_id}`])
+    .map((r) => {
+      const [t, id] = r.includes(":") ? r.split(":") : ["community", m.community_id];
+      const type = allowed.includes(t) ? t : "community";
+      return { type, id: type === "community" ? m.community_id : id };
+    })
+    .filter((x) => {
+      const k = `${x.type}:${x.id}`;
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
 
-  await supabase.from("audiences").insert({
-    community_id: m.community_id,
-    content_type: "post",
-    content_id: post.id,
-    target_type: targetType,
-    target_id: targetId,
-  });
+  await supabase.from("audiences").insert(
+    rows.map((x) => ({
+      community_id: m.community_id,
+      content_type: "post",
+      content_id: post.id,
+      target_type: x.type,
+      target_id: x.id,
+    })),
+  );
 
   // Push notifications a los dispositivos de la comunidad (si hay tokens).
   const { data: tokens } = await supabase.rpc("recipient_tokens", { p_post: post.id });
