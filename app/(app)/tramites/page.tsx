@@ -7,10 +7,17 @@ export default async function TramitesPage() {
   const [items, me] = await Promise.all([getRequests(), getIdentity()]);
   // Dirección/gestión no inicia trámites de alumno (inasistencias, salidas): los gestiona.
   const canCreate = !me?.isAdmin;
+  // El nombre de la sección cambia por rol (más claro): Tareas / Pendientes / Trámites.
+  const heading =
+    me?.roleKey === "guardian"
+      ? "Pendientes"
+      : me?.isAdmin || me?.roleKey === "teacher"
+        ? "Tareas"
+        : "Trámites";
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="mb-5">
-        <h1 className="font-display text-2xl font-700 text-ink">Trámites</h1>
+        <h1 className="font-display text-2xl font-700 text-ink">{heading}</h1>
         <p className="text-sm font-500 text-ink/55">
           {canCreate
             ? "Inasistencias, autorizaciones y comprobantes."

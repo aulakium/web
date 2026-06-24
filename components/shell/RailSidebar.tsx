@@ -7,7 +7,7 @@ import { Avatar } from "../Avatar";
 import { useLocale } from "../locale-context";
 import { useIdentity } from "../identity-context";
 import { BrandIcon } from "../Wordmark";
-import { NAV_ITEMS, STUDENT_HIDDEN, DEMO_USER } from "@/lib/domain";
+import { NAV_ITEMS, STUDENT_HIDDEN, DEMO_USER, requestsNavKey } from "@/lib/domain";
 import { logout } from "@/app/(auth)/login/actions";
 
 /** Rail slim de íconos (estilo Alliance). Desktop. */
@@ -15,6 +15,9 @@ export function RailSidebar() {
   const pathname = usePathname();
   const { t } = useLocale();
   const me = useIdentity();
+  // Etiqueta del item, con el renombrado por rol de "Trámites".
+  const label = (it: { key: string }) =>
+    t(it.key === "nav.requests" ? requestsNavKey(me?.roleKey ?? null) : it.key);
   const userName = me?.name ?? DEMO_USER.name;
 
   return (
@@ -34,12 +37,12 @@ export function RailSidebar() {
               <div
                 key={it.href}
                 aria-disabled="true"
-                title={`${t(it.key)} — próximamente`}
+                title={`${label(it)} — próximamente`}
                 className="group relative grid h-12 w-12 cursor-not-allowed place-items-center rounded-2xl text-ink/20"
               >
                 <Icon name={it.icon} className="h-[22px] w-[22px]" />
                 <span className="pointer-events-none absolute left-14 z-30 whitespace-nowrap rounded-lg bg-ink px-2.5 py-1 text-xs font-600 text-white opacity-0 shadow-card transition-opacity group-hover:opacity-100">
-                  {t(it.key)} · próximamente
+                  {label(it)} · próximamente
                 </span>
               </div>
             );
@@ -50,7 +53,7 @@ export function RailSidebar() {
               key={it.href}
               href={it.href}
               aria-current={active ? "page" : undefined}
-              title={t(it.key)}
+              title={label(it)}
               className={`group relative grid h-12 w-12 place-items-center rounded-2xl transition-colors ${
                 active ? "bg-brand text-white shadow-soft" : "text-ink/40 hover:bg-mist hover:text-ink"
               }`}
@@ -60,7 +63,7 @@ export function RailSidebar() {
                 <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border border-white bg-cta" />
               ) : null}
               <span className="pointer-events-none absolute left-14 z-30 whitespace-nowrap rounded-lg bg-ink px-2.5 py-1 text-xs font-600 text-white opacity-0 shadow-card transition-opacity group-hover:opacity-100">
-                {t(it.key)}
+                {label(it)}
               </span>
             </Link>
           );

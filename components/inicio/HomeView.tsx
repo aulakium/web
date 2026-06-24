@@ -19,6 +19,7 @@ import {
   DEMO_REQUESTS,
   DEMO_CONVERSATIONS,
   DEMO_TODAY,
+  requestsNavKey,
 } from "@/lib/domain";
 import { calendarColor, sortDayEvents } from "../calendario/utils";
 
@@ -46,6 +47,15 @@ export function HomeView({
   const { t, locale } = useLocale();
   const me = useIdentity();
   const firstName = me?.firstName ?? DEMO_USER.name.split(" ")[0];
+  // Renombrado por rol de "Trámites" (Tareas / Pendientes).
+  const reqLabel = t(requestsNavKey(me?.roleKey ?? null));
+  const qlabel = (q: { key: string }) => (q.key === "nav.requests" ? reqLabel : t(q.key));
+  const reqSummaryLabel =
+    me?.roleKey === "guardian"
+      ? "Pendientes"
+      : me?.isAdmin || me?.roleKey === "teacher"
+        ? "Tareas pendientes"
+        : t("home.summary.requests");
 
   const dateLabel = new Date(
     DEMO_TODAY.year,
@@ -66,7 +76,7 @@ export function HomeView({
   const summary = [
     { label: t("home.summary.unread"), value: unreadPosts, icon: "Megaphone", color: "news" as AccentColor, href: "/muro" },
     { label: t("home.summary.events"), value: eventsThisWeek, icon: "CalendarDays", color: "brand" as AccentColor, href: "/calendario" },
-    { label: t("home.summary.requests"), value: pendingRequests, icon: "ClipboardList", color: "requests" as AccentColor, href: "/tramites" },
+    { label: reqSummaryLabel, value: pendingRequests, icon: "ClipboardList", color: "requests" as AccentColor, href: "/tramites" },
     { label: t("home.summary.messages"), value: unreadMessages, icon: "MessagesSquare", color: "sky" as AccentColor, href: "/conversaciones" },
   ].filter((s) => !(me?.isStudent && STUDENT_HIDDEN.includes(s.href)));
 
@@ -129,13 +139,13 @@ export function HomeView({
               <div
                 key={q.href}
                 aria-disabled="true"
-                title={`${t(q.key)} — próximamente`}
+                title={`${qlabel(q)} — próximamente`}
                 className="flex cursor-not-allowed flex-col items-center gap-2 rounded-[1.5rem] border border-ink/5 bg-white/60 p-4 text-center opacity-50"
               >
                 <span className="grid h-12 w-12 place-items-center rounded-2xl bg-mist text-ink/35">
                   <Icon name={q.icon} className="h-6 w-6" />
                 </span>
-                <span className="text-sm font-700 text-ink/40">{t(q.key)}</span>
+                <span className="text-sm font-700 text-ink/40">{qlabel(q)}</span>
               </div>
             ) : (
               <Link
@@ -148,7 +158,7 @@ export function HomeView({
                 >
                   <Icon name={q.icon} className="h-6 w-6" />
                 </span>
-                <span className="text-sm font-700 text-ink">{t(q.key)}</span>
+                <span className="text-sm font-700 text-ink">{qlabel(q)}</span>
               </Link>
             ),
           )}

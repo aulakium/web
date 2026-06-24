@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { Icon } from "../icons";
-import { Avatar } from "../Avatar";
 import { useLocale } from "../locale-context";
 import { useIdentity } from "../identity-context";
 import { BrandIcon } from "../Wordmark";
 import { NotificationsBell } from "./NotificationsBell";
+import { AccountMenu } from "../AccountMenu";
 import { LOCALES } from "@/lib/i18n";
-import { DEMO_USER, DEMO_SCHOOL, ROLE_LABELS } from "@/lib/domain";
+import { DEMO_SCHOOL } from "@/lib/domain";
 
 /** Topbar del shell interno (estilo Alliance): marca móvil + buscador + idioma + notif + perfil. */
 export function AppTopbar() {
@@ -17,9 +17,7 @@ export function AppTopbar() {
   const [open, setOpen] = useState(false);
   const current = LOCALES.find((l) => l.code === locale);
 
-  const userName = me?.name ?? DEMO_USER.name;
   const schoolShort = me?.schoolShort ?? DEMO_SCHOOL.shortName;
-  const roleText = me?.roleLabel || DEMO_USER.roleScope || ROLE_LABELS[DEMO_USER.role];
 
   return (
     <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-ink/8 bg-white px-4 py-3 sm:px-5">
@@ -82,14 +80,8 @@ export function AppTopbar() {
       {/* Notificaciones */}
       <NotificationsBell />
 
-      {/* Perfil */}
-      <div className="flex shrink-0 items-center gap-2.5">
-        <Avatar name={userName} color="navy" />
-        <div className="hidden leading-tight lg:block">
-          <p className="text-sm font-700 text-ink">{userName}</p>
-          <p className="text-xs font-500 text-ink/50">{roleText}</p>
-        </div>
-      </div>
+      {/* Menú de cuenta (perfil, configuración, secciones extra, salir) */}
+      <AccountMenu />
 
       </div>
     </header>

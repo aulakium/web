@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Icon } from "../icons";
 import { useLocale } from "../locale-context";
 import { useIdentity } from "../identity-context";
-import { NAV_ITEMS, STUDENT_HIDDEN } from "@/lib/domain";
+import { NAV_ITEMS, STUDENT_HIDDEN, requestsNavKey } from "@/lib/domain";
 
 /** Bottom-nav para móvil (el rail slim se oculta < lg). */
 export function MobileNav() {
@@ -30,7 +30,9 @@ export function MobileNav() {
                   <Icon name={it.icon} className="h-5 w-5" />
                   {it.badge ? <span className="absolute right-2 top-1 h-2 w-2 rounded-full border border-white bg-cta" /> : null}
                 </span>
-                <span className={`text-[10px] font-700 ${active ? "text-ink" : "text-ink/45"}`}>{t(it.key)}</span>
+                <span className={`text-[10px] font-700 ${active ? "text-ink" : "text-ink/45"}`}>
+                  {t(it.key === "nav.requests" ? requestsNavKey(me?.roleKey ?? null) : it.key)}
+                </span>
               </Link>
             </li>
           );

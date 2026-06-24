@@ -138,6 +138,23 @@ export const DEMO_USER: CurrentUser = {
 /** Rutas que el rol alumno NO ve (vista acotada). */
 export const STUDENT_HIDDEN = ["/conversaciones", "/tramites", "/comunidad"];
 
+/**
+ * La sección "Trámites" se llama distinto según el rol para que quede claro:
+ * docentes/dirección → "Tareas"; familias → "Pendientes"; resto → "Trámites".
+ */
+export function requestsNavKey(roleKey: RoleKey | null): string {
+  if (roleKey === "guardian") return "nav.requests.pending";
+  if (
+    roleKey &&
+    ["teacher", "principal", "coordinator", "manager", "board", "department_head", "support_staff"].includes(
+      roleKey,
+    )
+  ) {
+    return "nav.requests.tasks";
+  }
+  return "nav.requests";
+}
+
 export const NAV_ITEMS: NavItemDef[] = [
   { key: "nav.home", href: "/inicio", icon: "LayoutGrid" },
   { key: "nav.wall", href: "/muro", icon: "Megaphone", badge: 3 },
