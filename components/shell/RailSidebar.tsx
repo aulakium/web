@@ -25,7 +25,9 @@ export function RailSidebar() {
 
       <nav className="mt-7 flex flex-1 flex-col items-center gap-2">
         {NAV_ITEMS.filter(
-          (it) => !(me?.isStudent && STUDENT_HIDDEN.includes(it.href)),
+          (it) =>
+            !(me?.isStudent && STUDENT_HIDDEN.includes(it.href)) &&
+            !(it.staffOnly && !(me?.isAdmin || me?.roleKey === "teacher")),
         ).map((it) => {
           if (it.disabled) {
             return (

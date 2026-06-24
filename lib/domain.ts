@@ -79,6 +79,7 @@ export interface NavItemDef {
   icon: string; // nombre del icono lucide
   badge?: number;
   disabled?: boolean; // se muestra en gris, no navegable (módulo aún no habilitado)
+  staffOnly?: boolean; // solo docentes y dirección/gestión
 }
 
 export interface CurrentUser {
@@ -136,6 +137,7 @@ export const NAV_ITEMS: NavItemDef[] = [
   { key: "nav.conversations", href: "/conversaciones", icon: "MessagesSquare", badge: 5 },
   { key: "nav.requests", href: "/tramites", icon: "ClipboardList" },
   { key: "nav.payments", href: "/pagos", icon: "CreditCard" },
+  { key: "nav.exits", href: "/salidas", icon: "DoorOpen", staffOnly: true },
   { key: "nav.documents", href: "/documentos", icon: "FolderClosed" },
   { key: "nav.transport", href: "/transporte", icon: "Bus" },
   { key: "nav.people", href: "/comunidad", icon: "Users" },
