@@ -6,7 +6,6 @@ import { Avatar } from "../Avatar";
 import { useLocale } from "../locale-context";
 import { useIdentity } from "../identity-context";
 import { ROLE_LABELS, type Post, type RoleKey } from "@/lib/domain";
-import { getTranslation } from "@/lib/translations";
 import { type AccentColor } from "../colors";
 import {
   toggleLike,
@@ -14,6 +13,7 @@ import {
   markRead,
   getComments,
   addComment,
+  translatePost,
   type PostComment,
   type CommentState,
 } from "@/app/(app)/muro/actions";
@@ -28,13 +28,28 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
   const [, startSave] = useTransition();
   const [expanded, setExpanded] = useState(false);
   const [readDone, setReadDone] = useState(false);
-  const [showTranslation, setShowTranslation] = useState(false);
-
-  // "Ver traducción": solo si el idioma de la interfaz no es español y hay traducción.
-  const translation = getTranslation(post.id, locale);
+  // "Ver traducción": solo cuando el idioma de la interfaz no es español.
+  const canTranslate = !locale.startsWith("es");
   const isPt = locale.startsWith("pt");
-  const shownTitle = showTranslation && translation ? translation.title : post.title;
-  const shownBody = showTranslation && translation ? translation.body : post.body;
+  const [showTranslation, setShowTranslation] = useState(false);
+  const [translated, setTranslated] = useState<{ title: string; body: string } | null>(null);
+  const [translating, setTranslating] = useState(false);
+  const shownTitle = showTranslation && translated ? translated.title : post.title;
+  const shownBody = showTranslation && translated ? translated.body : post.body;
+
+  async function onTranslate() {
+    if (translated) {
+      setShowTranslation((v) => !v);
+      return;
+    }
+    setTranslating(true);
+    const r = await translatePost(post.id, locale);
+    setTranslating(false);
+    if (r) {
+      setTranslated(r);
+      setShowTranslation(true);
+    }
+  }
 
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState<PostComment[] | null>(null);
@@ -128,17 +143,20 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
               </button>
             ) : null}
 
-            {translation ? (
+            {canTranslate ? (
               <div className="mt-2 flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setShowTranslation((v) => !v)}
-                  className="inline-flex items-center gap-1.5 text-xs font-700 text-brand transition-colors hover:text-ink"
+                  onClick={onTranslate}
+                  disabled={translating}
+                  className="inline-flex items-center gap-1.5 text-xs font-700 text-brand transition-colors hover:text-ink disabled:opacity-50"
                 >
                   <Icon name="Languages" className="h-3.5 w-3.5" />
-                  {showTranslation
-                    ? isPt ? "Ver original" : "See original"
-                    : isPt ? "Ver tradução" : "See translation"}
+                  {translating
+                    ? isPt ? "Traduzindo…" : "Translating…"
+                    : showTranslation
+                      ? isPt ? "Ver original" : "See original"
+                      : isPt ? "Ver tradução" : "See translation"}
                 </button>
                 {showTranslation ? (
                   <span className="text-[11px] font-600 text-ink/35">

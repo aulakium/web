@@ -2,7 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { sendExpoPush } from "@/lib/push";
+import { geminiTranslate, type Translated } from "@/lib/translate";
 
 type Supa = Awaited<ReturnType<typeof createClient>>;
 
@@ -20,6 +22,63 @@ async function myMembership(supabase: Supa) {
     .limit(1)
     .maybeSingle();
   return data as { id: string; community_id: string } | null;
+}
+
+/**
+ * Traduce un aviso al idioma destino (read-through cache).
+ * 1ª vez: llama a Gemini y guarda en `translations`. Luego: lee de la base.
+ */
+export async function translatePost(
+  postId: string,
+  targetLang: string,
+): Promise<Translated | null> {
+  if (!targetLang || targetLang.startsWith("es")) return null;
+  const supabase = await createClient();
+  const admin = createAdminClient();
+
+  // 1) Caché (vía service-role; la tabla no es accesible por clientes).
+  if (admin) {
+    const { data: cached } = await admin
+      .from("translations")
+      .select("title, body")
+      .eq("content_type", "post")
+      .eq("content_id", postId)
+      .eq("target_lang", targetLang)
+      .maybeSingle();
+    if (cached) return { title: cached.title ?? "", body: cached.body ?? "" };
+  }
+
+  // 2) Traer el post (RLS valida que el usuario pueda verlo).
+  const { data: post } = await supabase
+    .from("posts")
+    .select("title, body")
+    .eq("id", postId)
+    .maybeSingle();
+  if (!post) return null;
+
+  // 3) Traducir y cachear.
+  const result = await geminiTranslate(post.title ?? "", post.body ?? "", targetLang);
+  if (!result) {
+    // Fallback demo: si la API falla (p. ej. quota de la key), usar las
+    // traducciones hechas a mano de los avisos sembrados (no se cachean).
+    const { getTranslation } = await import("@/lib/translations");
+    return getTranslation(postId, targetLang);
+  }
+  if (admin) {
+    await admin.from("translations").upsert(
+      {
+        content_type: "post",
+        content_id: postId,
+        target_lang: targetLang,
+        source_lang: "es",
+        title: result.title,
+        body: result.body,
+        provider: "gemini",
+      },
+      { onConflict: "content_type,content_id,target_lang" },
+    );
+  }
+  return result;
 }
 
 /** Da o quita el like del usuario actual sobre un post. */
