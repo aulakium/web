@@ -248,6 +248,7 @@ export interface PostComment {
   authorRole: string | null;
   body: string;
   at: string;
+  parentId: string | null;
 }
 
 /** Lista los comentarios de un post (para cuando se expanden). */
@@ -261,11 +262,13 @@ export async function getComments(postId: string): Promise<PostComment[]> {
     author_role: string | null;
     body: string;
     created_at: string;
+    parent_id: string | null;
   }[]).map((c) => ({
     id: c.id,
     authorName: c.author_name ?? "—",
     authorRole: c.author_role,
     body: c.body,
+    parentId: c.parent_id,
     at: new Date(c.created_at).toLocaleDateString("es-MX", {
       day: "numeric",
       month: "short",
@@ -313,13 +316,26 @@ export type CommentState = { error?: string; ok?: boolean } | null;
 export async function addComment(_prev: CommentState, formData: FormData): Promise<CommentState> {
   const postId = String(formData.get("postId") || "");
   const body = String(formData.get("body") || "").trim();
+  const rawParent = String(formData.get("parentId") || "").trim() || null;
   if (!postId || !body) return { error: "Escribe un comentario." };
   const supabase = await createClient();
   const m = await myMembership(supabase);
   if (!m) return { error: "No pudimos identificar tu cuenta." };
+
+  // Un solo nivel: si respondo a una respuesta, la cuelgo del comentario raíz.
+  let parentId = rawParent;
+  if (parentId) {
+    const { data: parent } = await supabase
+      .from("post_comments")
+      .select("id, parent_id")
+      .eq("id", parentId)
+      .maybeSingle();
+    parentId = parent ? (parent.parent_id ?? parent.id) : null;
+  }
+
   const { error } = await supabase
     .from("post_comments")
-    .insert({ post_id: postId, membership_id: m.id, body });
+    .insert({ post_id: postId, membership_id: m.id, body, parent_id: parentId });
   if (error) return { error: "No se pudo comentar." };
   revalidatePath("/muro");
   revalidatePath("/inicio");

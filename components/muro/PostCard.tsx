@@ -52,6 +52,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
   }
 
   const [showComments, setShowComments] = useState(false);
+  const [replyTo, setReplyTo] = useState<string | null>(null);
   const [comments, setComments] = useState<PostComment[] | null>(null);
   const [, startComments] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
@@ -75,6 +76,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
   useEffect(() => {
     if (cState?.ok) {
       formRef.current?.reset();
+      setReplyTo(null);
       loadComments();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -239,21 +241,73 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
               <p className="text-xs font-600 text-ink/40">Sé el primero en comentar.</p>
             ) : (
               <ul className="flex flex-col gap-3">
-                {comments.map((c) => (
-                  <li key={c.id} className="flex items-start gap-2.5">
-                    <Avatar name={c.authorName} color="sky" size="sm" />
-                    <div className="min-w-0 flex-1 rounded-2xl bg-mist px-3 py-2">
-                      <p className="text-xs font-700 text-ink">
-                        {c.authorName}
-                        {c.authorRole ? (
-                          <span className="font-500 text-ink/45">
-                            {" "}· {ROLE_LABELS[c.authorRole as RoleKey] ?? c.authorRole}
-                          </span>
-                        ) : null}
-                      </p>
-                      <p className="text-sm font-500 text-ink/80">{c.body}</p>
-                      <p className="mt-0.5 text-[11px] font-500 text-ink/35">{c.at}</p>
+                {comments.filter((c) => !c.parentId).map((c) => (
+                  <li key={c.id} className="flex flex-col gap-2">
+                    <div className="flex items-start gap-2.5">
+                      <Avatar name={c.authorName} color="sky" size="sm" />
+                      <div className="min-w-0 flex-1">
+                        <div className="rounded-2xl bg-mist px-3 py-2">
+                          <p className="text-xs font-700 text-ink">
+                            {c.authorName}
+                            {c.authorRole ? (
+                              <span className="font-500 text-ink/45">
+                                {" "}· {ROLE_LABELS[c.authorRole as RoleKey] ?? c.authorRole}
+                              </span>
+                            ) : null}
+                          </p>
+                          <p className="text-sm font-500 text-ink/80">{c.body}</p>
+                          <p className="mt-0.5 text-[11px] font-500 text-ink/35">{c.at}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setReplyTo((v) => (v === c.id ? null : c.id))}
+                          className="mt-1 pl-3 text-[11px] font-700 text-brand transition-colors hover:text-ink"
+                        >
+                          Responder
+                        </button>
+                      </div>
                     </div>
+
+                    {/* Respuestas (un nivel) */}
+                    {comments.filter((r) => r.parentId === c.id).map((r) => (
+                      <div key={r.id} className="ml-9 flex items-start gap-2.5">
+                        <Avatar name={r.authorName} color="news" size="sm" />
+                        <div className="min-w-0 flex-1 rounded-2xl bg-mist/70 px-3 py-2">
+                          <p className="text-xs font-700 text-ink">
+                            {r.authorName}
+                            {r.authorRole ? (
+                              <span className="font-500 text-ink/45">
+                                {" "}· {ROLE_LABELS[r.authorRole as RoleKey] ?? r.authorRole}
+                              </span>
+                            ) : null}
+                          </p>
+                          <p className="text-sm font-500 text-ink/80">{r.body}</p>
+                          <p className="mt-0.5 text-[11px] font-500 text-ink/35">{r.at}</p>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Caja de respuesta */}
+                    {replyTo === c.id ? (
+                      <form action={commentAction} className="ml-9 flex items-center gap-2">
+                        <input type="hidden" name="postId" value={post.id} />
+                        <input type="hidden" name="parentId" value={c.id} />
+                        <input
+                          name="body"
+                          required
+                          autoFocus
+                          placeholder={`Responde a ${c.authorName}…`}
+                          className="min-w-0 flex-1 rounded-full bg-mist px-4 py-2 text-sm font-500 text-ink outline-none placeholder:text-ink/40 focus:ring-2 focus:ring-brand/30"
+                        />
+                        <button
+                          type="submit"
+                          className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-ink text-white transition-colors hover:bg-navy-deep"
+                          aria-label="Responder"
+                        >
+                          <Icon name="Send" className="h-4 w-4" />
+                        </button>
+                      </form>
+                    ) : null}
                   </li>
                 ))}
               </ul>
