@@ -163,19 +163,21 @@ export default function LabHome() {
           <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f, i) => (
               <Reveal key={f.title} delay={i * 70}>
-                <div className="h-full overflow-hidden rounded-3xl border border-ink/10 bg-white shadow-card transition-all hover:border-brand/30 hover:shadow-pop">
-                  <div className="aspect-[4/3] w-full overflow-hidden border-b border-ink/10 bg-mist">
-                    {f.img ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={f.img} alt={`Pantalla de ${f.title}`} className="h-full w-full object-cover object-top" />
-                    ) : (
-                      <div className="relative grid h-full w-full place-items-center bg-gradient-to-br from-navy via-ink to-brand">
-                        <Icon name={f.icon ?? "Sparkles"} className="h-12 w-12 text-white/30" />
-                        <span className="absolute bottom-3 right-3 rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-700 text-white/80 backdrop-blur">Foto</span>
-                      </div>
-                    )}
+                <div className="h-full rounded-3xl border border-ink/10 bg-white shadow-card transition-all hover:border-brand/30 hover:shadow-pop">
+                  <div className="p-3">
+                    <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-mist ring-1 ring-ink/5">
+                      {f.img ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={f.img} alt={`Pantalla de ${f.title}`} className="h-full w-full object-cover object-top" />
+                      ) : (
+                        <div className="relative grid h-full w-full place-items-center bg-gradient-to-br from-navy via-ink to-brand">
+                          <Icon name={f.icon ?? "Sparkles"} className="h-12 w-12 text-white/30" />
+                          <span className="absolute bottom-3 right-3 rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-700 text-white/80 backdrop-blur">Foto</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="p-6">
+                  <div className="px-6 pb-6 pt-1">
                     <h3 className="text-lg font-700 text-ink">{f.title}</h3>
                     <p className="mt-2 text-sm font-400 leading-relaxed text-ink/60">{f.text}</p>
                   </div>
