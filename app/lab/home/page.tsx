@@ -69,7 +69,7 @@ const FEATURES: { img?: string; icon?: string; title: string; text: string }[] =
   { img: "/features/6-documentos.webp", title: "Documentos", text: "Circulares, reglamentos y archivos del colegio, ordenados y a un clic." },
   { img: "/features/7-transporte.webp", title: "Transporte", text: "Sigue el transporte escolar en el mapa, con avisos de subida y bajada." },
   { img: "/features/8-traduccion.webp", title: "Traducción", text: "Cada familia lee los avisos en su idioma, con un solo toque." },
-  { icon: "CreditCard", title: "Pagos", text: "El comprobante de la cuota de cada mes, y las familias suben su pago." },
+  { img: "/features/9-pagos.webp", title: "Pagos", text: "El comprobante de la cuota de cada mes, y las familias suben su pago." },
 ];
 const PLANES = [
   { name: "Demo", price: "$0", per: "para probar", feats: ["Hasta 1 salón", "Novedades y calendario", "Soporte por correo"] },
