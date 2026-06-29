@@ -7,8 +7,9 @@ import { useLocale } from "@/components/locale-context";
 import { toggleTask } from "@/app/(app)/feed/actions";
 import type { Post } from "@/lib/domain";
 
-/** Lista de tareas asignadas al usuario (firmar / entregar / completar). */
-export function TasksView({ tasks }: { tasks: Post[] }) {
+/** Lista de tareas tipo novedad. Las familias las cumplen (checkbox); el equipo
+ *  (docente/dirección) solo las ve y abre su detalle. */
+export function TasksView({ tasks, staff = false }: { tasks: Post[]; staff?: boolean }) {
   const { t, locale } = useLocale();
   const [done, setDone] = useState<Set<string>>(
     () => new Set(tasks.filter((p) => p.taskDone).map((p) => p.id)),
@@ -49,18 +50,25 @@ export function TasksView({ tasks }: { tasks: Post[] }) {
     const isDone = done.has(p.id);
     return (
       <div className="flex items-center gap-3 rounded-[1.25rem] border border-ink/5 bg-white p-3 shadow-card">
-        <button
-          type="button"
-          onClick={() => toggle(p.id)}
-          aria-pressed={isDone}
-          className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg border-2 transition-colors ${
-            isDone ? "border-brand bg-brand text-white" : "border-ink/20 text-transparent hover:border-brand"
-          }`}
-        >
-          <Icon name="Check" className="h-4 w-4" />
-        </button>
+        {staff ? (
+          // El equipo no "cumple" la tarea: solo un ícono, sin checkbox.
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-cta/10 text-cta">
+            <Icon name="ClipboardList" className="h-4 w-4" />
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={() => toggle(p.id)}
+            aria-pressed={isDone}
+            className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg border-2 transition-colors ${
+              isDone ? "border-brand bg-brand text-white" : "border-ink/20 text-transparent hover:border-brand"
+            }`}
+          >
+            <Icon name="Check" className="h-4 w-4" />
+          </button>
+        )}
         <Link href={`/aviso/${p.id}`} className="min-w-0 flex-1">
-          <p className={`truncate text-sm font-700 ${isDone ? "text-ink/40 line-through" : "text-ink"}`}>
+          <p className={`truncate text-sm font-700 ${!staff && isDone ? "text-ink/40 line-through" : "text-ink"}`}>
             {p.title || p.body}
           </p>
           <p className="truncate text-xs font-600 text-ink/50">
@@ -69,6 +77,17 @@ export function TasksView({ tasks }: { tasks: Post[] }) {
           </p>
         </Link>
         <Icon name="ChevronRight" className="h-4 w-4 shrink-0 text-ink/30" />
+      </div>
+    );
+  }
+
+  // El equipo ve todas las tareas en una sola lista (no las cumple).
+  if (staff) {
+    return (
+      <div className="flex flex-col gap-2.5">
+        {tasks.map((p) => (
+          <Card key={p.id} p={p} />
+        ))}
       </div>
     );
   }

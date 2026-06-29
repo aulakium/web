@@ -118,6 +118,7 @@ export async function getFeed(
       },
       audience: { target, label: audienceLabel(r.audience_target, r.audience_label) },
       publishedAt: relativeLabel(r.published_at),
+      publishedAtISO: r.published_at ?? undefined,
       title: r.title ?? "",
       body: r.body ?? "",
       image: r.cover_url ?? undefined,

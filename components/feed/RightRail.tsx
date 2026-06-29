@@ -13,6 +13,8 @@ export interface RailEvent {
   title: string;
   time: string;
   accent: AccentColor;
+  /** true si viene de un aviso publicado → tiene detalle en /aviso/[id]. */
+  isPost?: boolean;
 }
 export interface RailTask {
   id: string;
@@ -20,6 +22,7 @@ export interface RailTask {
   due: string;
   group: string;
   done: boolean;
+  isPost?: boolean;
 }
 
 export function RightRail({
@@ -34,54 +37,32 @@ export function RightRail({
   const railEvents = events && events.length > 0 ? events : DEMO_EVENTS;
   const railTasks = tasks && tasks.length > 0 ? tasks : DEMO_TASKS;
 
-  const momentos = [
-    { label: "Feria de ciencias", src: "/momentos/feria-ciencias.webp" },
-    { label: "Día del deporte", src: "/momentos/dia-deporte.webp" },
-    { label: "Muestra de arte", src: "/momentos/muestra-arte.webp" },
-    { label: "Acto escolar", src: "/momentos/acto-escolar.webp" },
-  ];
+  // Un evento/tarea individual lleva a su detalle (/aviso/[id]) si es un aviso
+  // publicado; si no (datos demo), al menos lleva a la sección.
+  const eventHref = (e: { id: string; isPost?: boolean }) =>
+    e.isPost ? `/aviso/${e.id}` : "/calendar";
+  const taskHref = (tk: { id: string; isPost?: boolean }) =>
+    tk.isPost ? `/aviso/${tk.id}` : "/tasks";
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Momentos (galería de imágenes de la comunidad) */}
-      <section className="rounded-[1.75rem] border border-ink/5 bg-white p-5 shadow-card">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-display text-base font-700 text-ink">{t("rail.moments")}</h2>
-        </div>
-        <div className="grid grid-cols-2 gap-2.5">
-          {momentos.map((m) => (
-            <div
-              key={m.label}
-              className="relative aspect-[4/3] overflow-hidden rounded-2xl text-left"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={m.src}
-                alt={m.label}
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-              <span className="absolute inset-0 bg-gradient-to-t from-ink/70 to-transparent" />
-              <span className="absolute inset-x-2 bottom-2 truncate text-[11px] font-700 text-white">
-                {m.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* Próximos eventos */}
       <section className="rounded-[1.75rem] border border-ink/5 bg-white p-5 shadow-card">
-        <div className="mb-3 flex items-center justify-between">
+        {/* El encabezado lleva a la página de calendario. */}
+        <Link
+          href="/calendar"
+          className="mb-3 flex items-center justify-between rounded-xl -mx-1 px-1 py-0.5 transition-colors hover:bg-mist"
+        >
           <h2 className="font-display text-base font-700 text-ink">
             {t("rail.events")}
           </h2>
           <Icon name="CalendarDays" className="h-5 w-5 text-brand" />
-        </div>
+        </Link>
         <ul className="flex flex-col gap-1">
           {railEvents.map((e) => (
             <li key={e.id}>
               <Link
-                href="/calendar"
+                href={eventHref(e)}
                 className="flex w-full items-center gap-3 rounded-2xl p-2 text-left transition-colors hover:bg-mist"
               >
                 <span
@@ -117,16 +98,20 @@ export function RightRail({
 
       {/* Tareas pendientes */}
       <section className="rounded-[1.75rem] border border-ink/5 bg-white p-5 shadow-card">
-        <div className="mb-3 flex items-center justify-between">
+        {/* El encabezado lleva a la página de tareas. */}
+        <Link
+          href="/tasks"
+          className="mb-3 flex items-center justify-between rounded-xl -mx-1 px-1 py-0.5 transition-colors hover:bg-mist"
+        >
           <h2 className="font-display text-base font-700 text-ink">
             {t("rail.tasks")}
           </h2>
           <Icon name="ClipboardList" className="h-5 w-5 text-cta" />
-        </div>
+        </Link>
         <ul className="flex flex-col gap-2">
           {railTasks.map((task) => (
             <li key={task.id}>
-              <Link href="/tasks" className="flex items-start gap-3 rounded-2xl p-1.5 transition-colors hover:bg-mist">
+              <Link href={taskHref(task)} className="flex items-start gap-3 rounded-2xl p-1.5 transition-colors hover:bg-mist">
                 <span
                   className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md border-2 ${
                     task.done

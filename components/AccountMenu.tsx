@@ -19,6 +19,8 @@ export function AccountMenu() {
   const { t } = useLocale();
   const me = useIdentity();
   const [open, setOpen] = useState(false);
+  // Rol traducido según idioma (no el label baked en español del server).
+  const roleText = me?.roleKey ? t(`role.${me.roleKey}`) : t("account.member");
 
   const isStaff = !!me && (me.isAdmin || me.roleKey === "teacher");
   // TODAS las secciones (no solo las que faltan en la barra móvil): el menú completo.
@@ -39,7 +41,7 @@ export function AccountMenu() {
         <Avatar name={me?.name ?? DEMO_USER.name} color="navy" />
         <span className="hidden leading-tight lg:block">
           <span className="block text-sm font-700 text-ink">{me?.name ?? DEMO_USER.name}</span>
-          <span className="block text-xs font-500 text-ink/50">{me?.roleLabel ?? t("account.member")}</span>
+          <span className="block text-xs font-500 text-ink/50">{roleText}</span>
         </span>
         <Icon name="ChevronDown" className="hidden h-4 w-4 text-ink/40 lg:block" />
       </button>
@@ -57,7 +59,7 @@ export function AccountMenu() {
               <div className="min-w-0 leading-tight">
                 <p className="truncate text-sm font-700 text-ink">{me?.name ?? DEMO_USER.name}</p>
                 <p className="truncate text-xs font-600 text-ink/50">
-                  {me?.roleLabel ?? t("account.member")}
+                  {roleText}
                 </p>
               </div>
             </div>

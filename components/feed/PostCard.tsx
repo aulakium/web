@@ -6,7 +6,7 @@ import { Avatar } from "../Avatar";
 import { SubmitButton } from "../SubmitButton";
 import { useLocale } from "../locale-context";
 import { useIdentity } from "../identity-context";
-import { ROLE_LABELS, type Post, type RoleKey } from "@/lib/domain";
+import { type Post } from "@/lib/domain";
 import { type AccentColor } from "../colors";
 import {
   toggleLike,
@@ -22,9 +22,38 @@ import {
 } from "@/app/(app)/feed/actions";
 import { PollView } from "./PollView";
 
-export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
+/** Tiempo relativo localizado ("hace 2 h" / "2 h ago" / "há 2 h") desde el timestamp crudo. */
+function relativeTime(iso: string | undefined, locale: string, fallback: string): string {
+  if (!iso) return fallback;
+  const ms = Date.now() - new Date(iso).getTime();
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  const min = Math.round(ms / 60000);
+  if (Math.abs(min) < 60) return rtf.format(-min, "minute");
+  const h = Math.round(min / 60);
+  if (Math.abs(h) < 24) return rtf.format(-h, "hour");
+  const d = Math.round(h / 24);
+  if (Math.abs(d) < 7) return rtf.format(-d, "day");
+  return new Date(iso).toLocaleDateString(locale, { day: "numeric", month: "short" });
+}
+
+export function PostCard({
+  post,
+  index = 0,
+  onBookmarkChange,
+}: {
+  post: Post;
+  index?: number;
+  /** Avisa al feed cuando cambia "guardado", para que el filtro Guardados use el estado real. */
+  onBookmarkChange?: (postId: string, saved: boolean) => void;
+}) {
   const { t, locale } = useLocale();
   const me = useIdentity();
+  // Traduce un rol; si la clave no existe, muestra el valor crudo.
+  const roleName = (rk?: string | null) => {
+    if (!rk) return "";
+    const label = t(`role.${rk}`);
+    return label === `role.${rk}` ? rk : label;
+  };
   const [liked, setLiked] = useState(post.liked);
   const [, startLike] = useTransition();
   const [saved, setSaved] = useState(post.bookmarked);
@@ -120,7 +149,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
           <div className="min-w-0 flex-1 leading-tight">
             <p className="truncate text-sm font-700 text-ink">{post.author.name}</p>
             <p className="truncate text-xs font-600 text-ink/50">
-              {ROLE_LABELS[post.author.role]} · {post.publishedAt}
+              {t(`role.${post.author.role}`)} · {relativeTime(post.publishedAtISO, locale, post.publishedAt)}
             </p>
           </div>
           {post.pinned ? (
@@ -390,7 +419,9 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
           <button
             type="button"
             onClick={() => {
-              setSaved((v) => !v);
+              const next = !saved;
+              setSaved(next);
+              onBookmarkChange?.(post.id, next);
               startSave(() => toggleBookmark(post.id));
             }}
             className={`ml-auto grid h-10 w-10 place-items-center rounded-xl transition-colors ${
@@ -422,7 +453,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
                             {c.authorName}
                             {c.authorRole ? (
                               <span className="font-500 text-ink/45">
-                                {" "}· {ROLE_LABELS[c.authorRole as RoleKey] ?? c.authorRole}
+                                {" "}· {roleName(c.authorRole)}
                               </span>
                             ) : null}
                           </p>
@@ -448,7 +479,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
                             {r.authorName}
                             {r.authorRole ? (
                               <span className="font-500 text-ink/45">
-                                {" "}· {ROLE_LABELS[r.authorRole as RoleKey] ?? r.authorRole}
+                                {" "}· {roleName(r.authorRole)}
                               </span>
                             ) : null}
                           </p>

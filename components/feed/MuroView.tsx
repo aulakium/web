@@ -22,7 +22,7 @@ export function MuroView({
   canPublish?: boolean;
   audiences?: AudienceOptions;
 }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [filter, setFilter] = useState<WallFilter>("all");
   // Paginación: arrancamos con la primera página y vamos sumando con "Ver más".
   const [posts, setPosts] = useState<Post[]>(initialPosts);
@@ -44,6 +44,12 @@ export function MuroView({
     filter === "unread" ? p.unread : filter === "saved" ? p.bookmarked : true,
   );
 
+  // Mantiene "bookmarked" en sincronía con la acción optimista de cada tarjeta,
+  // para que el filtro "Guardados" muestre lo recién guardado sin recargar.
+  function handleBookmarkChange(postId: string, saved: boolean) {
+    setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, bookmarked: saved } : p)));
+  }
+
   // Rail: próximos eventos (invitaciones) y mis tareas pendientes (sin completar).
   const railEvents: RailEvent[] = posts
     .filter((p) => p.kind === "event" && p.eventAt)
@@ -53,11 +59,12 @@ export function MuroView({
       const d = new Date(p.eventAt!);
       return {
         id: p.id,
-        day: String(d.getDate()),
-        month: d.toLocaleDateString("es-MX", { month: "short" }).replace(".", "").toUpperCase(),
+        day: d.toLocaleDateString(locale, { day: "numeric", timeZone: "UTC" }),
+        month: d.toLocaleDateString(locale, { month: "short", timeZone: "UTC" }).replace(".", "").toUpperCase(),
         title: p.title || p.body,
-        time: d.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" }),
+        time: d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit", timeZone: "UTC" }),
         accent: "brand",
+        isPost: true,
       };
     });
   const railTasks: RailTask[] = posts
@@ -67,14 +74,15 @@ export function MuroView({
       id: p.id,
       title: p.title || p.body,
       due: p.taskDue
-        ? new Date(p.taskDue).toLocaleDateString("es-MX", {
+        ? new Date(p.taskDue).toLocaleDateString(locale, {
             day: "numeric",
             month: "short",
             timeZone: "UTC",
           })
-        : "Sin fecha",
+        : t("rail.noDate"),
       group: p.audience.label,
       done: false,
+      isPost: true,
     }));
 
   return (
@@ -90,17 +98,19 @@ export function MuroView({
           <Composer canPublish={canPublish} audiences={audiences} />
           <Filters active={filter} onChange={setFilter} />
           {shown.length > 0 ? (
-            shown.map((post, i) => <PostCard key={post.id} post={post} index={i} />)
+            shown.map((post, i) => (
+              <PostCard key={post.id} post={post} index={i} onBookmarkChange={handleBookmarkChange} />
+            ))
           ) : (
             <div className="rounded-[1.5rem] border border-dashed border-ink/15 bg-white px-6 py-12 text-center">
               <span className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-mist text-ink/40">
                 <Icon name="Megaphone" className="h-6 w-6" />
               </span>
               <p className="font-display text-base font-700 text-ink">
-                Todavía no hay avisos para ti
+                {t("wall.empty.title")}
               </p>
               <p className="mt-1 text-sm font-500 text-ink/55">
-                Cuando el colegio publique algo para tu comunidad o tus grupos, aparece aquí.
+                {t("wall.empty.body")}
               </p>
             </div>
           )}
@@ -113,11 +123,11 @@ export function MuroView({
               className="mx-auto flex items-center gap-2 rounded-full border border-ink/10 bg-white px-5 py-2.5 text-sm font-700 text-ink/70 shadow-card transition-colors hover:text-ink disabled:opacity-60"
             >
               {loadingMore ? (
-                "Cargando…"
+                t("common.loading")
               ) : (
                 <>
                   <Icon name="ChevronDown" className="h-4 w-4" />
-                  Ver más novedades
+                  {t("wall.loadMore")}
                 </>
               )}
             </button>

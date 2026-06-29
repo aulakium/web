@@ -64,7 +64,8 @@ export interface Post {
   id: string;
   author: Author;
   audience: Audience;
-  publishedAt: string; // etiqueta relativa para la demo
+  publishedAt: string; // etiqueta relativa (fallback para datos demo)
+  publishedAtISO?: string; // timestamp crudo; el cliente formatea el relativo según idioma
   title: string;
   body: string;
   image?: string; // foto de portada (subida por quien publica); si falta, se usa el gradiente

@@ -67,7 +67,7 @@ export function ConversationsView({
           className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-cta px-4 py-2.5 text-sm font-700 text-white shadow-soft transition-colors hover:bg-cta-deep"
         >
           <Icon name="Plus" className="h-4 w-4" />
-          Escribir
+          {t("conv.compose")}
         </button>
       ) : null}
     </div>
@@ -76,9 +76,9 @@ export function ConversationsView({
         <span className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-mist text-ink/40">
           <Icon name="MessagesSquare" className="h-6 w-6" />
         </span>
-        <p className="font-display text-base font-700 text-ink">No tienes conversaciones</p>
+        <p className="font-display text-base font-700 text-ink">{t("conv.empty.title")}</p>
         <p className="mt-1 text-sm font-500 text-ink/55">
-          Cuando te sumen a un hilo con el colegio o las familias, aparece aquí.
+          {t("conv.empty.body")}
         </p>
       </div>
     ) : (
@@ -117,9 +117,14 @@ export function ConversationsView({
         </ul>
       </div>
 
-      {/* HILO */}
+      {/* HILO — en móvil es una capa a pantalla completa (así el composer queda
+          siempre pegado abajo, sin pelear con la barra de navegación). */}
       <div
-        className={`${mobileOpen ? "flex" : "hidden lg:flex"} min-h-[70dvh] flex-col overflow-hidden rounded-[1.75rem] border border-ink/5 bg-white shadow-card lg:min-h-0`}
+        className={`${
+          mobileOpen
+            ? "fixed inset-0 z-40 flex rounded-none border-0"
+            : "hidden"
+        } min-h-0 flex-col overflow-hidden bg-white lg:relative lg:z-auto lg:flex lg:rounded-[1.75rem] lg:border lg:border-ink/5 lg:shadow-card`}
       >
         {selected ? (
           <Thread
@@ -262,8 +267,8 @@ function Thread({
           type="button"
           onClick={toggleArchive}
           disabled={pending}
-          title={archived ? "Desarchivar" : "Archivar"}
-          aria-label={archived ? "Desarchivar conversación" : "Archivar conversación"}
+          title={archived ? t("conv.unarchive") : t("conv.archive")}
+          aria-label={archived ? t("conv.unarchiveConv") : t("conv.archiveConv")}
           className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-ink/50 transition-colors hover:bg-mist hover:text-ink disabled:opacity-50"
         >
           <Icon name={archived ? "ArchiveRestore" : "Archive"} className="h-5 w-5" />
@@ -367,6 +372,7 @@ function ComposeModal({
   onClose: () => void;
   onCreated: (conversationId: string) => void;
 }) {
+  const { t } = useLocale();
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [picked, setPicked] = useState<Recipient | null>(null);
@@ -411,19 +417,19 @@ function ComposeModal({
             <button
               type="button"
               onClick={() => setPicked(null)}
-              aria-label="Volver"
+              aria-label={t("conv.back")}
               className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-ink/60 transition-colors hover:bg-mist"
             >
               <Icon name="ChevronLeft" className="h-5 w-5" />
             </button>
           ) : null}
           <h2 className="flex-1 font-display text-lg font-700 text-ink">
-            {picked ? "Nuevo mensaje" : "¿A quién le escribes?"}
+            {picked ? t("conv.newTitle") : t("conv.toWhom")}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Cerrar"
+            aria-label={t("conv.close")}
             className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-ink/60 transition-colors hover:bg-mist"
           >
             <Icon name="X" className="h-5 w-5" />
@@ -446,13 +452,13 @@ function ComposeModal({
             <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-4">
               <input
                 name="subject"
-                placeholder="Asunto (opcional)"
+                placeholder={t("conv.subjectPh")}
                 className="rounded-2xl bg-mist px-4 py-3 text-sm font-600 text-ink outline-none placeholder:text-ink/40 focus:ring-2 focus:ring-brand/30"
               />
               <textarea
                 name="body"
                 rows={5}
-                placeholder="Escribe tu mensaje…"
+                placeholder={t("conv.messagePh")}
                 className="min-h-[7rem] flex-1 resize-none rounded-2xl bg-mist px-4 py-3 text-sm font-600 text-ink outline-none placeholder:text-ink/40 focus:ring-2 focus:ring-brand/30"
               />
               {state?.error ? (
@@ -465,7 +471,7 @@ function ComposeModal({
                 disabled={pending}
                 className="w-full rounded-2xl bg-cta px-4 py-3 text-sm font-700 text-white shadow-soft transition-colors hover:bg-cta-deep disabled:opacity-50"
               >
-                {pending ? "Enviando…" : "Enviar mensaje"}
+                {pending ? t("conv.sending") : t("conv.sendMessage")}
               </button>
             </div>
           </form>
@@ -478,7 +484,7 @@ function ComposeModal({
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Buscar persona…"
+                  placeholder={t("conv.searchPerson")}
                   className="min-w-0 flex-1 bg-transparent py-2.5 text-sm font-600 text-ink outline-none placeholder:text-ink/40"
                 />
               </div>
@@ -486,7 +492,7 @@ function ComposeModal({
             <div className="min-h-0 flex-1 overflow-y-auto p-2">
               {filtered.length === 0 ? (
                 <p className="px-3 py-8 text-center text-sm font-600 text-ink/45">
-                  No encontramos a nadie con ese nombre.
+                  {t("conv.noPerson")}
                 </p>
               ) : (
                 filtered.map((g) => (
