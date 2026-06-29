@@ -118,6 +118,7 @@ export interface School {
 
 export interface EventItem {
   id: string;
+  weekday?: string; // "LUN"
   day: string; // "12"
   month: string; // "JUN"
   title: string;

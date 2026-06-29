@@ -102,6 +102,7 @@ export function MuroView({
       const d = new Date(p.eventAt!);
       return {
         id: p.id,
+        weekday: d.toLocaleDateString(locale, { weekday: "short", timeZone: "UTC" }).replace(".", "").slice(0, 3).toUpperCase(),
         day: d.toLocaleDateString(locale, { day: "numeric", timeZone: "UTC" }),
         month: d.toLocaleDateString(locale, { month: "short", timeZone: "UTC" }).replace(".", "").toUpperCase(),
         title: p.title || p.body,

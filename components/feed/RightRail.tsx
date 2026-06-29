@@ -8,6 +8,7 @@ import { DEMO_EVENTS, DEMO_TASKS } from "@/lib/domain";
 
 export interface RailEvent {
   id: string;
+  weekday?: string; // día de la semana en 3 letras (LUN, MAR…)
   day: string;
   month: string;
   title: string;
@@ -66,14 +67,15 @@ export function RightRail({
                 className="flex w-full items-center gap-3 rounded-2xl p-2 text-left transition-colors hover:bg-mist"
               >
                 <span
-                  className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl leading-none ${
+                  className={`flex h-14 w-12 shrink-0 flex-col items-center justify-center rounded-2xl leading-none ${
                     ACCENT_ON[e.accent as AccentColor]
                   }`}
                 >
-                  <span className="font-display text-lg font-700">{e.day}</span>
-                  <span className="text-[9px] font-700 opacity-80">
-                    {e.month}
-                  </span>
+                  {e.weekday ? (
+                    <span className="text-[9px] font-700 uppercase opacity-80">{e.weekday}</span>
+                  ) : null}
+                  <span className="my-0.5 font-display text-lg font-700">{e.day}</span>
+                  <span className="text-[9px] font-700 uppercase opacity-80">{e.month}</span>
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-700 text-ink">

@@ -95,6 +95,12 @@ export function HomeView({
     new Date(e.year, e.month, e.day)
       .toLocaleDateString(locale, { month: "short" })
       .replace(".", "");
+  const weekdayAbbr = (e: { year: number; month: number; day: number }) =>
+    new Date(e.year, e.month, e.day)
+      .toLocaleDateString(locale, { weekday: "short" })
+      .replace(".", "")
+      .slice(0, 3)
+      .toUpperCase();
 
   return (
     <div className="flex flex-col gap-6">
@@ -165,11 +171,10 @@ export function HomeView({
               const cls = `flex items-center gap-3 rounded-2xl border border-l-4 border-ink/5 bg-white p-3 ${ACCENT_BORDER_L[color]}`;
               const inner = (
                 <>
-                  <span className="flex w-11 shrink-0 flex-col items-center leading-none">
-                    <span className="font-display text-lg font-700 text-ink">{e.day}</span>
-                    <span className="text-[10px] font-700 uppercase text-ink/45">
-                      {monthAbbr(e)}
-                    </span>
+                  <span className="flex w-11 shrink-0 flex-col items-center justify-center leading-none">
+                    <span className="text-[10px] font-700 uppercase text-ink/45">{weekdayAbbr(e)}</span>
+                    <span className="my-0.5 font-display text-lg font-700 text-ink">{e.day}</span>
+                    <span className="text-[10px] font-700 uppercase text-ink/45">{monthAbbr(e)}</span>
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-700 text-ink">{e.title}</span>
