@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
 import { Icon } from "../icons";
 import { Avatar } from "../Avatar";
 import { SubmitButton } from "../SubmitButton";
@@ -66,6 +67,14 @@ export function PostCard({
   const [saved, setSaved] = useState(post.bookmarked);
   const [, startSave] = useTransition();
   const [expanded, setExpanded] = useState(false);
+  // Imágenes del aviso (portada + adjuntos imagen) → miniatura a la derecha y
+  // lightbox propio (sin abrir la URL de Supabase en otra pestaña).
+  const images: string[] = [
+    ...(post.image ? [post.image] : []),
+    ...((post.attachments ?? []).filter((a) => a.isImage).map((a) => a.url)),
+  ];
+  const fileAttachments = (post.attachments ?? []).filter((a) => !a.isImage);
+  const [lightbox, setLightbox] = useState<number | null>(null);
   const [readDone, setReadDone] = useState(false);
   // "Ver traducción": solo cuando el idioma de la interfaz no es español.
   const canTranslate = !locale.startsWith("es");
@@ -189,16 +198,8 @@ export function PostCard({
           {post.audience.label}
         </span>
 
-        {/* Contenido: imagen cuadrada (opcional) al costado del texto */}
-        <div className={`mt-3 ${post.image ? "flex gap-4" : ""}`}>
-          {post.image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={post.image}
-              alt=""
-              className="h-28 w-28 shrink-0 rounded-2xl object-cover sm:h-32 sm:w-32"
-            />
-          ) : null}
+        {/* Contenido: texto a la izquierda + imagen (opcional) al margen derecho */}
+        <div className={`mt-3 ${images.length ? "flex gap-4" : ""}`}>
           <div
             className={`min-w-0 flex-1 ${expanded ? "" : "cursor-pointer"}`}
             onClick={() => {
@@ -248,6 +249,28 @@ export function PostCard({
               </div>
             ) : null}
           </div>
+
+          {/* Imagen al margen derecho → abre el lightbox propio */}
+          {images.length ? (
+            <button
+              type="button"
+              onClick={() => setLightbox(0)}
+              className="group relative h-28 w-28 shrink-0 overflow-hidden rounded-2xl sm:h-32 sm:w-32"
+              aria-label="Ver imagen"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={images[0]}
+                alt=""
+                className="h-full w-full object-cover transition-transform group-hover:scale-105"
+              />
+              {images.length > 1 ? (
+                <span className="absolute bottom-1.5 right-1.5 rounded-full bg-ink/70 px-2 py-0.5 text-[11px] font-700 text-white">
+                  +{images.length - 1}
+                </span>
+              ) : null}
+            </button>
+          ) : null}
         </div>
 
         {/* Invitación: lugar + fecha del evento */}
@@ -334,48 +357,25 @@ export function PostCard({
           </div>
         ) : null}
 
-        {/* Adjuntos: imágenes en miniatura + archivos descargables */}
-        {post.attachments && post.attachments.length > 0 ? (
+        {/* Adjuntos no-imagen: archivos descargables. Las imágenes se muestran
+            arriba a la derecha y se abren en el lightbox propio. */}
+        {fileAttachments.length > 0 ? (
           <div className="mt-3 flex flex-col gap-2">
-            {post.attachments.some((a) => a.isImage) ? (
-              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-                {post.attachments
-                  .filter((a) => a.isImage)
-                  .map((a, i) => (
-                    <a
-                      key={i}
-                      href={a.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group relative aspect-square overflow-hidden rounded-xl"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={a.url}
-                        alt={a.name}
-                        className="absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-105"
-                      />
-                    </a>
-                  ))}
-              </div>
-            ) : null}
-            {post.attachments
-              .filter((a) => !a.isImage)
-              .map((a, i) => (
-                <a
-                  key={i}
-                  href={a.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2.5 rounded-xl border border-ink/8 bg-mist/50 px-3 py-2 transition-colors hover:bg-mist"
-                >
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white text-brand">
-                    <Icon name="FileText" className="h-4 w-4" />
-                  </span>
-                  <span className="min-w-0 flex-1 truncate text-sm font-700 text-ink">{a.name}</span>
-                  <Icon name="ArrowRight" className="h-4 w-4 shrink-0 text-ink/30" />
-                </a>
-              ))}
+            {fileAttachments.map((a, i) => (
+              <a
+                key={i}
+                href={a.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 rounded-xl border border-ink/8 bg-mist/50 px-3 py-2 transition-colors hover:bg-mist"
+              >
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white text-brand">
+                  <Icon name="FileText" className="h-4 w-4" />
+                </span>
+                <span className="min-w-0 flex-1 truncate text-sm font-700 text-ink">{a.name}</span>
+                <Icon name="ArrowRight" className="h-4 w-4 shrink-0 text-ink/30" />
+              </a>
+            ))}
           </div>
         ) : null}
 
@@ -555,6 +555,60 @@ export function PostCard({
           </div>
         ) : null}
       </div>
+
+      {/* Lightbox propio: muestra la imagen dentro de Colequium (sin abrir Supabase).
+          Se monta en <body> (portal) para no quedar atrapado por el transform de la tarjeta. */}
+      {lightbox !== null && images[lightbox] && typeof document !== "undefined"
+        ? createPortal(
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/90 p-4"
+          onClick={() => setLightbox(null)}
+        >
+          <button
+            type="button"
+            aria-label="Cerrar"
+            onClick={() => setLightbox(null)}
+            className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+          >
+            <Icon name="X" className="h-5 w-5" />
+          </button>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={images[lightbox]}
+            alt=""
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-[85vh] max-w-full rounded-2xl object-contain"
+          />
+          {images.length > 1 ? (
+            <>
+              <button
+                type="button"
+                aria-label="Anterior"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightbox((i) => ((i ?? 0) - 1 + images.length) % images.length);
+                }}
+                className="absolute left-4 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+              >
+                <Icon name="ChevronLeft" className="h-6 w-6" />
+              </button>
+              <button
+                type="button"
+                aria-label="Siguiente"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightbox((i) => ((i ?? 0) + 1) % images.length);
+                }}
+                className="absolute right-4 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+              >
+                <Icon name="ChevronRight" className="h-6 w-6" />
+              </button>
+            </>
+          ) : null}
+        </div>,
+            document.body,
+          )
+        : null}
     </article>
   );
 }

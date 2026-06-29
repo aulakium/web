@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Composer } from "@/components/feed/Composer";
 import { Filters, type WallFilter } from "@/components/feed/Filters";
 import { PostCard } from "@/components/feed/PostCard";
 import { RightRail, type RailEvent, type RailTask } from "@/components/feed/RightRail";
 import { Icon } from "@/components/icons";
 import { useLocale } from "@/components/locale-context";
+import { createClient } from "@/lib/supabase/client";
 import type { Post } from "@/lib/domain";
 import type { AudienceOptions } from "@/lib/audiences";
 import { getMorePosts } from "@/app/(app)/feed/actions";
@@ -17,17 +19,58 @@ export function MuroView({
   posts: initialPosts,
   canPublish = false,
   audiences,
+  communityId = null,
 }: {
   posts: Post[];
   canPublish?: boolean;
   audiences?: AudienceOptions;
+  communityId?: string | null;
 }) {
   const { t, locale } = useLocale();
+  const router = useRouter();
   const [filter, setFilter] = useState<WallFilter>("all");
   // Paginación: arrancamos con la primera página y vamos sumando con "Ver más".
   const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [done, setDone] = useState(initialPosts.length < PAGE_SIZE);
   const [loadingMore, startMore] = useTransition();
+
+  // Tiempo real: escuchamos `feed_signals` (un ping por aviso nuevo en la
+  // comunidad). Al recibirlo refrescamos el feed, que vuelve a filtrar por
+  // audiencia con RLS. Usamos esta tabla liviana porque la RLS de `posts` es
+  // demasiado compleja para que Realtime la evalúe en postgres_changes.
+  useEffect(() => {
+    if (!communityId) return;
+    const supabase = createClient();
+    const channel = supabase
+      .channel("muro-feed-signals")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "feed_signals",
+          filter: `community_id=eq.${communityId}`,
+        },
+        () => router.refresh(),
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [router, communityId]);
+
+  // Al refrescar (router.refresh trae datos frescos del server), incorporamos
+  // los avisos nuevos al principio sin perder los ya cargados con "Ver más".
+  const seenInitial = useRef(initialPosts);
+  useEffect(() => {
+    if (initialPosts === seenInitial.current) return;
+    seenInitial.current = initialPosts;
+    setPosts((prev) => {
+      const have = new Set(prev.map((p) => p.id));
+      const fresh = initialPosts.filter((p) => !have.has(p.id));
+      return fresh.length ? [...fresh, ...prev] : prev;
+    });
+  }, [initialPosts]);
 
   function loadMore() {
     startMore(async () => {
