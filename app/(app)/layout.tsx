@@ -7,6 +7,7 @@ import { MobileNav } from "@/components/shell/MobileNav";
 import { ChildFilterBar } from "@/components/shell/ChildFilterBar";
 import { getIdentity } from "@/lib/identity";
 import { getChildFilter } from "@/lib/child-filter";
+import { getUnreadMessageCount } from "@/lib/conversations";
 import { LOCALES, LOCALE_COOKIE, type Locale } from "@/lib/i18n";
 
 /**
@@ -19,10 +20,11 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [identity, childFilter, cookieStore] = await Promise.all([
+  const [identity, childFilter, cookieStore, unreadMessages] = await Promise.all([
     getIdentity(),
     getChildFilter(),
     cookies(),
+    getUnreadMessageCount(),
   ]);
   const codes = LOCALES.map((l) => l.code) as string[];
   // Prioridad: cookie (elección rápida que persiste) → perfil → default.
@@ -37,12 +39,12 @@ export default async function AppLayout({
     <LocaleProvider initial={initialLocale}>
       <IdentityProvider value={identity}>
         <div className="flex min-h-dvh bg-[#f1f5fa]">
-          <RailSidebar />
+          <RailSidebar unreadMessages={unreadMessages} />
           <div className="flex min-w-0 flex-1 flex-col">
             <AppTopbar />
             <ChildFilterBar courses={childFilter.courses} active={childFilter.active} />
             <div className="flex-1">{children}</div>
-            <MobileNav />
+            <MobileNav unreadMessages={unreadMessages} />
           </div>
         </div>
       </IdentityProvider>

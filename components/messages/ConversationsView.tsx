@@ -11,6 +11,7 @@ import {
   startConversation,
   sendMessage,
   archiveConversation,
+  markConversationRead,
   type RecipientGroup,
   type Recipient,
   type StartState,
@@ -34,6 +35,9 @@ export function ConversationsView({
   const [selectedId, setSelectedId] = useState<string>(data[0]?.id ?? "");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [composeOpen, setComposeOpen] = useState(false);
+  // Conversaciones leídas en esta sesión: limpian el badge al instante mientras
+  // el servidor confirma (mark_conversation_read + revalidación del layout).
+  const [locallyRead, setLocallyRead] = useState<Set<string>>(new Set());
 
   const list = data.filter((c) => c.status === filter);
   const selected =
@@ -42,6 +46,11 @@ export function ConversationsView({
   function openConversation(id: string) {
     setSelectedId(id);
     setMobileOpen(true);
+    const conv = data.find((c) => c.id === id);
+    if (conv && conv.unread > 0 && !locallyRead.has(id)) {
+      setLocallyRead((prev) => new Set(prev).add(id));
+      void markConversationRead(id);
+    }
   }
 
   return (
@@ -99,7 +108,7 @@ export function ConversationsView({
           {list.map((c) => (
             <li key={c.id}>
               <ConversationRow
-                conversation={c}
+                conversation={locallyRead.has(c.id) ? { ...c, unread: 0 } : c}
                 active={c.id === selectedId}
                 onClick={() => openConversation(c.id)}
               />

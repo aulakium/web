@@ -20,7 +20,7 @@ const LABEL =
  * El <aside> reserva 84px fijos; el panel interno crece por encima del
  * contenido (no lo corre) mostrando las etiquetas.
  */
-export function RailSidebar() {
+export function RailSidebar({ unreadMessages = 0 }: { unreadMessages?: number }) {
   const pathname = usePathname();
   const { t } = useLocale();
   const me = useIdentity();
@@ -57,6 +57,7 @@ export function RailSidebar() {
               );
             }
             const active = pathname.startsWith(it.href);
+            const showDot = it.key === "nav.conversations" && unreadMessages > 0;
             return (
               <Link
                 key={it.href}
@@ -67,10 +68,18 @@ export function RailSidebar() {
                   active ? "bg-brand text-white shadow-soft" : "text-ink/45 hover:bg-mist hover:text-ink"
                 }`}
               >
-                <span className={ICONBOX}>
+                <span className={`${ICONBOX} relative`}>
                   <Icon name={it.icon} className="h-[22px] w-[22px]" />
+                  {showDot ? (
+                    <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-cta" />
+                  ) : null}
                 </span>
-                <span className={LABEL}>{label(it)}</span>
+                <span className={`${LABEL} flex-1`}>{label(it)}</span>
+                {showDot ? (
+                  <span className={`${LABEL} mr-1 rounded-full bg-cta px-1.5 text-[11px] font-700 text-white`}>
+                    {unreadMessages}
+                  </span>
+                ) : null}
               </Link>
             );
           })}

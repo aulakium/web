@@ -114,3 +114,15 @@ export async function sendMessage(conversationId: string, body: string) {
   if (error) console.error("[sendMessage] insert error:", error.message);
   revalidatePath("/messages");
 }
+
+/** Marca como leídos los mensajes de una conversación (limpia el puntito de la nav). */
+export async function markConversationRead(conversationId: string) {
+  if (!conversationId) return;
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("mark_conversation_read", {
+    p_conversation: conversationId,
+  });
+  if (error) console.error("[markConversationRead] rpc error:", error.message);
+  // Revalida el layout para refrescar el contador del shell (rail + bottom-nav).
+  revalidatePath("/", "layout");
+}

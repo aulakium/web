@@ -444,6 +444,8 @@ export interface RequestItem {
   createdAt: string;
   status: RequestStatus;
   handledBy?: string;
+  /** Fecha del evento (inasistencia / salida) en ISO `YYYY-MM-DD`, si la familia la indicó. */
+  eventDate?: string;
 }
 
 export const DEMO_REQUESTS: RequestItem[] = [

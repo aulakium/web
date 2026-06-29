@@ -67,3 +67,19 @@ export async function getConversations(): Promise<Conversation[]> {
     } satisfies Conversation;
   });
 }
+
+/** Total de mensajes sin leer (para el puntito en la navegación de Mensajes). */
+export async function getUnreadMessageCount(): Promise<number> {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return 0;
+  }
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc("unread_messages_count");
+    if (error || data == null) return 0;
+    return Number(data) || 0;
+  } catch (e) {
+    rethrowNextControl(e);
+    return 0;
+  }
+}

@@ -11,6 +11,7 @@ interface RequestRow {
   status: string;
   created_at: string | null;
   handled_by: string | null;
+  event_date: string | null;
 }
 
 function relative(iso: string | null): string {
@@ -51,6 +52,7 @@ export async function getRequests(): Promise<RequestItem[]> {
     createdAt: relative(r.created_at),
     status: r.status as RequestStatus,
     handledBy: r.handled_by ?? undefined,
+    eventDate: r.event_date ?? undefined,
   }));
 }
 

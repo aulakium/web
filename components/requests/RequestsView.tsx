@@ -45,7 +45,7 @@ export function RequestsView({
   canCreate?: boolean;
   children?: MyChild[];
 }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [filter, setFilter] = useState<"all" | "pending" | "resolved">("all");
   const [openType, setOpenType] = useState<RequestType | null>(null);
   const data = items ?? DEMO_REQUESTS;
@@ -55,6 +55,56 @@ export function RequestsView({
     if (filter === "resolved") return r.status !== "submitted";
     return true;
   });
+
+  // Agrupamos por la FECHA del evento (inasistencia / salida), no por cuándo se
+  // creó: una falta para el 3 de julio va a "Próximas" aunque se haya enviado hoy.
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  function bucket(r: RequestItem): "today" | "upcoming" | "past" {
+    if (!r.eventDate) return "past";
+    const d = new Date(`${r.eventDate}T00:00:00`);
+    if (d.getTime() === startOfToday.getTime()) return "today";
+    return d > startOfToday ? "upcoming" : "past";
+  }
+  const fmtDate = (iso: string) =>
+    new Date(`${iso}T00:00:00`).toLocaleDateString(locale, { day: "numeric", month: "short" });
+
+  const groups: { id: string; key: string; items: RequestItem[] }[] = [
+    { id: "today", key: "req.group.today", items: requests.filter((r) => bucket(r) === "today") },
+    { id: "upcoming", key: "req.group.upcoming", items: requests.filter((r) => bucket(r) === "upcoming") },
+    { id: "past", key: "req.group.past", items: requests.filter((r) => bucket(r) === "past") },
+  ].filter((g) => g.items.length > 0);
+
+  function RequestRow({ r }: { r: RequestItem }) {
+    const typeMeta = REQUEST_TYPES.find((x) => x.type === r.type)!;
+    const status = STATUS_META[r.status];
+    return (
+      <li className="flex items-center gap-3 rounded-[1.5rem] border border-ink/5 bg-white p-4 shadow-card">
+        <span
+          className={`grid h-11 w-11 shrink-0 place-items-center rounded-2xl ${ACCENT_ON[typeMeta.color as AccentColor]}`}
+        >
+          <Icon name={typeMeta.icon} className="h-5 w-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-700 text-ink">
+            {t(typeMeta.titleKey)} · {r.studentName}
+          </p>
+          <p className="truncate text-xs font-600 text-ink/55">{r.summary}</p>
+          <p className="mt-0.5 text-[11px] font-700 text-ink/40">
+            {r.group}
+            {r.eventDate ? ` · ${fmtDate(r.eventDate)}` : ` · ${r.createdAt}`}
+            {r.handledBy ? ` · ${t("req.handledBy")} ${r.handledBy}` : ""}
+          </p>
+        </div>
+        <span
+          className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-700 ${ACCENT_SOFT_BG[status.color]} ${ACCENT_TEXT[status.color]}`}
+        >
+          <Icon name={status.icon} className="h-3.5 w-3.5" />
+          {t(status.key)}
+        </span>
+      </li>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -114,42 +164,29 @@ export function RequestsView({
           ))}
         </div>
 
-        <ul className="flex flex-col gap-2.5">
-          {requests.map((r) => {
-            const typeMeta = REQUEST_TYPES.find((x) => x.type === r.type)!;
-            const status = STATUS_META[r.status];
-            return (
-              <li
-                key={r.id}
-                className="flex items-center gap-3 rounded-[1.5rem] border border-ink/5 bg-white p-4 shadow-card"
-              >
-                <span
-                  className={`grid h-11 w-11 shrink-0 place-items-center rounded-2xl ${ACCENT_ON[typeMeta.color as AccentColor]}`}
-                >
-                  <Icon name={typeMeta.icon} className="h-5 w-5" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-700 text-ink">
-                    {t(typeMeta.titleKey)} · {r.studentName}
-                  </p>
-                  <p className="truncate text-xs font-600 text-ink/55">
-                    {r.summary}
-                  </p>
-                  <p className="mt-0.5 text-[11px] font-700 text-ink/40">
-                    {r.group} · {r.createdAt}
-                    {r.handledBy ? ` · ${t("req.handledBy")} ${r.handledBy}` : ""}
-                  </p>
-                </div>
-                <span
-                  className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-700 ${ACCENT_SOFT_BG[status.color]} ${ACCENT_TEXT[status.color]}`}
-                >
-                  <Icon name={status.icon} className="h-3.5 w-3.5" />
-                  {t(status.key)}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+        {groups.length === 0 ? (
+          <p className="rounded-[1.5rem] border border-dashed border-ink/15 bg-white px-6 py-10 text-center text-sm font-500 text-ink/55">
+            {t("req.empty")}
+          </p>
+        ) : (
+          <div className="flex flex-col gap-5">
+            {groups.map((g) => (
+              <div key={g.id}>
+                <h3 className="mb-2 flex items-center gap-2 text-xs font-700 uppercase tracking-wide text-ink/45">
+                  {t(g.key)}
+                  <span className="rounded-full bg-ink/5 px-1.5 py-0.5 text-[10px] text-ink/50">
+                    {g.items.length}
+                  </span>
+                </h3>
+                <ul className="flex flex-col gap-2.5">
+                  {g.items.map((r) => (
+                    <RequestRow key={r.id} r={r} />
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {openType ? (
