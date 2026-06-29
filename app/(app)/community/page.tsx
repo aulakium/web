@@ -1,8 +1,9 @@
 import { Icon } from "@/components/icons";
 import { getPeople, personSubtitle } from "@/lib/people";
 import { ROLE_COLOR } from "@/lib/posts";
-import { blockStudents } from "@/lib/identity";
+import { blockStudents, getIdentity } from "@/lib/identity";
 import { getServerT } from "@/lib/i18n-server";
+import { createClient } from "@/lib/supabase/server";
 import type { RoleKey } from "@/lib/domain";
 import { ComunidadView, type DirSection } from "@/components/community/ComunidadView";
 
@@ -18,7 +19,16 @@ const GROUPS: { key: string; titleKey: string; icon: string; roles: RoleKey[]; f
 
 export default async function ComunidadPage() {
   await blockStudents();
-  const [people, t] = await Promise.all([getPeople(), getServerT()]);
+  const [people, t, me] = await Promise.all([getPeople(), getServerT(), getIdentity()]);
+  const isAdmin = !!me?.isAdmin;
+
+  // Para el editor (solo admin): lista de salones del colegio.
+  let allGroups: { id: string; name: string }[] = [];
+  if (isAdmin) {
+    const supabase = await createClient();
+    const { data } = await supabase.from("groups").select("id, name").order("name");
+    allGroups = (data ?? []) as { id: string; name: string }[];
+  }
 
   const sections: DirSection[] = GROUPS.map((g) => ({
     key: g.key,
@@ -28,6 +38,8 @@ export default async function ComunidadPage() {
     people: people
       .filter((p) => p.roleKey && g.roles.includes(p.roleKey))
       .map((p) => ({
+        membershipId: p.membershipId,
+        roleKey: p.roleKey,
         name: p.name,
         subtitle: personSubtitle(p),
         color: (p.roleKey ? ROLE_COLOR[p.roleKey] ?? "brand" : "brand") as string,
@@ -57,7 +69,7 @@ export default async function ComunidadPage() {
           </p>
         </div>
       ) : (
-        <ComunidadView sections={sections} />
+        <ComunidadView sections={sections} isAdmin={isAdmin} groups={allGroups} />
       )}
     </main>
   );
