@@ -35,6 +35,7 @@ interface FeedRow {
   my_rsvp: string | null;
   rsvp_yes: number;
   group_id: string | null;
+  event_all_day: boolean | null;
 }
 
 export const ROLE_COLOR: Record<string, AccentColor> = {
@@ -134,6 +135,7 @@ export async function getFeed(
               : "announcement",
       eventLocation: r.event_location ?? undefined,
       eventAt: r.event_at ?? undefined,
+      eventAllDay: r.event_all_day ?? false,
       myRsvp: (r.my_rsvp as Post["myRsvp"]) ?? null,
       rsvpYes: r.rsvp_yes,
       taskAction: (r.task_action as Post["taskAction"]) ?? undefined,

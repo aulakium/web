@@ -143,6 +143,7 @@ export async function createPost(
   let dbType = "announcement";
   let eventLocation: string | null = null;
   let eventAt: string | null = null;
+  let eventAllDay = false;
   let taskAction: string | null = null;
   let taskDue: string | null = null;
 
@@ -151,9 +152,18 @@ export async function createPost(
   } else if (postType === "invitacion") {
     dbType = "event";
     eventLocation = String(formData.get("eventLocation") || "").trim() || null;
-    const at = String(formData.get("eventAt") || "").trim();
-    eventAt = at ? new Date(at).toISOString() : null;
-    if (!eventAt) return { error: "Una invitación necesita fecha y hora." };
+    // La hora es OPCIONAL: con fecha sola, el evento es "todo el día".
+    const date = String(formData.get("eventDate") || "").trim();
+    const time = String(formData.get("eventTime") || "").trim();
+    if (!date) return { error: "Una invitación necesita una fecha." };
+    // Guardamos la hora "de pared" como UTC para que coincida con el calendario.
+    if (time) {
+      eventAt = `${date}T${time}:00.000Z`;
+      eventAllDay = false;
+    } else {
+      eventAt = `${date}T00:00:00.000Z`;
+      eventAllDay = true;
+    }
   } else if (postType === "tarea") {
     dbType = "task";
     const action = String(formData.get("taskAction") || "complete");
@@ -173,6 +183,17 @@ export async function createPost(
           ? ["teacher", "guardian"]
           : null;
 
+  // Cuándo publicar: "ahora" por defecto, o programado a futuro. Lo programado
+  // queda oculto para los destinatarios hasta su fecha (lo filtra feed()).
+  let publishedAt = new Date().toISOString();
+  if (String(formData.get("publishMode") || "now") === "schedule") {
+    const raw = String(formData.get("publishAt") || "").trim();
+    const when = raw ? new Date(`${raw}:00.000Z`) : null;
+    if (when && !isNaN(when.getTime()) && when.getTime() > Date.now()) {
+      publishedAt = when.toISOString();
+    }
+  }
+
   const { data: post, error } = await supabase
     .from("posts")
     .insert({
@@ -183,11 +204,12 @@ export async function createPost(
       type: dbType,
       event_location: eventLocation,
       event_at: eventAt,
+      event_all_day: eventAllDay,
       task_action: taskAction,
       task_due: taskDue,
       comments_enabled: commentsEnabled,
       audience_roles: audienceRoles,
-      published_at: new Date().toISOString(),
+      published_at: publishedAt,
     })
     .select("id")
     .single();
@@ -269,16 +291,20 @@ export async function createPost(
     }
   }
 
-  // Push notifications a los dispositivos de la comunidad (si hay tokens).
-  const { data: tokens } = await supabase.rpc("recipient_tokens", { p_post: post.id });
-  await sendExpoPush(
-    ((tokens as { token: string }[]) ?? []).map((t) => t.token),
-    title || "Nuevo aviso",
-    body.slice(0, 140),
-  );
+  // Push notifications: solo si se publica ahora. Si está programado, la
+  // notificación debería salir recién en su fecha (lo dejamos para el scheduler).
+  if (new Date(publishedAt).getTime() <= Date.now()) {
+    const { data: tokens } = await supabase.rpc("recipient_tokens", { p_post: post.id });
+    await sendExpoPush(
+      ((tokens as { token: string }[]) ?? []).map((t) => t.token),
+      title || "Nuevo aviso",
+      body.slice(0, 140),
+    );
+  }
 
   revalidatePath("/feed");
   revalidatePath("/home");
+  revalidatePath("/calendar");
   return { ok: true };
 }
 

@@ -75,6 +75,7 @@ export interface Post {
   // Invitación (kind="event"): lugar + fecha del evento + RSVP.
   eventLocation?: string;
   eventAt?: string; // ISO
+  eventAllDay?: boolean; // evento sin hora ("todo el día")
   myRsvp?: "yes" | "no" | "maybe" | null;
   rsvpYes?: number;
   // Tarea (kind="task"): acción requerida + si ya la completé.

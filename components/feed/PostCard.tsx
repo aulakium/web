@@ -54,6 +54,13 @@ export function PostCard({
     const label = t(`role.${rk}`);
     return label === `role.${rk}` ? rk : label;
   };
+  // Programado: published_at en el futuro (solo lo ve el autor hasta su fecha).
+  const isScheduled = !!post.publishedAtISO && new Date(post.publishedAtISO).getTime() > Date.now();
+  const scheduledLabel = post.publishedAtISO
+    ? new Date(post.publishedAtISO).toLocaleString(locale, {
+        day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "UTC",
+      })
+    : "";
   const [liked, setLiked] = useState(post.liked);
   const [, startLike] = useTransition();
   const [saved, setSaved] = useState(post.bookmarked);
@@ -149,7 +156,14 @@ export function PostCard({
           <div className="min-w-0 flex-1 leading-tight">
             <p className="truncate text-sm font-700 text-ink">{post.author.name}</p>
             <p className="truncate text-xs font-600 text-ink/50">
-              {t(`role.${post.author.role}`)} · {relativeTime(post.publishedAtISO, locale, post.publishedAt)}
+              {t(`role.${post.author.role}`)} ·{" "}
+              {isScheduled ? (
+                <span className="font-700 text-cta">
+                  {t("post.scheduledFor")} {scheduledLabel}
+                </span>
+              ) : (
+                relativeTime(post.publishedAtISO, locale, post.publishedAt)
+              )}
             </p>
           </div>
           {post.pinned ? (
@@ -242,7 +256,10 @@ export function PostCard({
             {post.eventAt ? (
               <span className="inline-flex items-center gap-2 text-sm font-700 text-ink">
                 <Icon name="CalendarDays" className="h-4 w-4 text-brand" />
-                {formatEventDate(post.eventAt, locale)}
+                {formatEventDate(post.eventAt, locale, post.eventAllDay)}{" "}
+                {post.eventAllDay ? (
+                  <span className="font-600 text-ink/50">· {t("post.allDay")}</span>
+                ) : null}
               </span>
             ) : null}
             {post.eventLocation ? (
@@ -542,11 +559,12 @@ export function PostCard({
   );
 }
 
-/** Fecha del evento: "mié 9 jul · 18:30". UTC para coincidir con el calendario
- *  (que usa la hora "de pared" guardada) y no correr el día/hora por zona horaria. */
-function formatEventDate(iso: string, locale: string): string {
+/** Fecha del evento: "mié 9 jul · 18:30" (o solo la fecha si es todo el día).
+ *  UTC para coincidir con el calendario (hora "de pared") y no correr el día. */
+function formatEventDate(iso: string, locale: string, allDay?: boolean): string {
   const d = new Date(iso);
   const day = d.toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+  if (allDay) return day;
   const time = d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
   return `${day} · ${time}`;
 }

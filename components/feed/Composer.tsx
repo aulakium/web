@@ -37,6 +37,20 @@ export function Composer({
   // Controlados: un error (p. ej. sin permiso) no borra lo escrito.
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  // Cuándo publicar: ahora (default) o programado. El default al programar es
+  // mañana 8:00 (se calcula en el cliente para no chocar con la hidratación).
+  const [publishMode, setPublishMode] = useState<"now" | "schedule">("now");
+  const [publishAt, setPublishAt] = useState("");
+  function tomorrowAt8() {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T08:00`;
+  }
+  function chooseSchedule() {
+    setPublishMode("schedule");
+    setPublishAt((v) => v || tomorrowAt8());
+  }
 
   function refreshAud(form: HTMLFormElement | null) {
     if (form) {
@@ -55,6 +69,8 @@ export function Composer({
       formRef.current?.reset();
       setTitle("");
       setBody("");
+      setPublishMode("now");
+      setPublishAt("");
       setPollMode(false);
       setPostType("comunicado");
       setOptionCount(2);
@@ -164,7 +180,7 @@ export function Composer({
           ) : null}
 
           {!pollMode && postType === "invitacion" ? (
-            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            <div className="mt-2 flex flex-col gap-2">
               <div className="relative">
                 <Icon name="MapPin" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/40" />
                 <input
@@ -173,14 +189,28 @@ export function Composer({
                   className="w-full rounded-xl bg-mist py-2.5 pl-9 pr-3 text-sm font-600 text-ink outline-none placeholder:text-ink/45 focus:ring-2 focus:ring-brand/30"
                 />
               </div>
-              <div className="relative">
-                <Icon name="CalendarDays" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/40" />
-                <input
-                  name="eventAt"
-                  type="datetime-local"
-                  className="w-full rounded-xl bg-mist py-2.5 pl-9 pr-3 text-sm font-600 text-ink outline-none focus:ring-2 focus:ring-brand/30"
-                />
+              {/* Fecha obligatoria, hora opcional (sin hora = todo el día). */}
+              <div className="grid gap-2 sm:grid-cols-2">
+                <div className="relative">
+                  <Icon name="CalendarDays" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/40" />
+                  <input
+                    name="eventDate"
+                    type="date"
+                    title={t("comp.eventDate")}
+                    className="w-full rounded-xl bg-mist py-2.5 pl-9 pr-3 text-sm font-600 text-ink outline-none focus:ring-2 focus:ring-brand/30"
+                  />
+                </div>
+                <div className="relative">
+                  <Icon name="Clock" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/40" />
+                  <input
+                    name="eventTime"
+                    type="time"
+                    title={t("comp.eventTime")}
+                    className="w-full rounded-xl bg-mist py-2.5 pl-9 pr-3 text-sm font-600 text-ink outline-none focus:ring-2 focus:ring-brand/30"
+                  />
+                </div>
               </div>
+              <p className="px-1 text-[11px] font-600 text-ink/40">{t("comp.allDayHint")}</p>
             </div>
           ) : null}
 
@@ -311,6 +341,44 @@ export function Composer({
           </button>
         </div>
       ) : null}
+
+      {/* Cuándo publicar: ahora (default) o programar a futuro */}
+      <input type="hidden" name="publishMode" value={publishMode} />
+      <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-ink/5 pt-3">
+        <span className="flex items-center gap-1.5 text-[11px] font-700 uppercase tracking-wide text-ink/40">
+          <Icon name="Clock" className="h-3.5 w-3.5" />
+          {t("comp.publishWhen")}
+        </span>
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setPublishMode("now")}
+            className={`rounded-full px-3 py-1.5 text-xs font-700 ring-1 transition-colors ${
+              publishMode === "now" ? "bg-ink text-white ring-ink" : "bg-white text-ink/55 ring-ink/10 hover:text-ink"
+            }`}
+          >
+            {t("comp.publishNow")}
+          </button>
+          <button
+            type="button"
+            onClick={chooseSchedule}
+            className={`rounded-full px-3 py-1.5 text-xs font-700 ring-1 transition-colors ${
+              publishMode === "schedule" ? "bg-ink text-white ring-ink" : "bg-white text-ink/55 ring-ink/10 hover:text-ink"
+            }`}
+          >
+            {t("comp.publishSchedule")}
+          </button>
+        </div>
+        {publishMode === "schedule" ? (
+          <input
+            name="publishAt"
+            type="datetime-local"
+            value={publishAt}
+            onChange={(e) => setPublishAt(e.target.value)}
+            className="rounded-xl bg-mist px-3 py-2 text-xs font-600 text-ink outline-none focus:ring-2 focus:ring-brand/30"
+          />
+        ) : null}
+      </div>
 
       <div className="mt-3 flex items-center gap-2 border-t border-ink/5 pt-3">
         <button

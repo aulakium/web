@@ -62,7 +62,9 @@ export function MuroView({
         day: d.toLocaleDateString(locale, { day: "numeric", timeZone: "UTC" }),
         month: d.toLocaleDateString(locale, { month: "short", timeZone: "UTC" }).replace(".", "").toUpperCase(),
         title: p.title || p.body,
-        time: d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit", timeZone: "UTC" }),
+        time: p.eventAllDay
+          ? t("post.allDay")
+          : d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit", timeZone: "UTC" }),
         accent: "brand",
         isPost: true,
       };
