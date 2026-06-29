@@ -51,8 +51,8 @@ export function RequestsView({ items, canCreate = true }: { items?: RequestItem[
         <h2 className="mb-3 font-display text-base font-700 text-ink">
           {t("req.new")}
         </h2>
-        <div className="grid gap-3 sm:grid-cols-3">
-          {REQUEST_TYPES.map((rt) => (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {REQUEST_TYPES.filter((rt) => rt.type !== "payment").map((rt) => (
             <button
               key={rt.type}
               type="button"

@@ -149,19 +149,10 @@ export const DEMO_USER: CurrentUser = {
 export const STUDENT_HIDDEN = ["/messages", "/requests", "/community"];
 
 /**
- * La sección "Trámites" se llama distinto según el rol para que quede claro:
- * docentes/dirección → "Tareas"; familias → "Pendientes"; resto → "Trámites".
+ * La sección de inasistencias + autorizar salida se llama "Solicitudes" (lo que
+ * la familia le pide/avisa al colegio). Las tareas asignadas viven aparte.
  */
-export function requestsNavKey(roleKey: RoleKey | null): string {
-  if (roleKey === "guardian") return "nav.requests.pending";
-  if (
-    roleKey &&
-    ["teacher", "principal", "coordinator", "manager", "board", "department_head", "support_staff"].includes(
-      roleKey,
-    )
-  ) {
-    return "nav.requests.tasks";
-  }
+export function requestsNavKey(_roleKey: RoleKey | null): string {
   return "nav.requests";
 }
 

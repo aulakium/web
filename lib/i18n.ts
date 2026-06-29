@@ -30,7 +30,7 @@ const es: Dict = {
   "nav.wall": "Avisos",
   "nav.calendar": "Calendario",
   "nav.conversations": "Mensajes",
-  "nav.requests": "Trámites",
+  "nav.requests": "Solicitudes",
   "nav.requests.tasks": "Tareas",
   "nav.requests.pending": "Pendientes",
   "nav.documents": "Documentos",
