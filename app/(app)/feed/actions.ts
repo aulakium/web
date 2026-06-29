@@ -6,13 +6,15 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { sendExpoPush } from "@/lib/push";
 import { translateNotice, type Translated } from "@/lib/translate";
 import { getFeed, FEED_PAGE_SIZE } from "@/lib/posts";
+import { getActiveChildGroup } from "@/lib/child-filter";
 import type { Post } from "@/lib/domain";
 
 type Supa = Awaited<ReturnType<typeof createClient>>;
 
-/** Trae la siguiente página del muro (para "Ver más novedades"). */
+/** Trae la siguiente página del muro (para "Ver más novedades"). Respeta el filtro por hijo. */
 export async function getMorePosts(offset: number): Promise<Post[]> {
-  return getFeed(FEED_PAGE_SIZE, offset);
+  const child = await getActiveChildGroup();
+  return getFeed(FEED_PAGE_SIZE, offset, child);
 }
 
 /** Membresía activa del usuario actual (id + comunidad). */

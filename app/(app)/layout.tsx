@@ -3,7 +3,9 @@ import { IdentityProvider } from "@/components/identity-context";
 import { RailSidebar } from "@/components/shell/RailSidebar";
 import { AppTopbar } from "@/components/shell/AppTopbar";
 import { MobileNav } from "@/components/shell/MobileNav";
+import { ChildFilterBar } from "@/components/shell/ChildFilterBar";
 import { getIdentity } from "@/lib/identity";
+import { getChildFilter } from "@/lib/child-filter";
 import { LOCALES, type Locale } from "@/lib/i18n";
 
 /**
@@ -16,7 +18,7 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const identity = await getIdentity();
+  const [identity, childFilter] = await Promise.all([getIdentity(), getChildFilter()]);
   const codes = LOCALES.map((l) => l.code) as string[];
   const initialLocale: Locale =
     identity?.uiLocale && codes.includes(identity.uiLocale)
@@ -30,6 +32,7 @@ export default async function AppLayout({
           <RailSidebar />
           <div className="flex min-w-0 flex-1 flex-col">
             <AppTopbar />
+            <ChildFilterBar courses={childFilter.courses} active={childFilter.active} />
             <div className="flex-1">{children}</div>
             <MobileNav />
           </div>

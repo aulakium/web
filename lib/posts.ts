@@ -34,6 +34,7 @@ interface FeedRow {
   reads: number;
   my_rsvp: string | null;
   rsvp_yes: number;
+  group_id: string | null;
 }
 
 export const ROLE_COLOR: Record<string, AccentColor> = {
@@ -88,6 +89,7 @@ export const FEED_PAGE_SIZE = 8;
 export async function getFeed(
   limit: number = FEED_PAGE_SIZE,
   offset: number = 0,
+  group: string | null = null,
 ): Promise<Post[]> {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     return []; // sin env → muro vacío en vez de romper
@@ -95,7 +97,7 @@ export async function getFeed(
   let data: unknown;
   try {
     const supabase = await createClient();
-    const res = await supabase.rpc("feed", { p_limit: limit, p_offset: offset });
+    const res = await supabase.rpc("feed", { p_limit: limit, p_offset: offset, p_group: group });
     if (res.error || !res.data) return [];
     data = res.data;
   } catch (e) {
@@ -136,6 +138,7 @@ export async function getFeed(
       taskAction: (r.task_action as Post["taskAction"]) ?? undefined,
       taskDue: r.task_due ?? undefined,
       taskDone: r.task_done,
+      groupId: r.group_id ?? undefined,
       commentsEnabled: r.comments_enabled,
       likes: r.likes,
       comments: r.comments,

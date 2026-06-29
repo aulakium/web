@@ -81,6 +81,7 @@ export interface Post {
   taskDue?: string; // ISO, opcional
   taskDone?: boolean;
   attachments?: PostAttachment[]; // adjuntos (PDF/imagen/documento)
+  groupId?: string; // salón al que apunta (filtro por hijo); null = toda la escuela
   commentsEnabled?: boolean; // el colegio puede desactivar comentarios por aviso
   likes: number;
   comments: number;
