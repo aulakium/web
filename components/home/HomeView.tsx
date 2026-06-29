@@ -21,7 +21,7 @@ import {
   DEMO_TODAY,
   requestsNavKey,
 } from "@/lib/domain";
-import { calendarColor, sortDayEvents } from "../calendar/utils";
+import { calendarColor } from "../calendar/utils";
 
 // Un color e ícono FIJOS por sección (mismos en todos lados; el ícono identifica).
 const QUICK = [
@@ -80,9 +80,20 @@ export function HomeView({
     { label: t("home.summary.messages"), value: unreadMessages, icon: "MessagesSquare", color: "sky" as AccentColor, href: "/messages" },
   ].filter((s) => !(me?.isStudent && STUDENT_HIDDEN.includes(s.href)));
 
-  const todayEvents = sortDayEvents(
-    calEvents.filter((e) => e.day === DEMO_TODAY.day),
-  );
+  // Próximos eventos: de hoy en adelante, ordenados por fecha, hasta 5.
+  const upcomingEvents = calEvents
+    .filter((e) => e.kind === "event" && e.day >= DEMO_TODAY.day)
+    .sort(
+      (a, b) =>
+        a.day - b.day ||
+        (a.allDay ? 0 : 1) - (b.allDay ? 0 : 1) ||
+        (a.time ?? "").localeCompare(b.time ?? ""),
+    )
+    .slice(0, 5);
+  const monthAbbr = (day: number) =>
+    new Date(DEMO_TODAY.year, DEMO_TODAY.month, day)
+      .toLocaleDateString(locale, { month: "short" })
+      .replace(".", "");
 
   return (
     <div className="flex flex-col gap-6">
@@ -128,44 +139,7 @@ export function HomeView({
         ))}
       </section>
 
-      {/* Accesos rápidos */}
-      <section>
-        <h2 className="mb-3 font-display text-base font-700 text-ink">
-          {t("home.quick")}
-        </h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {QUICK.filter((q) => !(me?.isStudent && STUDENT_HIDDEN.includes(q.href))).map((q) =>
-            "disabled" in q && q.disabled ? (
-              <div
-                key={q.href}
-                aria-disabled="true"
-                title={`${qlabel(q)} — próximamente`}
-                className="flex cursor-not-allowed flex-col items-center gap-2 rounded-[1.5rem] border border-ink/5 bg-white/60 p-4 text-center opacity-50"
-              >
-                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-mist text-ink/35">
-                  <Icon name={q.icon} className="h-6 w-6" />
-                </span>
-                <span className="text-sm font-700 text-ink/40">{qlabel(q)}</span>
-              </div>
-            ) : (
-              <Link
-                key={q.href}
-                href={q.href}
-                className="flex flex-col items-center gap-2 rounded-[1.5rem] border border-ink/5 bg-white p-4 text-center shadow-card transition-transform hover:-translate-y-0.5"
-              >
-                <span
-                  className={`grid h-12 w-12 place-items-center rounded-2xl ${ACCENT_ON[q.color as AccentColor]}`}
-                >
-                  <Icon name={q.icon} className="h-6 w-6" />
-                </span>
-                <span className="text-sm font-700 text-ink">{qlabel(q)}</span>
-              </Link>
-            ),
-          )}
-        </div>
-      </section>
-
-      {/* Agenda de hoy */}
+      {/* Próximos eventos */}
       <section className="rounded-[1.75rem] border border-ink/5 bg-white p-5 shadow-card">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="font-display text-base font-700 text-ink">
@@ -179,35 +153,67 @@ export function HomeView({
             <Icon name="ChevronRight" className="h-4 w-4" />
           </Link>
         </div>
-        <ul className="flex flex-col gap-2.5">
-          {todayEvents.map((e) => {
-            const color = calendarColor(e.calendarId);
-            return (
-              <li
-                key={e.id}
-                className={`flex items-center gap-3 rounded-2xl border border-l-4 border-ink/5 bg-white p-3 ${ACCENT_BORDER_L[color]}`}
-              >
-                <span className="w-14 shrink-0 text-right text-sm font-700 text-ink">
-                  {e.allDay ? (
-                    <span className="text-[11px] uppercase text-ink/45">
-                      {t("cal.allDay")}
-                    </span>
-                  ) : (
-                    e.time
-                  )}
-                </span>
-                <span className="min-w-0 flex-1 text-sm font-700 text-ink">
-                  {e.title}
-                </span>
-                <span
-                  className={`hidden shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-700 sm:inline-flex ${ACCENT_SOFT_BG[color]} ${ACCENT_TEXT[color]}`}
+        {upcomingEvents.length === 0 ? (
+          <p className="py-4 text-center text-sm font-500 text-ink/45">
+            No hay eventos próximos.
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-2.5">
+            {upcomingEvents.map((e) => {
+              const color = calendarColor(e.calendarId);
+              return (
+                <li
+                  key={e.id}
+                  className={`flex items-center gap-3 rounded-2xl border border-l-4 border-ink/5 bg-white p-3 ${ACCENT_BORDER_L[color]}`}
                 >
-                  {e.audienceLabel}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+                  <span className="flex w-11 shrink-0 flex-col items-center leading-none">
+                    <span className="font-display text-lg font-700 text-ink">{e.day}</span>
+                    <span className="text-[10px] font-700 uppercase text-ink/45">
+                      {monthAbbr(e.day)}
+                    </span>
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-700 text-ink">{e.title}</span>
+                    <span className="block truncate text-xs font-600 text-ink/50">
+                      {e.allDay ? t("cal.allDay") : e.time} · {e.audienceLabel}
+                    </span>
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+
+      {/* Accesos rápidos (compacto; ya están en el menú lateral) */}
+      <section>
+        <h2 className="mb-2 text-xs font-700 uppercase tracking-wide text-ink/40">
+          {t("home.quick")}
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          {QUICK.filter((q) => !(me?.isStudent && STUDENT_HIDDEN.includes(q.href))).map((q) =>
+            "disabled" in q && q.disabled ? (
+              <span
+                key={q.href}
+                aria-disabled="true"
+                title={`${qlabel(q)} — próximamente`}
+                className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-full border border-ink/8 bg-white/60 px-3 py-1.5 text-xs font-700 text-ink/35"
+              >
+                <Icon name={q.icon} className="h-4 w-4" />
+                {qlabel(q)}
+              </span>
+            ) : (
+              <Link
+                key={q.href}
+                href={q.href}
+                className="inline-flex items-center gap-1.5 rounded-full border border-ink/8 bg-white px-3 py-1.5 text-xs font-700 text-ink/70 shadow-sm transition-colors hover:border-brand/30 hover:text-ink"
+              >
+                <Icon name={q.icon} className="h-4 w-4 text-ink/45" />
+                {qlabel(q)}
+              </Link>
+            ),
+          )}
+        </div>
       </section>
     </div>
   );

@@ -7,103 +7,109 @@ import { Avatar } from "../Avatar";
 import { useLocale } from "../locale-context";
 import { useIdentity } from "../identity-context";
 import { BrandIcon } from "../Wordmark";
-import { NAV_ITEMS, STUDENT_HIDDEN, DEMO_USER, requestsNavKey } from "@/lib/domain";
+import { NAV_ITEMS, STUDENT_HIDDEN, DEMO_USER, DEMO_SCHOOL, requestsNavKey } from "@/lib/domain";
 import { logout } from "@/app/(auth)/login/actions";
 
-/** Rail slim de íconos (estilo Alliance). Desktop. */
+const ROW = "flex h-12 items-center gap-3 rounded-2xl px-[11px] transition-colors";
+const ICONBOX = "grid h-9 w-9 shrink-0 place-items-center";
+const LABEL =
+  "whitespace-nowrap text-sm font-700 opacity-0 transition-opacity duration-150 group-hover/rail:opacity-100";
+
+/**
+ * Rail de íconos (desktop) que se despliega a la derecha al pasar el cursor.
+ * El <aside> reserva 84px fijos; el panel interno crece por encima del
+ * contenido (no lo corre) mostrando las etiquetas.
+ */
 export function RailSidebar() {
   const pathname = usePathname();
   const { t } = useLocale();
   const me = useIdentity();
-  // Etiqueta del item, con el renombrado por rol de "Trámites".
   const label = (it: { key: string }) =>
     t(it.key === "nav.requests" ? requestsNavKey(me?.roleKey ?? null) : it.key);
   const userName = me?.name ?? DEMO_USER.name;
+  const schoolShort = me?.schoolShort ?? DEMO_SCHOOL.shortName;
 
   return (
-    <aside className="sticky top-0 hidden h-dvh w-[84px] shrink-0 flex-col items-center border-r border-ink/8 bg-white py-5 lg:flex">
-      <Link href="/home" title="Inicio">
-        <BrandIcon className="h-11 w-11" />
-      </Link>
-
-      <nav className="mt-7 flex flex-1 flex-col items-center gap-2">
-        {NAV_ITEMS.filter(
-          (it) =>
-            !(me?.isStudent && STUDENT_HIDDEN.includes(it.href)) &&
-            !(it.staffOnly && !(me?.isAdmin || me?.roleKey === "teacher")),
-        ).map((it) => {
-          if (it.disabled) {
-            return (
-              <div
-                key={it.href}
-                aria-disabled="true"
-                title={`${label(it)} — próximamente`}
-                className="group relative grid h-12 w-12 cursor-not-allowed place-items-center rounded-2xl text-ink/20"
-              >
-                <Icon name={it.icon} className="h-[22px] w-[22px]" />
-                <span className="pointer-events-none absolute left-14 z-30 whitespace-nowrap rounded-lg bg-ink px-2.5 py-1 text-xs font-600 text-white opacity-0 shadow-card transition-opacity group-hover:opacity-100">
-                  {label(it)} · próximamente
-                </span>
-              </div>
-            );
-          }
-          const active = pathname.startsWith(it.href);
-          return (
-            <Link
-              key={it.href}
-              href={it.href}
-              aria-current={active ? "page" : undefined}
-              title={label(it)}
-              className={`group relative grid h-12 w-12 place-items-center rounded-2xl transition-colors ${
-                active ? "bg-brand text-white shadow-soft" : "text-ink/40 hover:bg-mist hover:text-ink"
-              }`}
-            >
-              <Icon name={it.icon} className="h-[22px] w-[22px]" />
-              {it.badge ? (
-                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border border-white bg-cta" />
-              ) : null}
-              <span className="pointer-events-none absolute left-14 z-30 whitespace-nowrap rounded-lg bg-ink px-2.5 py-1 text-xs font-600 text-white opacity-0 shadow-card transition-opacity group-hover:opacity-100">
-                {label(it)}
-              </span>
-            </Link>
-          );
-        })}
-      </nav>
-
-      {me?.isAdmin ? (
-        <Link
-          href="/settings"
-          title="Configuración"
-          aria-current={pathname.startsWith("/settings") ? "page" : undefined}
-          className={`group relative mt-3 grid h-12 w-12 place-items-center rounded-2xl transition-colors ${
-            pathname.startsWith("/settings")
-              ? "bg-brand text-white shadow-soft"
-              : "text-ink/40 hover:bg-mist hover:text-ink"
-          }`}
-        >
-          <Icon name="Settings" className="h-[22px] w-[22px]" />
-          <span className="pointer-events-none absolute left-14 z-30 whitespace-nowrap rounded-lg bg-ink px-2.5 py-1 text-xs font-600 text-white opacity-0 shadow-card transition-opacity group-hover:opacity-100">
-            Configuración
+    <aside className="sticky top-0 z-40 hidden h-dvh w-[84px] shrink-0 lg:block">
+      <div className="group/rail flex h-full w-[84px] flex-col gap-1.5 overflow-hidden border-r border-ink/8 bg-white px-3 py-5 transition-[width] duration-200 ease-out hover:w-[248px] hover:shadow-pop">
+        {/* Marca */}
+        <Link href="/home" className={`${ROW} mb-2`} title={schoolShort}>
+          <span className={ICONBOX}>
+            <BrandIcon className="h-9 w-9" />
           </span>
+          <span className={`${LABEL} font-display text-base text-ink`}>{schoolShort}</span>
         </Link>
-      ) : null}
 
-      <form action={logout} className="mt-3">
-        <button
-          type="submit"
-          title="Cerrar sesión"
-          className="group relative grid h-12 w-12 place-items-center rounded-2xl text-ink/40 transition-colors hover:bg-rose/10 hover:text-rose"
-        >
-          <Icon name="LogOut" className="h-[22px] w-[22px]" />
-          <span className="pointer-events-none absolute left-14 z-30 whitespace-nowrap rounded-lg bg-ink px-2.5 py-1 text-xs font-600 text-white opacity-0 shadow-card transition-opacity group-hover:opacity-100">
-            Cerrar sesión
+        <nav className="flex flex-1 flex-col gap-1.5">
+          {NAV_ITEMS.filter(
+            (it) =>
+              !(me?.isStudent && STUDENT_HIDDEN.includes(it.href)) &&
+              !(it.staffOnly && !(me?.isAdmin || me?.roleKey === "teacher")),
+          ).map((it) => {
+            if (it.disabled) {
+              return (
+                <div key={it.href} aria-disabled="true" className={`${ROW} cursor-not-allowed text-ink/25`}>
+                  <span className={ICONBOX}>
+                    <Icon name={it.icon} className="h-[22px] w-[22px]" />
+                  </span>
+                  <span className={`${LABEL} text-ink/35`}>{label(it)} · pronto</span>
+                </div>
+              );
+            }
+            const active = pathname.startsWith(it.href);
+            return (
+              <Link
+                key={it.href}
+                href={it.href}
+                aria-current={active ? "page" : undefined}
+                title={label(it)}
+                className={`${ROW} ${
+                  active ? "bg-brand text-white shadow-soft" : "text-ink/45 hover:bg-mist hover:text-ink"
+                }`}
+              >
+                <span className={ICONBOX}>
+                  <Icon name={it.icon} className="h-[22px] w-[22px]" />
+                </span>
+                <span className={LABEL}>{label(it)}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {me?.isAdmin ? (
+          <Link
+            href="/settings"
+            title="Configuración"
+            aria-current={pathname.startsWith("/settings") ? "page" : undefined}
+            className={`${ROW} ${
+              pathname.startsWith("/settings")
+                ? "bg-brand text-white shadow-soft"
+                : "text-ink/45 hover:bg-mist hover:text-ink"
+            }`}
+          >
+            <span className={ICONBOX}>
+              <Icon name="ShieldCheck" className="h-[22px] w-[22px]" />
+            </span>
+            <span className={LABEL}>Configuración</span>
+          </Link>
+        ) : null}
+
+        <form action={logout}>
+          <button type="submit" title="Cerrar sesión" className={`${ROW} w-full text-ink/45 hover:bg-rose/10 hover:text-rose`}>
+            <span className={ICONBOX}>
+              <Icon name="LogOut" className="h-[22px] w-[22px]" />
+            </span>
+            <span className={LABEL}>Cerrar sesión</span>
+          </button>
+        </form>
+
+        <Link href="/profile" className={`${ROW} hover:bg-mist`} title={userName}>
+          <span className={ICONBOX}>
+            <Avatar name={userName} color="navy" size="sm" />
           </span>
-        </button>
-      </form>
-
-      <Link href="/profile" className="mt-1" title={userName}>
-        <Avatar name={userName} color="navy" size="lg" />
-      </Link>
+          <span className={`${LABEL} text-ink`}>{userName}</span>
+        </Link>
+      </div>
     </aside>
   );
 }
