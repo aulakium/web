@@ -3,20 +3,30 @@
 import { useMemo, useState } from "react";
 import { Icon } from "../icons";
 import { useLocale } from "../locale-context";
-import { DEMO_CAL_EVENTS, DEMO_TODAY, type CalEvent } from "@/lib/domain";
+import { DEMO_CAL_EVENTS, DEMO_TODAY, type CalEvent, type MyCourse } from "@/lib/domain";
 import { MonthGrid } from "./MonthGrid";
 import { DayAgenda } from "./DayAgenda";
 import { CalendarsFilter } from "./CalendarsFilter";
 import { sortDayEvents } from "./utils";
 
-export function CalendarView({ events }: { events?: CalEvent[] }) {
+export function CalendarView({
+  events,
+  courses = [],
+}: {
+  events?: CalEvent[];
+  courses?: MyCourse[];
+}) {
   const { t, locale } = useLocale();
   const calEvents = events ?? DEMO_CAL_EVENTS;
   const [viewYear, setViewYear] = useState(DEMO_TODAY.year);
   const [viewMonth, setViewMonth] = useState(DEMO_TODAY.month); // 0-based
   const [selectedDay, setSelectedDay] = useState<number>(DEMO_TODAY.day);
+  // `hidden` guarda los groupId de los cursos ocultados (filtro por hijo).
   const [hidden, setHidden] = useState<Set<string>>(new Set());
-  const [doneTasks, setDoneTasks] = useState<Set<string>>(new Set());
+  // Tareas hechas: arranca con las que la base dice que ya completé.
+  const [doneTasks, setDoneTasks] = useState<Set<string>>(
+    () => new Set(calEvents.filter((e) => e.done).map((e) => e.id)),
+  );
 
   // Los eventos demo viven en junio 2026; otros meses quedan vacíos.
   const inDemoMonth = viewYear === DEMO_TODAY.year && viewMonth === DEMO_TODAY.month;
@@ -25,7 +35,8 @@ export function CalendarView({ events }: { events?: CalEvent[] }) {
     () => (day: number) =>
       inDemoMonth
         ? calEvents.filter(
-            (e) => e.day === day && !hidden.has(e.calendarId),
+            // Se ve si es de toda la escuela (sin curso) o si su curso no está oculto.
+            (e) => e.day === day && (!e.groupId || !hidden.has(e.groupId)),
           )
         : [],
     [inDemoMonth, hidden, calEvents],
@@ -121,7 +132,9 @@ export function CalendarView({ events }: { events?: CalEvent[] }) {
 
       {/* Panel derecho: filtros + agenda del día */}
       <div className="flex flex-col gap-5">
-        <CalendarsFilter hidden={hidden} onToggle={toggleCalendar} />
+        {courses.length > 0 ? (
+          <CalendarsFilter courses={courses} hidden={hidden} onToggle={toggleCalendar} />
+        ) : null}
         <DayAgenda
           year={viewYear}
           month={viewMonth}

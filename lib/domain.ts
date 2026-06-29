@@ -287,6 +287,15 @@ export interface CalEvent {
   audienceLabel: string;
   kind: "event" | "task";
   unread?: boolean;
+  groupId?: string; // salón al que apunta (para filtrar por curso); null = de toda la escuela
+  done?: boolean; // tarea ya marcada como hecha por mí
+}
+
+/** Un curso del usuario (hijo y su salón, o salón asignado del docente). */
+export interface MyCourse {
+  groupId: string;
+  groupName: string;
+  personName: string | null; // nombre del hijo (familias)
 }
 
 /** "Hoy" para la demo (coincide con currentDate del proyecto). Junio = mes 5 (0-based). */
