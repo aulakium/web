@@ -32,21 +32,21 @@ export function ChildFilterBar({
   return (
     <div
       className={`flex items-center gap-3 border-b px-4 py-2 sm:px-5 ${
-        active ? "border-brand/20 bg-brand/[0.06]" : "border-ink/8 bg-white"
+        active ? "border-cta/30 bg-cta/10" : "border-ink/8 bg-white"
       }`}
     >
       {active ? (
         <>
-          <span className="inline-flex items-center gap-1.5 text-sm font-700 text-ink">
-            <Icon name="Users" className="h-4 w-4 text-brand" />
+          <span className="inline-flex items-center gap-1.5 text-sm font-700 text-cta-deep">
+            <Icon name="Users" className="h-4 w-4 text-cta" />
             Viendo solo a {active.personName ?? active.groupName}
-            <span className="font-600 text-ink/45">· {active.groupName}</span>
+            <span className="font-600 text-cta-deep/60">· {active.groupName}</span>
           </span>
           <button
             type="button"
             onClick={() => choose(null)}
             disabled={pending}
-            className="ml-auto inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-700 text-ink/60 transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-50"
+            className="ml-auto inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-700 text-cta-deep transition-colors hover:bg-cta/15 disabled:opacity-50"
           >
             <Icon name="X" className="h-3.5 w-3.5" />
             Quitar filtro
@@ -81,7 +81,7 @@ export function ChildFilterBar({
                       className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left transition-colors hover:bg-mist"
                     >
                       <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-brand/10 text-[11px] font-700 text-brand">
-                        {c.groupName.replace(/\s*Sec$/, "").slice(0, 3)}
+                        {c.groupName.replace(/\s*\(.*\)$/, "").slice(0, 3)}
                       </span>
                       <span className="min-w-0">
                         <span className="block truncate text-sm font-700 text-ink">{childLabel(c)}</span>

@@ -71,12 +71,12 @@ insert into levels (id, community_id, name, position) values
 on conflict (id) do nothing;
 
 insert into grades (id, community_id, level_id, name, position) values
-  ('d1000000-0000-0000-0000-000000000001', '$COMM', 'e1000000-0000-0000-0000-000000000001', '1° Sec', 0)
+  ('d1000000-0000-0000-0000-000000000001', '$COMM', 'e1000000-0000-0000-0000-000000000001', '1° (secundaria)', 0)
 on conflict (id) do nothing;
 
 insert into groups (id, community_id, grade_id, name, position) values
-  ('c1000000-0000-0000-0000-000000000001', '$COMM', 'd1000000-0000-0000-0000-000000000001', '1°A Sec', 0),
-  ('c1000000-0000-0000-0000-000000000002', '$COMM', 'd1000000-0000-0000-0000-000000000001', '1°B Sec', 1)
+  ('c1000000-0000-0000-0000-000000000001', '$COMM', 'd1000000-0000-0000-0000-000000000001', '1°A (secundaria)', 0),
+  ('c1000000-0000-0000-0000-000000000002', '$COMM', 'd1000000-0000-0000-0000-000000000001', '1°B (secundaria)', 1)
 on conflict (id) do nothing;
 
 -- ════════════════ 2) Membresías + roles de los nuevos usuarios ═══════════
