@@ -2,11 +2,12 @@ import { LocaleProvider } from "@/components/locale-context";
 import { IdentityProvider } from "@/components/identity-context";
 import { RailSidebar } from "@/components/shell/RailSidebar";
 import { AppTopbar } from "@/components/shell/AppTopbar";
+import { cookies } from "next/headers";
 import { MobileNav } from "@/components/shell/MobileNav";
 import { ChildFilterBar } from "@/components/shell/ChildFilterBar";
 import { getIdentity } from "@/lib/identity";
 import { getChildFilter } from "@/lib/child-filter";
-import { LOCALES, type Locale } from "@/lib/i18n";
+import { LOCALES, LOCALE_COOKIE, type Locale } from "@/lib/i18n";
 
 /**
  * Shell interno (estilo intranet Alliance): rail slim de íconos a la izquierda,
@@ -18,10 +19,17 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [identity, childFilter] = await Promise.all([getIdentity(), getChildFilter()]);
+  const [identity, childFilter, cookieStore] = await Promise.all([
+    getIdentity(),
+    getChildFilter(),
+    cookies(),
+  ]);
   const codes = LOCALES.map((l) => l.code) as string[];
-  const initialLocale: Locale =
-    identity?.uiLocale && codes.includes(identity.uiLocale)
+  // Prioridad: cookie (elección rápida que persiste) → perfil → default.
+  const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value;
+  const initialLocale: Locale = codes.includes(cookieLocale ?? "")
+    ? (cookieLocale as Locale)
+    : identity?.uiLocale && codes.includes(identity.uiLocale)
       ? (identity.uiLocale as Locale)
       : "es-MX";
 

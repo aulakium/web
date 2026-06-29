@@ -12,6 +12,9 @@
 
 export type Locale = "es" | "es-MX" | "es-CO" | "es-AR" | "pt-BR" | "en";
 
+/** Cookie donde se persiste el idioma elegido (leída por el server layout). */
+export const LOCALE_COOKIE = "cq_locale";
+
 export const LOCALES: { code: Locale; label: string; flag: string }[] = [
   { code: "es", label: "Español (neutro)", flag: "🌎" },
   { code: "es-MX", label: "Español (México)", flag: "🇲🇽" },

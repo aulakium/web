@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState } from "react";
-import { type Locale, translator } from "@/lib/i18n";
+import { createContext, useContext, useMemo, useState, useCallback } from "react";
+import { type Locale, translator, LOCALE_COOKIE } from "@/lib/i18n";
 
 interface LocaleCtx {
   locale: Locale;
@@ -18,10 +18,19 @@ export function LocaleProvider({
   children: React.ReactNode;
   initial?: Locale;
 }) {
-  const [locale, setLocale] = useState<Locale>(initial);
+  const [locale, setLocaleState] = useState<Locale>(initial);
+
+  // Persistimos la elección en una cookie para que se mantenga al navegar.
+  const setLocale = useCallback((l: Locale) => {
+    setLocaleState(l);
+    if (typeof document !== "undefined") {
+      document.cookie = `${LOCALE_COOKIE}=${l}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+    }
+  }, []);
+
   const value = useMemo(
     () => ({ locale, setLocale, t: translator(locale) }),
-    [locale],
+    [locale, setLocale],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
