@@ -403,10 +403,24 @@ function RequestForm({
   childrenList: MyChild[];
   onClose: () => void;
 }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [state, action] = useActionState<RequestState, FormData>(createRequest, null);
   const isExit = type === "exit";
-  const today = new Date().toISOString().slice(0, 10);
+
+  // Selección de fecha en orden día / mes / año (el <input type=date> nativo usa
+  // el orden del SO del dispositivo, que a veces es mes/día; con selects lo
+  // fijamos nosotros). El valor se envía como YYYY-MM-DD en un input oculto.
+  const now = new Date();
+  const [day, setDay] = useState(now.getDate());
+  const [month, setMonth] = useState(now.getMonth() + 1); // 1-based
+  const [year, setYear] = useState(now.getFullYear());
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const dateValue = `${year}-${pad(month)}-${pad(day)}`;
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const monthName = (m: number) =>
+    new Date(2020, m - 1, 1).toLocaleDateString(locale, { month: "long" });
+  const selectCls =
+    "w-full rounded-xl bg-mist px-3 py-2.5 text-sm font-600 text-ink outline-none focus:ring-2 focus:ring-brand/30";
 
   useEffect(() => {
     if (state?.ok) onClose();
@@ -449,13 +463,50 @@ function RequestForm({
         </select>
 
         <label className="mb-1 block text-xs font-700 text-ink/55">{t("req.form.date")}</label>
-        <input
-          name="date"
-          type="date"
-          required
-          defaultValue={today}
-          className="mb-3 w-full rounded-xl bg-mist px-3 py-2.5 text-sm font-600 text-ink outline-none focus:ring-2 focus:ring-brand/30"
-        />
+        <input type="hidden" name="date" value={dateValue} />
+        <div className="mb-3 grid grid-cols-[1fr_1.5fr_1fr] gap-2">
+          <select
+            aria-label={t("req.form.day")}
+            value={day}
+            onChange={(e) => setDay(Number(e.target.value))}
+            className={selectCls}
+          >
+            {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+          <select
+            aria-label={t("req.form.month")}
+            value={month}
+            onChange={(e) => {
+              const m = Number(e.target.value);
+              setMonth(m);
+              const dim = new Date(year, m, 0).getDate();
+              if (day > dim) setDay(dim);
+            }}
+            className={`${selectCls} capitalize`}
+          >
+            {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+              <option key={m} value={m} className="capitalize">
+                {monthName(m)}
+              </option>
+            ))}
+          </select>
+          <select
+            aria-label={t("req.form.year")}
+            value={year}
+            onChange={(e) => setYear(Number(e.target.value))}
+            className={selectCls}
+          >
+            {[now.getFullYear(), now.getFullYear() + 1].map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {isExit ? (
           <div className="mb-3 grid grid-cols-2 gap-2">
