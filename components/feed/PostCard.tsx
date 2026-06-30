@@ -341,6 +341,16 @@ export function PostCard({
                   <span className="font-600 text-ink/50"> · {t("post.before")} {formatDueDate(post.taskDue)}</span>
                 ) : null}
               </span>
+              {/* El colegio ve cuántos ya cumplieron/leyeron. */}
+              {(post.taskCompletions ?? 0) > 0 ? (
+                <span className="mt-1 inline-flex items-center gap-1 text-xs font-700 text-leaf">
+                  <Icon name="CircleCheck" className="h-3.5 w-3.5" />
+                  {post.taskCompletions}{" "}
+                  {post.taskAction === "read"
+                    ? post.taskCompletions === 1 ? t("post.task.readOne") : t("post.task.readMany")
+                    : post.taskCompletions === 1 ? t("post.task.doneOne") : t("post.task.doneMany")}
+                </span>
+              ) : null}
             </span>
             <button
               type="button"

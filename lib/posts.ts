@@ -36,6 +36,7 @@ interface FeedRow {
   rsvp_yes: number;
   group_id: string | null;
   event_all_day: boolean | null;
+  task_completions: number | null;
 }
 
 export const ROLE_COLOR: Record<string, AccentColor> = {
@@ -141,6 +142,7 @@ export async function getFeed(
       taskAction: (r.task_action as Post["taskAction"]) ?? undefined,
       taskDue: r.task_due ?? undefined,
       taskDone: r.task_done,
+      taskCompletions: r.task_completions ?? 0,
       groupId: r.group_id ?? undefined,
       commentsEnabled: r.comments_enabled,
       likes: r.likes,

@@ -224,6 +224,7 @@ export function Composer({
                 <option value="sign">{t("comp.task.sign")}</option>
                 <option value="submit">{t("comp.task.submit")}</option>
                 <option value="complete">{t("comp.task.complete")}</option>
+                <option value="read">{t("comp.task.read")}</option>
               </select>
               <div className="relative">
                 <Icon name="Clock" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/40" />

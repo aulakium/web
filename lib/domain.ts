@@ -79,9 +79,10 @@ export interface Post {
   myRsvp?: "yes" | "no" | "maybe" | null;
   rsvpYes?: number;
   // Tarea (kind="task"): acción requerida + si ya la completé.
-  taskAction?: "sign" | "submit" | "complete";
+  taskAction?: "sign" | "submit" | "complete" | "read";
   taskDue?: string; // ISO, opcional
   taskDone?: boolean;
+  taskCompletions?: number; // cuántos ya la marcaron hecha (visible para el colegio)
   attachments?: PostAttachment[]; // adjuntos (PDF/imagen/documento)
   groupId?: string; // salón al que apunta (filtro por hijo); null = toda la escuela
   commentsEnabled?: boolean; // el colegio puede desactivar comentarios por aviso

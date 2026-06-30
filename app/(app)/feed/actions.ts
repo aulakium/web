@@ -167,7 +167,7 @@ export async function createPost(
   } else if (postType === "tarea") {
     dbType = "task";
     const action = String(formData.get("taskAction") || "complete");
-    taskAction = ["sign", "submit", "complete"].includes(action) ? action : "complete";
+    taskAction = ["sign", "submit", "complete", "read"].includes(action) ? action : "complete";
     const due = String(formData.get("taskDue") || "").trim();
     taskDue = due ? new Date(due).toISOString() : null;
   }
