@@ -8,11 +8,11 @@ sobre la web (ver `MOBILE.md`). Marcá cada ítem antes de enviar.
   cuenta", triple confirmación. Borra el usuario de auth → cascadea lo personal;
   el contenido institucional queda anonimizado (author → NULL).
 - [x] **Login solo por invitación** — no hay alta abierta de cuentas en la app.
-- [ ] **Sin IAP ni CTAs de compra en la app** (Apple 2.1(b)/3.1.3, 3.1.1). El shell
-  carga colequium.com y puede navegar a la landing con **"Planes"/pricing**. Antes
-  de iOS: agregar `appendUserAgent` en `capacitor.config.ts` (iOS) y que el server
-  oculte pricing y el alta "para tu colegio" cuando detecte ese user-agent. El
-  registro/cobro B2B va SIEMPRE en la web, nunca en la app.
+- [x] **Sin IAP ni CTAs de compra en la app** (Apple 2.1(b)/3.1.3, 3.1.1). HECHO:
+  `capacitor.config.ts` marca el UA iOS con `ColequiumiOSApp`; `proxy.ts` redirige la
+  landing `/` (planes/precios + "Solicitar demo") al login dentro de la app. Web y
+  Android sin cambios. El registro/cobro B2B va siempre en la web, nunca en la app.
+  (Activo al recompilar iOS; el server ya está deployado.)
 
 ## Build iOS (re-aplicar si se regenera `ios/`)
 - [ ] `ios/App/App/Info.plist`: `UIBackgroundModes → remote-notification` (push),
