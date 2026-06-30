@@ -51,6 +51,7 @@ export interface Author {
   name: string;
   role: RoleKey;
   color: string; // color del avatar (token tailwind, ej. "brand")
+  isMe?: boolean; // en conversaciones: marca al usuario actual (para mostrar al otro)
 }
 
 export interface PostAttachment {

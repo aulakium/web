@@ -167,7 +167,11 @@ function ConversationRow({
   active: boolean;
   onClick: () => void;
 }) {
-  const other = c.participants.find((p) => p.role !== "teacher") ?? c.participants[0];
+  // Mostrar a la OTRA persona (la que no soy yo), no mi propio avatar.
+  const other =
+    c.participants.find((p) => p.isMe === false) ??
+    c.participants.find((p) => !p.isMe) ??
+    c.participants[0];
   return (
     <button
       type="button"
@@ -242,8 +246,8 @@ function Thread({
 
   return (
     <>
-      {/* Cabecera del hilo */}
-      <div className="flex items-center gap-3 border-b border-ink/5 p-4">
+      {/* Cabecera del hilo (en móvil el hilo es fixed inset-0: respetar el notch) */}
+      <div className="flex items-center gap-3 border-b border-ink/5 px-4 pb-4 pt-[max(env(safe-area-inset-top),1rem)] lg:pt-4">
         <button
           type="button"
           onClick={onBack}
@@ -287,7 +291,7 @@ function Thread({
       </div>
 
       {/* Composer + nota de privacidad (regla de scope §3.3) */}
-      <div className="border-t border-ink/5 p-3">
+      <div className="border-t border-ink/5 px-3 pt-3 pb-[max(env(safe-area-inset-bottom),0.75rem)] lg:pb-3">
         <p className="mb-2 flex items-center gap-1.5 px-1 text-[11px] font-700 text-ink/40">
           <Icon name="Users" className="h-3.5 w-3.5" />
           {t("conv.scopeNote")}

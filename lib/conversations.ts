@@ -8,7 +8,7 @@ interface ConvRow {
   subject: string | null;
   status: string;
   scope_label: string | null;
-  participants: { name: string; role: string }[] | null;
+  participants: { name: string; role: string; is_me?: boolean }[] | null;
   labels: string[] | null;
   messages: {
     id: string;
@@ -57,7 +57,10 @@ export async function getConversations(): Promise<Conversation[]> {
       id: c.id,
       subject: c.subject ?? "(sin asunto)",
       scopeLabel: scope,
-      participants: (c.participants ?? []).map((p) => author(p.name, p.role)),
+      participants: (c.participants ?? []).map((p) => ({
+        ...author(p.name, p.role),
+        isMe: p.is_me ?? false,
+      })),
       labels: (c.labels ?? []).filter((l) => l !== scope),
       status: (c.status === "closed" ? "closed" : "open") as Conversation["status"],
       preview: last?.body ?? "",
