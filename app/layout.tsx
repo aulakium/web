@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, Caveat } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { NativeBack } from "@/components/NativeBack";
 import "./globals.css";
 
 // ID de Google Analytics (configurable por env; default al de Colequium).
@@ -53,7 +54,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${outfit.variable} ${caveat.variable} h-full`}>
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <NativeBack />
+        {children}
+      </body>
       {process.env.NODE_ENV === "production" ? <GoogleAnalytics gaId={GA_ID} /> : null}
     </html>
   );

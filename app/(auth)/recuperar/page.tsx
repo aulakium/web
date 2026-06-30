@@ -16,7 +16,9 @@ export default function RecuperarPage() {
 
   return (
     <div>
-      <Wordmark href="/" className="mb-8 lg:hidden" />
+      <div className="mb-8 lg:hidden">
+        <Wordmark href="/" />
+      </div>
 
       {sent ? (
         <div className="text-center">
