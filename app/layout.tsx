@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Outfit, Caveat } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { NativeBack } from "@/components/NativeBack";
@@ -45,6 +45,14 @@ export const metadata: Metadata = {
     title: "Colequium — La comunidad escolar, conectada",
     description: DESCRIPTION,
   },
+};
+
+// viewport-fit=cover habilita las variables CSS env(safe-area-inset-*), necesarias
+// para que en la app iOS (Capacitor) el contenido no se meta bajo la isla/notch.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

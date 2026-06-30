@@ -20,7 +20,7 @@ export function AppTopbar() {
   const schoolShort = me?.schoolShort ?? DEMO_SCHOOL.shortName;
 
   return (
-    <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-ink/8 bg-white px-4 py-3 sm:px-5">
+    <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-ink/8 bg-white px-4 pb-3 pt-[max(env(safe-area-inset-top),0.75rem)] sm:px-5">
       {/* Marca compacta en móvil (el rail está oculto) */}
       <div className="flex items-center gap-2 lg:hidden">
         <BrandIcon className="h-9 w-9" iconClassName="h-4 w-4" />
