@@ -77,6 +77,18 @@ export async function getAudienceOptions(roleKey: RoleKey | null = null): Promis
       lvl = [];
       community = null;
       roleOpts = [];
+    } else if (roleKey === "coordinator") {
+      // Coordinación: su sección. Salones de su alcance + los grados y niveles
+      // que los contienen. Sin "toda la comunidad" (no es admin total).
+      const { data: gidsRaw } = await supabase.rpc("my_admin_group_ids");
+      const gids = new Set(((gidsRaw as string[]) ?? []).map(String));
+      grp = grp.filter((g) => gids.has(g.id));
+      const gradeIds = new Set(grp.map((g) => g.grade_id).filter(Boolean) as string[]);
+      grd = grd.filter((g) => gradeIds.has(g.id));
+      const levelIds = new Set(grd.map((g) => g.level_id).filter(Boolean) as string[]);
+      lvl = lvl.filter((l) => levelIds.has(l.id));
+      community = null;
+      roleOpts = []; // los destinos por rol son de todo el colegio → no para coordinación
     }
 
     return {
