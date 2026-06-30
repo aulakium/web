@@ -109,6 +109,18 @@ export async function requireAdmin(): Promise<Identity> {
   return me;
 }
 
+/**
+ * Acceso al panel de Configuración: administradores totales o coordinación.
+ * La coordinación entra acotada (solo gestiona la estructura de su nivel); el
+ * resto de las pestañas se ocultan y se bloquean en sus propias páginas.
+ */
+export async function requireSettingsAccess(): Promise<Identity> {
+  const me = await getIdentity();
+  if (!me) redirect("/login");
+  if (!me.isAdmin && me.roleKey !== "coordinator") redirect("/home");
+  return me;
+}
+
 /** Bloquea a los alumnos de las secciones que no les corresponden. */
 export async function blockStudents() {
   const me = await getIdentity();

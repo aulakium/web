@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/identity";
 import { ROLE_LABELS, type RoleKey } from "@/lib/domain";
 import { Icon } from "@/components/icons";
 import { Avatar } from "@/components/Avatar";
@@ -18,6 +19,7 @@ interface StaffRow {
 }
 
 export default async function DocentesPage() {
+  await requireAdmin();
   const supabase = await createClient();
 
   const [{ data: rows }, { data: groups }] = await Promise.all([

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/identity";
 import { ROLE_LABELS, type RoleKey } from "@/lib/domain";
 import { InviteForm } from "@/components/settings/InviteForm";
 import { revokeInvitation, resendInvitation } from "./actions";
@@ -10,6 +11,7 @@ const INVITABLE: RoleKey[] = [
 ];
 
 export default async function PersonasPage() {
+  await requireAdmin();
   const supabase = await createClient();
 
   const [{ data: invites }, { data: groups }, { data: students }] = await Promise.all([

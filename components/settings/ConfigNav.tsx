@@ -4,17 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const TABS = [
-  { href: "/settings/structure", label: "Estructura", enabled: true },
-  { href: "/settings/people", label: "Personas", enabled: true },
-  { href: "/settings/teachers", label: "Docentes", enabled: true },
-  { href: "/settings/import", label: "Importar", enabled: true },
+  { href: "/settings/structure", label: "Estructura", enabled: true, adminOnly: false },
+  { href: "/settings/people", label: "Personas", enabled: true, adminOnly: true },
+  { href: "/settings/teachers", label: "Docentes", enabled: true, adminOnly: true },
+  { href: "/settings/import", label: "Importar", enabled: true, adminOnly: true },
 ];
 
-export function ConfigNav() {
+export function ConfigNav({ isAdmin = true }: { isAdmin?: boolean }) {
   const pathname = usePathname();
+  const tabs = TABS.filter((t) => isAdmin || !t.adminOnly);
   return (
     <nav className="flex items-center gap-1.5 border-b border-ink/8">
-      {TABS.map((t) => {
+      {tabs.map((t) => {
         const active = pathname.startsWith(t.href);
         if (!t.enabled) {
           return (

@@ -16,11 +16,20 @@ import {
 export function StructureManager({
   structure,
   presets,
+  canManageLevels = true,
 }: {
   structure: Structure;
   presets: SchoolPreset[];
+  /** Solo Dirección crea/borra niveles y aplica plantillas. La coordinación gestiona
+   *  grados y salones dentro de su nivel, pero no toca los niveles. */
+  canManageLevels?: boolean;
 }) {
   const empty = structure.levels.length === 0;
+  // Contar sobre los niveles visibles (la coordinación ve solo el suyo).
+  const visibleGroups = structure.levels.reduce(
+    (n, lv) => n + lv.grades.reduce((m, g) => m + g.groups.length, 0),
+    0,
+  );
 
   return (
     <div className="flex flex-col gap-5">
@@ -31,12 +40,19 @@ export function StructureManager({
         </span>
         <span>
           <b className="text-ink">{structure.levels.length}</b> niveles ·{" "}
-          <b className="text-ink">{structure.totalGroups}</b> salones
+          <b className="text-ink">{visibleGroups}</b> salones
         </span>
       </div>
 
       {empty ? (
-        <PresetPicker presets={presets} />
+        canManageLevels ? (
+          <PresetPicker presets={presets} />
+        ) : (
+          <div className="rounded-[1.5rem] border border-dashed border-ink/15 bg-white px-5 py-8 text-center text-sm font-600 text-ink/55">
+            Todavía no hay grados en tu nivel. La estructura general la define la
+            Dirección del colegio.
+          </div>
+        )
       ) : (
         <>
           {structure.levels.map((lv) => (
@@ -46,13 +62,15 @@ export function StructureManager({
             >
               <header className="flex items-center justify-between gap-2 border-b border-ink/5 bg-[#f8fafc] px-5 py-3">
                 <h2 className="font-display text-base font-700 text-ink">{lv.name}</h2>
-                <form action={deleteLevel}>
-                  <input type="hidden" name="id" value={lv.id} />
-                  <DeleteBtn
-                    disabled={lv.grades.length > 0}
-                    title={lv.grades.length > 0 ? "Borrá los grados primero" : "Eliminar nivel"}
-                  />
-                </form>
+                {canManageLevels ? (
+                  <form action={deleteLevel}>
+                    <input type="hidden" name="id" value={lv.id} />
+                    <DeleteBtn
+                      disabled={lv.grades.length > 0}
+                      title={lv.grades.length > 0 ? "Quita los grados primero" : "Eliminar nivel"}
+                    />
+                  </form>
+                ) : null}
               </header>
 
               <div className="flex flex-col divide-y divide-ink/5">
@@ -122,7 +140,8 @@ export function StructureManager({
             </section>
           ))}
 
-          {/* Agregar nivel */}
+          {/* Agregar nivel (solo Dirección) */}
+          {canManageLevels ? (
           <form
             action={createLevel}
             className="flex items-center gap-2 rounded-[1.5rem] border border-dashed border-ink/15 bg-white px-5 py-3"
@@ -139,6 +158,7 @@ export function StructureManager({
               <Icon name="Plus" className="h-4 w-4" /> Agregar nivel
             </button>
           </form>
+          ) : null}
         </>
       )}
     </div>
