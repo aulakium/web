@@ -1,14 +1,20 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { usePathname } from "next/navigation";
 import { Icon } from "../icons";
 import { useLocale } from "../locale-context";
 import { setChildFilter } from "@/app/(app)/child-filter-actions";
 import type { MyCourse } from "@/lib/domain";
 
+// Pantallas donde el filtro por hijo SÍ tiene efecto (filtran por salón activo).
+// En el resto (perfil, mensajes, comunidad, documentos, pagos, salidas,
+// transporte, configuración) no aplica → no se muestra la barra.
+const FILTER_ROUTES = ["/home", "/feed", "/calendar", "/tasks", "/requests"];
+
 /**
  * Filtro global "ver por hijo". Para familias con 2+ hijos: un selector arriba
- * que filtra toda la app, con un cartel cuando hay un hijo activo.
+ * que filtra las pantallas donde aplica, con un cartel cuando hay un hijo activo.
  */
 export function ChildFilterBar({
   courses,
@@ -18,11 +24,15 @@ export function ChildFilterBar({
   active: MyCourse | null;
 }) {
   const { t } = useLocale();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
 
   // Solo tiene sentido si hay más de un hijo/curso.
   if (courses.length < 2) return null;
+  // Solo en las pantallas donde el filtro realmente aplica.
+  const applies = FILTER_ROUTES.some((r) => pathname === r || pathname.startsWith(r + "/"));
+  if (!applies) return null;
 
   function choose(groupId: string | null) {
     setOpen(false);
