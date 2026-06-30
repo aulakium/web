@@ -17,6 +17,12 @@ const config: CapacitorConfig = {
     // interna (p. ej. home → login) se abre en el navegador y el WebView queda en blanco.
     allowNavigation: ["colequium.com", "*.colequium.com"],
   },
+  ios: {
+    // Marca el User-Agent SOLO en iOS. El server detecta este sufijo y, dentro de
+    // la app de Apple, esconde la landing pública con planes/precios mandándola al
+    // login (App Store guideline 3.1.1: nada de CTAs de compra/alta dentro de la app).
+    appendUserAgent: "ColequiumiOSApp",
+  },
 };
 
 export default config;
