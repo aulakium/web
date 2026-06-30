@@ -32,7 +32,8 @@ const config: CapacitorConfig = {
   // Stub: con server.url el contenido local no se usa, pero Capacitor exige webDir.
   webDir: "mobile/www",
   server: {
-    url: "https://colequium.com",
+    // Arranca en /home: el middleware manda al login si no hay sesión.
+    url: "https://colequium.com/home",
     androidScheme: "https",
     // Mantiene TODO el dominio dentro del WebView (si no, una redirección
     // login→muro se abre en Safari y queda en blanco).

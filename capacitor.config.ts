@@ -9,10 +9,12 @@ const config: CapacitorConfig = {
   // exige un webDir para el sync.
   webDir: "mobile/www",
   server: {
-    url: "https://colequium.com",
+    // Arranca en /home: el middleware manda al login si no hay sesión, y entra
+    // directo si ya está logueado. No usamos "/" porque ahí vive la landing pública.
+    url: "https://colequium.com/home",
     androidScheme: "https",
     // Mantiene TODO el dominio dentro del WebView. Sin esto, una redirección
-    // interna (p. ej. login → muro) se abre en Safari y el WebView queda en blanco.
+    // interna (p. ej. home → login) se abre en el navegador y el WebView queda en blanco.
     allowNavigation: ["colequium.com", "*.colequium.com"],
   },
 };
