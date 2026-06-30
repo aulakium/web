@@ -12,6 +12,21 @@ Mismo enfoque que `livinzy` y `save2app`. Bundle id: **`com.colequium.app`**.
 
 ---
 
+## Ícono y splash (marca)
+
+La fuente es `assets/icon.png` (1024×1024, **opaco, sin alpha** — Apple lo exige).
+Para regenerar todos los tamaños (iOS + Android) tras cambiar el ícono o si se
+regeneran `ios/`/`android/`:
+
+```bash
+npx @capacitor/assets generate \
+  --iconBackgroundColor '#f8a13a' --iconBackgroundColorDark '#f8a13a' \
+  --splashBackgroundColor '#f8a13a' --splashBackgroundColorDark '#1f2a44' \
+  --android --ios
+```
+Los assets generados viven en `ios/`/`android/` (gitignoreados); la fuente
+`assets/` sí va al repo.
+
 ## 1) Instalar Capacitor (una vez)
 
 ```bash
