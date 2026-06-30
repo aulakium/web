@@ -112,15 +112,15 @@ export default function LabHome() {
               <span className="h-2 w-2 rounded-full bg-cta" /> Plataforma de comunicación escolar
             </span>
             <h1 className="mt-6 text-4xl font-700 leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
-              La comunidad escolar,{" "}
+              Todo el colegio en una app que{" "}
               <span className="font-hand inline-block px-1 text-[1.15em] font-700 text-sky">
-                conectada
-              </span>{" "}
-              en un solo lugar
+                da gusto usar
+              </span>
             </h1>
             <p className="mt-5 max-w-lg text-lg font-400 leading-relaxed text-white/70">
-              Novedades, calendario, mensajes y solicitudes entre el colegio, las
-              familias y los docentes. Claro, ordenado y en el idioma de cada país.
+              <span className="font-700 text-white/90">Por fin una plataforma fácil, simple y completa:</span>{" "}
+              avisos, calendario, tareas, mensajes, pagos y mucho más, en el idioma
+              que cada usuario prefiera.
             </p>
             <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
               <PillCTA href="#contacto">Empieza hoy</PillCTA>
@@ -348,7 +348,10 @@ export default function LabHome() {
         <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-4">
           <div className="sm:col-span-2 lg:col-span-1">
             <Brand dark />
-            <p className="mt-4 max-w-xs text-sm font-400 text-white/55">La comunidad escolar, conectada en un solo lugar. Para LatAm y Brasil.</p>
+            <p className="mt-4 max-w-xs text-sm font-400 text-white/55">
+              <span className="font-700 text-white/85">Todo el colegio en una app que da gusto usar.</span>{" "}
+              Simple, fácil y completa.
+            </p>
           </div>
           {[
             { h: "Producto", items: ["Funciones", "Planes", "Novedades", "Seguridad"] },
