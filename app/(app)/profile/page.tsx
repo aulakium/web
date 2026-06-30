@@ -5,6 +5,7 @@ import { getServerT } from "@/lib/i18n-server";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/app/(auth)/login/actions";
 import { ProfileEditor } from "@/components/profile/ProfileEditor";
+import { FamilyInvite, type FamilyChild } from "@/components/profile/FamilyInvite";
 
 export default async function PerfilPage() {
   const [me, t] = await Promise.all([getIdentity(), getServerT()]);
@@ -14,8 +15,10 @@ export default async function PerfilPage() {
   const school = me?.schoolName ?? "—";
   const email = me?.email ?? "—";
 
-  // Mis comunidades (para multi-colegio).
+  // Mis comunidades (para multi-colegio) + hijos (si es tutor).
   let communities: { name: string }[] = [];
+  let children: FamilyChild[] = [];
+  const isGuardian = me?.roleKey === "guardian";
   if (me) {
     const supabase = await createClient();
     const {
@@ -33,6 +36,12 @@ export default async function PerfilPage() {
           return Array.isArray(c) ? c[0] : c;
         })
         .filter(Boolean) as { name: string }[];
+    }
+    if (isGuardian) {
+      const { data: kids } = await supabase.rpc("my_guardian_children");
+      children = ((kids as { student_id: string; student_name: string; group_name: string | null }[]) ?? []).map(
+        (k) => ({ studentId: k.student_id, studentName: k.student_name, groupName: k.group_name }),
+      );
     }
   }
 
@@ -66,6 +75,9 @@ export default async function PerfilPage() {
 
         {/* Editor: nombre + idioma */}
         <ProfileEditor fullName={me?.name ?? ""} uiLocale={me?.uiLocale ?? null} />
+
+        {/* Mi familia: invitar a otro tutor (solo tutores) */}
+        {isGuardian ? <FamilyInvite kids={children} /> : null}
 
         {/* Mis comunidades */}
         <section className="rounded-[1.5rem] border border-ink/8 bg-white p-5 shadow-card">
