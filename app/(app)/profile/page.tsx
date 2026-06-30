@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/app/(auth)/login/actions";
 import { ProfileEditor } from "@/components/profile/ProfileEditor";
 import { FamilyInvite, type FamilyChild } from "@/components/profile/FamilyInvite";
+import { NotificationPrefs } from "@/components/profile/NotificationPrefs";
+import { NOTIF_CATEGORIES, isPushEnabled, type NotifCategory } from "@/lib/notifications/prefs";
 
 export default async function PerfilPage() {
   const [me, t] = await Promise.all([getIdentity(), getServerT()]);
@@ -18,6 +20,11 @@ export default async function PerfilPage() {
   // Mis comunidades (para multi-colegio) + hijos (si es tutor).
   let communities: { name: string }[] = [];
   let children: FamilyChild[] = [];
+  // Estado de push por categoría (con defaults aplicados). Todo apagado para el
+  // invitado/sin sesión; se recalcula con las prefs reales del usuario.
+  const pushPrefs = Object.fromEntries(
+    NOTIF_CATEGORIES.map((c) => [c, isPushEnabled(null, c)]),
+  ) as Record<NotifCategory, boolean>;
   const isGuardian = me?.roleKey === "guardian";
   if (me) {
     const supabase = await createClient();
@@ -25,6 +32,14 @@ export default async function PerfilPage() {
       data: { user },
     } = await supabase.auth.getUser();
     if (user) {
+      const { data: prefRow } = await supabase
+        .from("users")
+        .select("notification_prefs")
+        .eq("id", user.id)
+        .maybeSingle();
+      for (const c of NOTIF_CATEGORIES) {
+        pushPrefs[c] = isPushEnabled(prefRow?.notification_prefs, c);
+      }
       const { data } = await supabase
         .from("memberships")
         .select("communities(name)")
@@ -75,6 +90,9 @@ export default async function PerfilPage() {
 
         {/* Editor: nombre + idioma */}
         <ProfileEditor fullName={me?.name ?? ""} uiLocale={me?.uiLocale ?? null} />
+
+        {/* Preferencias de notificación (push por categoría) */}
+        {me ? <NotificationPrefs push={pushPrefs} /> : null}
 
         {/* Mi familia: invitar a otro tutor (solo tutores) */}
         {isGuardian ? <FamilyInvite kids={children} /> : null}

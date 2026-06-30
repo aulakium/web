@@ -81,6 +81,27 @@ export async function inviteCoTutor(
   return { ok: true, emailed: res.emailed, link: res.link, count: count as number };
 }
 
+/** Enciende/apaga el push de una categoría para el usuario actual. */
+export async function setNotificationPush(category: string, enabled: boolean) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+  const { data } = await supabase
+    .from("users")
+    .select("notification_prefs")
+    .eq("id", user.id)
+    .maybeSingle();
+  const prefs = (data?.notification_prefs as { push?: Record<string, boolean> } | null) ?? {};
+  const push = { ...(prefs.push ?? {}), [category]: enabled };
+  await supabase
+    .from("users")
+    .update({ notification_prefs: { ...prefs, push } })
+    .eq("id", user.id);
+  revalidatePath("/profile");
+}
+
 /** Guarda el idioma preferido del usuario. */
 export async function setUiLocale(formData: FormData) {
   const locale = String(formData.get("locale") || "");

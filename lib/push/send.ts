@@ -2,6 +2,7 @@ import "server-only";
 
 import { JWT } from "google-auth-library";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isPushEnabled, type NotifCategory } from "@/lib/notifications/prefs";
 
 // Envío de push vía FCM HTTP v1 (Android nativo + iOS por el puente APNs→FCM).
 // La credencial (service account de Firebase) vive en FCM_SERVICE_ACCOUNT_JSON
@@ -44,6 +45,7 @@ function getClient(): JWT | null {
 export async function sendPushToUser(
   userId: string,
   payload: PushPayload,
+  category?: NotifCategory,
   platforms?: string[],
 ): Promise<void> {
   try {
@@ -52,6 +54,17 @@ export async function sendPushToUser(
 
     const admin = createAdminClient();
     if (!admin) return;
+
+    // Respeta la preferencia del usuario: si tiene el push de esta categoría
+    // apagado, no enviamos. Sin categoría → se envía siempre (transaccional).
+    if (category) {
+      const { data: u } = await admin
+        .from("users")
+        .select("notification_prefs")
+        .eq("id", userId)
+        .maybeSingle();
+      if (!isPushEnabled(u?.notification_prefs, category)) return;
+    }
 
     let q = admin.from("device_tokens").select("token, platform").eq("user_id", userId);
     if (platforms?.length) q = q.in("platform", platforms);
@@ -97,6 +110,7 @@ export async function sendPushToUser(
 export async function sendPushToUsers(
   userIds: string[],
   payload: PushPayload,
+  category?: NotifCategory,
 ): Promise<void> {
-  await Promise.all([...new Set(userIds)].map((id) => sendPushToUser(id, payload)));
+  await Promise.all([...new Set(userIds)].map((id) => sendPushToUser(id, payload, category)));
 }
