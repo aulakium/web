@@ -22,7 +22,6 @@ import {
   requestsNavKey,
 } from "@/lib/domain";
 import { calendarColor } from "../calendar/utils";
-import { HomeCelebration } from "./HomeCelebration";
 
 // Un color e ícono FIJOS por sección (mismos en todos lados; el ícono identifica).
 const QUICK = [
@@ -109,7 +108,6 @@ export function HomeView({
 
   return (
     <div className="flex flex-col gap-6">
-      <HomeCelebration allClear={allClear} />
       {/* Banner de saludo */}
       <section className="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-navy to-navy-deep p-6 text-white shadow-card sm:p-7">
         <div className="absolute inset-0 opacity-[0.10] [background:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:20px_20px]" />

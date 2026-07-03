@@ -4,12 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { useLocale } from "../locale-context";
 
 /**
- * Celebración "¡Todo al día!" en el Inicio. Se dispara SOLO en la transición a
- * "todo en cero" (no en cada carga si ya estabas al día), guardando el último
- * estado en localStorage. Confetti liviano y autocontenido (sin librerías); se
- * cancela tocando la pantalla, se auto-cierra, y respeta "reducir movimiento".
+ * Celebración "¡Todo al día!" GLOBAL (vive en el shell, no en una pantalla).
+ * Se dispara SOLO en la transición a "todo en cero" (avisos + tareas + mensajes),
+ * en el instante en que dejás lo último —desde cualquier pantalla—, guardando el
+ * último estado en localStorage para no repetir en cada carga. Confetti liviano y
+ * autocontenido (sin librerías); se cancela tocando la pantalla, se auto-cierra, y
+ * respeta "reducir movimiento".
  */
-export function HomeCelebration({ allClear }: { allClear: boolean }) {
+export function AllClearCelebration({ allClear }: { allClear: boolean }) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -18,7 +20,7 @@ export function HomeCelebration({ allClear }: { allClear: boolean }) {
     try {
       prev = localStorage.getItem(KEY);
     } catch {}
-    if (allClear && prev !== "1") {
+    if (allClear && prev === "0") {
       const reduce =
         typeof window !== "undefined" &&
         window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;

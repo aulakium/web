@@ -87,6 +87,32 @@ function audienceLabel(target: string | null, raw: string | null): string {
 /** Cuántas novedades se cargan por página en el muro. */
 export const FEED_PAGE_SIZE = 8;
 
+/**
+ * Contadores livianos para el estado "todo al día" (celebración global).
+ * No trae el feed completo: un solo RPC que cuenta avisos sin leer + tareas
+ * pendientes. Respeta el filtro por hijo (group), igual que getFeed.
+ */
+export async function getHomeCounts(
+  group: string | null = null,
+): Promise<{ unreadPosts: number; pendingTasks: number }> {
+  const zero = { unreadPosts: 0, pendingTasks: 0 };
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return zero;
+  }
+  try {
+    const supabase = await createClient();
+    const res = await supabase.rpc("home_counts", { p_group: group });
+    if (res.error || !res.data) return zero;
+    const row = (res.data as { unread_posts: number; pending_tasks: number }[])[0];
+    if (!row) return zero;
+    return { unreadPosts: row.unread_posts ?? 0, pendingTasks: row.pending_tasks ?? 0 };
+  } catch (e) {
+    rethrowNextControl(e);
+    console.error("[getHomeCounts] error, devuelvo 0:", e);
+    return zero;
+  }
+}
+
 /** Muro del usuario logueado (ya filtrado por audiencia/rol en la DB). */
 export async function getFeed(
   limit: number = FEED_PAGE_SIZE,

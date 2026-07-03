@@ -6,9 +6,11 @@ import { AppTopbar } from "@/components/shell/AppTopbar";
 import { cookies } from "next/headers";
 import { MobileNav } from "@/components/shell/MobileNav";
 import { ChildFilterBar } from "@/components/shell/ChildFilterBar";
+import { AllClearCelebration } from "@/components/shell/AllClearCelebration";
 import { getIdentity } from "@/lib/identity";
-import { getChildFilter } from "@/lib/child-filter";
+import { getChildFilter, getActiveChildGroup } from "@/lib/child-filter";
 import { getUnreadMessageCount } from "@/lib/conversations";
+import { getHomeCounts } from "@/lib/posts";
 import { LOCALES, LOCALE_COOKIE, type Locale } from "@/lib/i18n";
 
 /**
@@ -21,12 +23,18 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [identity, childFilter, cookieStore, unreadMessages] = await Promise.all([
+  const activeChild = await getActiveChildGroup();
+  const [identity, childFilter, cookieStore, unreadMessages, counts] = await Promise.all([
     getIdentity(),
     getChildFilter(),
     cookies(),
     getUnreadMessageCount(),
+    getHomeCounts(activeChild),
   ]);
+  // "Todo al día": avisos + tareas + mensajes en cero. Alimenta la celebración
+  // global (inbox-cero), que salta en la transición desde cualquier pantalla.
+  const allClear =
+    counts.unreadPosts === 0 && counts.pendingTasks === 0 && unreadMessages === 0;
   const codes = LOCALES.map((l) => l.code) as string[];
   // Prioridad: cookie (elección rápida que persiste) → perfil → default.
   const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value;
@@ -40,6 +48,7 @@ export default async function AppLayout({
     <LocaleProvider initial={initialLocale}>
       <IdentityProvider value={identity}>
         <NativePush />
+        <AllClearCelebration allClear={allClear} />
         <div className="flex min-h-dvh bg-[#f1f5fa]">
           <RailSidebar unreadMessages={unreadMessages} />
           <div className="flex min-w-0 flex-1 flex-col">
