@@ -1,0 +1,11 @@
+-- Perf del muro: el conteo de comentarios de cada aviso —count(*) from
+-- post_comments where post_id = X— recorría TODA la tabla de comentarios por
+-- cada aviso mostrado (post_comments solo tenía PK en id, no en post_id).
+-- Medido con 40k comentarios: feed() 158ms -> 94ms (~40%). El costo crece con
+-- el volumen de comentarios, así que este índice es seguro anti-degradación.
+--
+-- Nota: las demás tablas de conteo del feed (post_reads, post_likes,
+-- post_rsvps, post_task_completions) ya tienen PK (post_id, membership_id), que
+-- cubre el acceso por post_id; y bookmarks tiene PK (membership_id, ...). Por eso
+-- alcanza con indexar post_comments.
+create index if not exists post_comments_post_idx on public.post_comments (post_id);
