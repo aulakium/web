@@ -23,6 +23,22 @@ const config: CapacitorConfig = {
     // login (App Store guideline 3.1.1: nada de CTAs de compra/alta dentro de la app).
     appendUserAgent: "ColequiumiOSApp",
   },
+  plugins: {
+    SplashScreen: {
+      // La app carga la web en vivo (server.url); antes quedaba una pantalla
+      // BLANCA unos segundos mientras el WebView bajaba el sitio. Con esto se ve
+      // el splash de marca (ícono sobre navy + spinner) durante toda esa carga.
+      // No se auto-oculta: lo escondemos desde la web (NativeSplash) recién cuando
+      // la primera pantalla ya pintó → sin parpadeo blanco.
+      launchAutoHide: false,
+      backgroundColor: "#0b3a59", // navy de marca (--color-navy)
+      showSpinner: true,
+      androidSpinnerStyle: "large",
+      spinnerColor: "#ffffff",
+      splashFullScreen: true,
+      splashImmersive: true,
+    },
+  },
 };
 
 export default config;
