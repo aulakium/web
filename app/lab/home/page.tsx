@@ -3,15 +3,11 @@ import Image from "next/image";
 import { Icon } from "@/components/icons";
 import { Reveal } from "@/components/landing/Reveal";
 import { HeroMessages } from "@/components/landing/HeroMessages";
-import { MobileMenu } from "@/components/landing/MobileMenu";
-import { Wordmark } from "@/components/Wordmark";
+import { SiteHeader } from "@/components/landing/SiteHeader";
+import { SiteFooter } from "@/components/landing/SiteFooter";
+import { PillCTA } from "@/components/landing/PillCTA";
 import { BLOG_POSTS } from "@/lib/blog";
 import { SHOW_PRICING } from "@/lib/site-flags";
-
-/* ── Marca (manzana naranja + wordmark cursivo) ── */
-function Brand({ dark = false }: { dark?: boolean }) {
-  return <Wordmark theme={dark ? "dark" : "light"} />;
-}
 
 /* ── Placeholder de imagen 100% local (gradiente + patrón + icono). ── */
 const GRADS = [
@@ -43,24 +39,6 @@ function Ph({
   );
 }
 
-/* ── Botón pill con círculo de flecha (estilo Autoguru) ── */
-function PillCTA({ href, children, tone = "cta" }: { href: string; children: React.ReactNode; tone?: "cta" | "light" | "ink" }) {
-  const map = {
-    cta: "bg-cta text-white hover:bg-cta-deep",
-    light: "bg-white text-ink hover:bg-mist",
-    ink: "bg-ink text-white hover:bg-navy-deep",
-  } as const;
-  const circle = { cta: "bg-white/20", light: "bg-ink text-white", ink: "bg-white/20" } as const;
-  return (
-    <a href={href} className={`group inline-flex items-center gap-2 rounded-full py-2 pl-6 pr-2 text-sm font-700 shadow-soft transition-colors ${map[tone]}`}>
-      {children}
-      <span className={`grid h-9 w-9 place-items-center rounded-full ${circle[tone]} transition-transform group-hover:translate-x-0.5`}>
-        <Icon name="ArrowRight" className="h-4 w-4" />
-      </span>
-    </a>
-  );
-}
-
 const FEATURES: { img?: string; icon?: string; title: string; text: string }[] = [
   { img: "/features/1-inicio.webp", title: "Inicio", text: "Un resumen de todo: avisos sin leer, eventos de la semana y solicitudes pendientes, apenas entras." },
   { img: "/features/2-comunicados.webp", title: "Novedades", text: "Avisos del colegio con foto, me gusta y comentarios, segmentados por curso." },
@@ -82,23 +60,7 @@ const POSTS = BLOG_POSTS;
 export default function LabHome() {
   return (
     <div className="min-h-dvh bg-white text-ink antialiased">
-      {/* ===== Navbar ===== */}
-      <header className="sticky top-0 z-50 border-b border-ink/5 bg-white/85 backdrop-blur-md">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
-          <Brand />
-          <ul className="hidden items-center gap-8 text-sm font-600 text-ink/70 md:flex">
-            <li><a href="#funciones" className="transition-colors hover:text-brand">Funciones</a></li>
-            {SHOW_PRICING ? <li><a href="#planes" className="transition-colors hover:text-brand">Planes</a></li> : null}
-            <li><a href="#recursos" className="transition-colors hover:text-brand">Recursos</a></li>
-            <li><a href="#contacto" className="transition-colors hover:text-brand">Contacto</a></li>
-          </ul>
-          <div className="hidden items-center gap-3 md:flex">
-            <Link href="/login" className="text-sm font-700 text-ink transition-colors hover:text-brand">Ingresar</Link>
-            <PillCTA href="#contacto">Solicitar demo</PillCTA>
-          </div>
-          <MobileMenu />
-        </nav>
-      </header>
+      <SiteHeader />
 
       {/* ===== Hero (a sangre, con foto también en móvil) ===== */}
       <section className="relative isolate overflow-hidden">
@@ -346,48 +308,7 @@ export default function LabHome() {
         </Reveal>
       </section>
 
-      {/* ===== Footer ===== */}
-      <footer className="bg-gradient-to-br from-navy to-navy-deep text-white">
-        <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="sm:col-span-2 lg:col-span-1">
-            <Brand dark />
-            <p className="mt-4 max-w-xs text-sm font-400 text-white/55">
-              <span className="font-700 text-white/85">Todo el colegio en una app que da gusto usar.</span>{" "}
-              Simple, fácil y completa.
-            </p>
-          </div>
-          {[
-            { h: "Producto", items: ["Funciones", "Planes", "Novedades", "Seguridad"].filter((x) => SHOW_PRICING || x !== "Planes") },
-            { h: "Empresa", items: ["Sobre Colequium", "Recursos", "Contacto", "Trabaja con nosotros"] },
-            { h: "Legal", items: ["Privacidad", "Términos", "Datos de menores"] },
-          ].map((col) => (
-            <div key={col.h}>
-              <h3 className="text-sm font-700 text-white">{col.h}</h3>
-              <ul className="mt-4 flex flex-col gap-2.5 text-sm font-400 text-white/55">
-                {col.items.map((it) => {
-                  const href =
-                    ({
-                      Privacidad: "/privacidad",
-                      Términos: "/terminos",
-                      Contacto: "mailto:hola@colequium.com",
-                    } as Record<string, string>)[it] ?? "#";
-                  return (
-                    <li key={it}>
-                      <a href={href} className="transition-colors hover:text-white">{it}</a>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <div className="border-t border-white/10">
-          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-6 text-sm font-400 text-white/45 sm:flex-row">
-            <p>© 2026 Colequium · Comunicación escolar</p>
-            <span className="flex items-center gap-2"><Icon name="Mail" className="h-4 w-4" /> hola@colequium.com</span>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

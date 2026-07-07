@@ -6,12 +6,14 @@ import { Icon } from "@/components/icons";
 import { SHOW_PRICING } from "@/lib/site-flags";
 
 // "Planes" se oculta hasta definir el pricing (SHOW_PRICING).
+// Anclas absolutas (/#...) para que funcionen también fuera de la landing.
 const ITEMS = [
-  { href: "#funciones", label: "Funciones" },
-  { href: "#planes", label: "Planes" },
-  { href: "#recursos", label: "Recursos" },
-  { href: "#contacto", label: "Contacto" },
-].filter((it) => SHOW_PRICING || it.href !== "#planes");
+  { href: "/por-que-colequium", label: "¿Por qué?" },
+  { href: "/#funciones", label: "Funciones" },
+  { href: "/#planes", label: "Planes" },
+  { href: "/#recursos", label: "Recursos" },
+  { href: "/#contacto", label: "Contacto" },
+].filter((it) => SHOW_PRICING || it.href !== "/#planes");
 
 /** Menú hamburguesa para la landing en móvil. */
 export function MobileMenu() {
