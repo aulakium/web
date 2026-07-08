@@ -1,9 +1,14 @@
 import { Icon } from "@/components/icons";
-import { getDocuments } from "@/lib/documents";
+import { getDocuments, getUploadInfo } from "@/lib/documents";
 import { getServerT } from "@/lib/i18n-server";
+import { DocumentUploader } from "@/components/documents/DocumentUploader";
 
 export default async function DocumentosPage() {
-  const [folders, t] = await Promise.all([getDocuments(), getServerT()]);
+  const [folders, t, upload] = await Promise.all([
+    getDocuments(),
+    getServerT(),
+    getUploadInfo(),
+  ]);
 
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
@@ -11,6 +16,10 @@ export default async function DocumentosPage() {
         <h1 className="font-display text-2xl font-700 text-ink">{t("docs.title")}</h1>
         <p className="text-sm font-500 text-ink/55">{t("docs.subtitle")}</p>
       </div>
+
+      {upload.canUpload ? (
+        <DocumentUploader folders={upload.folders} roster={upload.roster} />
+      ) : null}
 
       {folders.length === 0 ? (
         <div className="rounded-[1.75rem] border border-dashed border-ink/15 bg-white px-6 py-16 text-center">
@@ -48,7 +57,14 @@ export default async function DocumentosPage() {
                       <Icon name="FileText" className="h-5 w-5" />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-700 text-ink">{d.title}</span>
+                      <span className="flex items-center gap-1.5">
+                        <span className="truncate text-sm font-700 text-ink">{d.title}</span>
+                        {d.isPrivate ? (
+                          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-grape/10 px-2 py-0.5 text-[10px] font-700 text-grape">
+                            <Icon name="ShieldCheck" className="h-3 w-3" /> Privado
+                          </span>
+                        ) : null}
+                      </span>
                       <span className="block text-xs font-500 text-ink/45">PDF · {d.dateLabel}</span>
                     </span>
                     <Icon name="ArrowRight" className="h-4 w-4 shrink-0 text-ink/30" />
