@@ -40,7 +40,7 @@ export async function uploadGeneralDocument(formData: FormData) {
   const scopeType = String(formData.get("scopeType") ?? "community");
   const scopeId = (formData.get("scopeId") as string) || null;
   const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) return { error: "Elegí un archivo." };
+  if (!(file instanceof File) || file.size === 0) return { error: "Elige un archivo." };
   const title = (String(formData.get("title") ?? "").trim()) || file.name.replace(/\.[^.]+$/, "");
 
   const supabase = await createClient();
@@ -67,7 +67,7 @@ export async function uploadGeneralDocument(formData: FormData) {
   return { ok: true };
 }
 
-/** Sube un LOTE de boletines: cada archivo va como documento PRIVADO del alumno
+/** Sube un LOTE de boletas: cada archivo va como documento PRIVADO del alumno
  *  asignado (visible solo para su familia). Los pares vienen como file_i/student_i. */
 export async function uploadBoletines(formData: FormData) {
   const me = await guardStaff();
@@ -75,7 +75,7 @@ export async function uploadBoletines(formData: FormData) {
   const admin = createAdminClient();
   if (!admin) return { error: "Almacenamiento no disponible." };
 
-  const folderName = (String(formData.get("folder") ?? "").trim()) || "Boletines";
+  const folderName = (String(formData.get("folder") ?? "").trim()) || "Boletas";
   const supabase = await createClient();
   const { data: folderId, error: fErr } = await supabase.rpc("get_or_create_document_folder", {
     p_name: folderName,

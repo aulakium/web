@@ -64,7 +64,7 @@ export function DocumentUploader({
                 General
               </TabBtn>
               <TabBtn active={mode === "boletines"} onClick={() => setMode("boletines")}>
-                Boletines (por alumno)
+                Boletas (por alumno)
               </TabBtn>
             </div>
             <button
@@ -146,12 +146,12 @@ function GeneralForm({ folders }: { folders: string[] }) {
       </div>
       <div className="flex flex-col gap-1">
         <label className="text-xs font-700 text-ink/60">Título (opcional)</label>
-        <input name="title" placeholder="Se usa el nombre del archivo si lo dejás vacío" className={FIELD} />
+        <input name="title" placeholder="Se usa el nombre del archivo si lo dejas vacío" className={FIELD} />
       </div>
       <input type="hidden" name="scopeType" value="community" />
       <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-ink/20 bg-mist/40 px-4 py-3 text-sm font-600 text-ink/70 hover:border-brand/40">
         <Icon name="Paperclip" className="h-4 w-4 text-ink/45" />
-        {file ? file.name : "Elegí un archivo (PDF, máx 10 MB)"}
+        {file ? file.name : "Elige un archivo (PDF, máx 10 MB)"}
         <input
           type="file"
           name="file"
@@ -178,7 +178,7 @@ function GeneralForm({ folders }: { folders: string[] }) {
 function BatchForm({ folders, roster }: { folders: string[]; roster: RosterStudent[] }) {
   const [pending, start] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [folder, setFolder] = useState("Boletines");
+  const [folder, setFolder] = useState("Boletas");
   const [rows, setRows] = useState<BatchRow[]>([]);
 
   const assigned = rows.filter((r) => r.studentId).length;
@@ -201,11 +201,11 @@ function BatchForm({ folders, roster }: { folders: string[]; roster: RosterStude
     setMsg(null);
     const toSend = rows.filter((r) => r.studentId);
     if (!toSend.length) {
-      setMsg({ ok: false, text: "Asigná al menos un archivo a un alumno." });
+      setMsg({ ok: false, text: "Asigna al menos un archivo a un alumno." });
       return;
     }
     const fd = new FormData();
-    fd.set("folder", folder || "Boletines");
+    fd.set("folder", folder || "Boletas");
     toSend.forEach((r, i) => {
       fd.set(`file_${i}`, r.file);
       fd.set(`student_${i}`, r.studentId);
@@ -215,7 +215,7 @@ function BatchForm({ folders, roster }: { folders: string[]; roster: RosterStude
       if (res?.error) setMsg({ ok: false, text: res.error });
       else {
         const errs = res?.errors?.length ? ` (${res.errors.length} con error)` : "";
-        setMsg({ ok: true, text: `Se enviaron ${res?.count ?? 0} boletines a sus familias${errs}.` });
+        setMsg({ ok: true, text: `Se enviaron ${res?.count ?? 0} boletas a sus familias${errs}.` });
         setRows([]);
       }
     });
@@ -224,13 +224,13 @@ function BatchForm({ folders, roster }: { folders: string[]; roster: RosterStude
   return (
     <div className="flex flex-col gap-3">
       <p className="text-sm font-500 text-ink/55">
-        Subí todos los boletines juntos. Cada archivo se envía como documento{" "}
+        Sube todas las boletas juntas. Cada archivo se envía como documento{" "}
         <span className="font-700 text-ink">privado</span>, visible solo para la familia del alumno.
-        Revisá el emparejamiento antes de publicar.
+        Revisa el emparejamiento antes de publicar.
       </p>
       {roster.length === 0 ? (
         <p className="rounded-xl bg-sun/10 px-4 py-3 text-sm font-600 text-ink/70">
-          No tenés grupos con alumnos asignados, así que no hay a quién dirigir boletines.
+          No tienes grupos con alumnos asignados, así que no hay a quién dirigir boletas.
         </p>
       ) : (
         <>
@@ -251,7 +251,7 @@ function BatchForm({ folders, roster }: { folders: string[]; roster: RosterStude
 
           <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-ink/20 bg-mist/40 px-4 py-3 text-sm font-600 text-ink/70 hover:border-brand/40">
             <Icon name="Upload" className="h-4 w-4 text-ink/45" />
-            {rows.length ? `${rows.length} archivos elegidos` : "Elegí los boletines (varios PDF)"}
+            {rows.length ? `${rows.length} archivos elegidos` : "Elige las boletas (varios PDF)"}
             <input
               type="file"
               multiple
@@ -310,7 +310,7 @@ function BatchForm({ folders, roster }: { folders: string[]; roster: RosterStude
             disabled={pending || assigned === 0}
             className="self-start rounded-full bg-cta px-5 py-2.5 text-sm font-700 text-white shadow-soft transition-colors hover:bg-cta-deep disabled:opacity-50"
           >
-            {pending ? "Enviando…" : `Enviar ${assigned} boletines`}
+            {pending ? "Enviando…" : `Enviar ${assigned} boletas`}
           </button>
         </>
       )}
