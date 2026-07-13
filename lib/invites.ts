@@ -21,7 +21,7 @@ export async function sendInvite(opts: {
   const admin = createAdminClient();
   if (!admin) return { ok: false, emailed: false, error: "Falta configurar el servidor." };
 
-  const redirectTo = `${siteUrl()}/auth/confirmar`;
+  const redirectTo = `${siteUrl()}/confirmar`;
 
   // generateLink crea el usuario (si no existe) y devuelve el hashed_token.
   let res = await admin.auth.admin.generateLink({
@@ -43,7 +43,7 @@ export async function sendInvite(opts: {
 
   const tokenHash = res.data.properties.hashed_token;
   const type = res.data.properties.verification_type || "invite";
-  const link = `${siteUrl()}/auth/confirmar?token_hash=${tokenHash}&type=${type}`;
+  const link = `${siteUrl()}/confirmar?token_hash=${tokenHash}&type=${type}`;
 
   const emailed = await sendEmail(
     opts.email,
@@ -72,7 +72,7 @@ export async function sendPasswordReset(email: string): Promise<boolean> {
 
   const tokenHash = res.data.properties.hashed_token;
   const next = encodeURIComponent("/recuperar/nueva");
-  const link = `${siteUrl()}/auth/confirmar?token_hash=${tokenHash}&type=recovery&next=${next}`;
+  const link = `${siteUrl()}/confirmar?token_hash=${tokenHash}&type=recovery&next=${next}`;
 
   return await sendEmail(
     email,
