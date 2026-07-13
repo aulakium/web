@@ -22,6 +22,13 @@ export interface Structure {
   totalGroups: number;
 }
 
+/** Primer número dentro del nombre ("1°"→1, "10°"→10, "1° Sec"→1). Los grados sin
+ *  número van al final. Sirve para ordenar por número y no por orden de creación. */
+function gradeNum(name: string): number {
+  const m = name.match(/\d+/);
+  return m ? parseInt(m[0], 10) : Number.POSITIVE_INFINITY;
+}
+
 /** Árbol de estructura académica (niveles → grados → salones) de la comunidad. */
 export async function getStructure(): Promise<Structure> {
   const empty: Structure = { levels: [], academicYear: null, totalGroups: 0 };
@@ -56,11 +63,21 @@ export async function getStructure(): Promise<Structure> {
       name: lv.name as string,
       grades: grades
         .filter((g) => g.level_id === lv.id)
+        // Siempre por número (1°, 2°… 10°, 11°), no por orden de creación.
+        .sort(
+          (a, b) =>
+            gradeNum(a.name as string) - gradeNum(b.name as string) ||
+            (a.name as string).localeCompare(b.name as string, "es", { numeric: true }),
+        )
         .map((g) => ({
           id: g.id as string,
           name: g.name as string,
           groups: groups
             .filter((gr) => gr.grade_id === g.id)
+            // Salones por nombre natural (1°A, 1°B…).
+            .sort((a, b) =>
+              (a.name as string).localeCompare(b.name as string, "es", { numeric: true }),
+            )
             .map((gr) => ({
               id: gr.id as string,
               name: gr.name as string,

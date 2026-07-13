@@ -123,7 +123,10 @@ export async function createGrade(formData: FormData) {
   revalidate();
 }
 
-/** Crea un salón. Si no se da nombre, autonombra: <grado> + próxima letra (A, B, C…). */
+/** Crea un salón. Convención de nombres cuando no se da uno explícito:
+ *  - Primer (y único) salón → SIN letra, igual al grado (ej. "1°").
+ *  - Al agregar el 2°, el único existente pasa a "<grado>A" y el nuevo a la
+ *    próxima letra libre (B, C…). Así, un solo salón nunca lleva letra. */
 export async function createGroup(formData: FormData) {
   const gradeId = String(formData.get("gradeId") || "");
   if (!gradeId) return;
@@ -132,25 +135,40 @@ export async function createGroup(formData: FormData) {
   if (!community) return;
 
   const { data: grade } = await supabase.from("grades").select("name").eq("id", gradeId).maybeSingle();
-  const { data: existing } = await supabase.from("groups").select("name").eq("grade_id", gradeId);
-  const count = existing?.length ?? 0;
+  const gradeName = String(grade?.name ?? "");
+  const { data: existing } = await supabase.from("groups").select("id, name").eq("grade_id", gradeId);
+  const rows = existing ?? [];
+
   let name = String(formData.get("name") || "").trim();
   if (!name) {
-    // Primera letra libre (A, B, C…), evitando colisiones con salones ya creados.
-    const used = new Set((existing ?? []).map((g) => String(g.name).slice(-1).toUpperCase()));
-    let letter = "A";
-    for (let i = 0; i < 26; i++) {
-      const L = String.fromCharCode(65 + i);
-      if (!used.has(L)) {
-        letter = L;
-        break;
+    if (rows.length === 0) {
+      name = gradeName; // único salón: sin letra
+    } else {
+      // Si el único existente no tiene letra (se llama igual que el grado), lo
+      // renombramos a "<grado>A" para que quede consistente con los demás.
+      if (rows.length === 1 && rows[0].name === gradeName) {
+        await supabase.from("groups").update({ name: `${gradeName}A` }).eq("id", rows[0].id);
       }
+      const letters = new Set(
+        rows.map((g) => {
+          const n = g.name === gradeName ? `${gradeName}A` : String(g.name);
+          return n.startsWith(gradeName) ? n.slice(gradeName.length).toUpperCase() : n.slice(-1).toUpperCase();
+        }),
+      );
+      let letter = "B";
+      for (let i = 0; i < 26; i++) {
+        const L = String.fromCharCode(65 + i);
+        if (!letters.has(L)) {
+          letter = L;
+          break;
+        }
+      }
+      name = `${gradeName}${letter}`;
     }
-    name = `${grade?.name ?? ""}${letter}`;
   }
   await supabase
     .from("groups")
-    .insert({ community_id: community, grade_id: gradeId, name, type: "class", position: count });
+    .insert({ community_id: community, grade_id: gradeId, name, type: "class", position: rows.length });
   revalidate();
 }
 
@@ -168,28 +186,47 @@ export async function deleteGroup(formData: FormData) {
   revalidate();
 }
 
+/** Borra un grado en cascada (con sus salones). Se bloquea solo si algún salón
+ *  tiene alumnos inscriptos (no borramos inscripciones en silencio). */
 export async function deleteGrade(formData: FormData) {
   const id = String(formData.get("id") || "");
   if (!id) return;
   const supabase = await createClient();
-  const { count } = await supabase
-    .from("groups")
-    .select("id", { count: "exact", head: true })
-    .eq("grade_id", id);
-  if ((count ?? 0) > 0) return; // tiene salones → borrarlos primero
+  const { data: grps } = await supabase.from("groups").select("id").eq("grade_id", id);
+  const gids = (grps ?? []).map((g) => g.id as string);
+  if (gids.length) {
+    const { count } = await supabase
+      .from("student_enrollments")
+      .select("student_id", { count: "exact", head: true })
+      .in("group_id", gids);
+    if ((count ?? 0) > 0) return; // hay alumnos inscriptos → no borrar
+    await supabase.from("groups").delete().in("id", gids);
+  }
   await supabase.from("grades").delete().eq("id", id);
   revalidate();
 }
 
+/** Borra una sección entera en cascada (grados + salones). Se bloquea solo si
+ *  algún salón tiene alumnos inscriptos. */
 export async function deleteLevel(formData: FormData) {
   const id = String(formData.get("id") || "");
   if (!id) return;
   const supabase = await createClient();
-  const { count } = await supabase
-    .from("grades")
-    .select("id", { count: "exact", head: true })
-    .eq("level_id", id);
-  if ((count ?? 0) > 0) return; // tiene grados → borrarlos primero
+  const { data: grds } = await supabase.from("grades").select("id").eq("level_id", id);
+  const gradeIds = (grds ?? []).map((g) => g.id as string);
+  if (gradeIds.length) {
+    const { data: grps } = await supabase.from("groups").select("id").in("grade_id", gradeIds);
+    const gids = (grps ?? []).map((g) => g.id as string);
+    if (gids.length) {
+      const { count } = await supabase
+        .from("student_enrollments")
+        .select("student_id", { count: "exact", head: true })
+        .in("group_id", gids);
+      if ((count ?? 0) > 0) return; // hay alumnos inscriptos → no borrar
+      await supabase.from("groups").delete().in("id", gids);
+    }
+    await supabase.from("grades").delete().in("id", gradeIds);
+  }
   await supabase.from("levels").delete().eq("id", id);
   revalidate();
 }

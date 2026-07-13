@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Icon } from "@/components/icons";
-import type { Structure } from "@/lib/structure";
+import type { Structure, StructureLevel, StructureGrade } from "@/lib/structure";
 import type { SchoolPreset } from "@/lib/school-presets";
 import {
   applyPreset,
@@ -63,11 +64,21 @@ export function StructureManager({
               <header className="flex items-center justify-between gap-2 border-b border-ink/5 bg-[#f8fafc] px-5 py-3">
                 <h2 className="font-display text-base font-700 text-ink">{lv.name}</h2>
                 {canManageLevels ? (
-                  <form action={deleteLevel}>
+                  <form
+                    action={deleteLevel}
+                    onSubmit={(e) => {
+                      if (!confirm(`Vas a eliminar "${lv.name}" con todos sus grados y salones. ¿Continuar?`))
+                        e.preventDefault();
+                    }}
+                  >
                     <input type="hidden" name="id" value={lv.id} />
                     <DeleteBtn
-                      disabled={lv.grades.length > 0}
-                      title={lv.grades.length > 0 ? "Quita los grados primero" : "Eliminar nivel"}
+                      disabled={levelHasStudents(lv)}
+                      title={
+                        levelHasStudents(lv)
+                          ? "Tiene alumnos inscriptos"
+                          : "Eliminar sección (con sus grados y salones)"
+                      }
                     />
                   </form>
                 ) : null}
@@ -113,29 +124,34 @@ export function StructureManager({
                       </form>
                     </div>
 
-                    <form action={deleteGrade} className="ml-auto">
+                    <form
+                      action={deleteGrade}
+                      className="ml-auto"
+                      onSubmit={(e) => {
+                        if (!confirm(`Vas a eliminar "${g.name}" con sus salones. ¿Continuar?`))
+                          e.preventDefault();
+                      }}
+                    >
                       <input type="hidden" name="id" value={g.id} />
                       <DeleteBtn
-                        disabled={g.groups.length > 0}
-                        title={g.groups.length > 0 ? "Quitá los salones primero" : "Eliminar grado"}
+                        disabled={gradeHasStudents(g)}
+                        title={
+                          gradeHasStudents(g)
+                            ? "Tiene alumnos inscriptos"
+                            : "Eliminar grado (con sus salones)"
+                        }
                         small
                       />
                     </form>
                   </div>
                 ))}
 
-                {/* Agregar grado */}
-                <form action={createGrade} className="flex items-center gap-2 px-5 py-2.5">
-                  <input type="hidden" name="levelId" value={lv.id} />
-                  <input
-                    name="name"
-                    placeholder="Nuevo grado (ej. 7°)"
-                    className="w-40 rounded-lg bg-mist px-3 py-1.5 text-sm font-600 text-ink outline-none placeholder:text-ink/40 focus:ring-2 focus:ring-brand/30"
-                  />
-                  <button type="submit" className="text-sm font-700 text-brand hover:text-ink">
-                    Agregar grado
-                  </button>
-                </form>
+                {/* Agregar grado (autosugiere el siguiente número) */}
+                <AddGradeForm
+                  key={suggestNextGrade(lv.grades)}
+                  levelId={lv.id}
+                  suggestion={suggestNextGrade(lv.grades)}
+                />
               </div>
             </section>
           ))}
@@ -213,5 +229,48 @@ function DeleteBtn({
     >
       <Icon name="X" className={small ? "h-3.5 w-3.5" : "h-4 w-4"} />
     </button>
+  );
+}
+
+/** ¿Algún salón del grado/sección tiene alumnos inscriptos? (bloquea el borrado). */
+function gradeHasStudents(g: StructureGrade): boolean {
+  return g.groups.some((gr) => gr.enrolled > 0);
+}
+function levelHasStudents(lv: StructureLevel): boolean {
+  return lv.grades.some(gradeHasStudents);
+}
+
+/** Sugiere el siguiente grado incrementando el número del último (1°→2°, 11°→12°,
+ *  "1° Sec"→"2° Sec"). Sin grados → "1°". Si el último no tiene número → "". */
+function suggestNextGrade(grades: StructureGrade[]): string {
+  if (grades.length === 0) return "1°";
+  const last = grades[grades.length - 1].name;
+  const m = last.match(/\d+/);
+  if (!m) return "";
+  return last.replace(m[0], String(parseInt(m[0], 10) + 1));
+}
+
+/** Form para agregar un grado, con el siguiente número ya propuesto y el botón
+ *  deshabilitado si el campo queda vacío (antes "no hacía nada" al enviar vacío). */
+function AddGradeForm({ levelId, suggestion }: { levelId: string; suggestion: string }) {
+  const [name, setName] = useState(suggestion);
+  return (
+    <form action={createGrade} className="flex items-center gap-2 px-5 py-2.5">
+      <input type="hidden" name="levelId" value={levelId} />
+      <input
+        name="name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Nuevo grado (ej. 7°)"
+        className="w-40 rounded-lg bg-mist px-3 py-1.5 text-sm font-600 text-ink outline-none placeholder:text-ink/40 focus:ring-2 focus:ring-brand/30"
+      />
+      <button
+        type="submit"
+        disabled={!name.trim()}
+        className="text-sm font-700 text-brand transition-colors hover:text-ink disabled:opacity-40"
+      >
+        Agregar grado
+      </button>
+    </form>
   );
 }
