@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 
 const TABS = [
   { href: "/settings/structure", label: "Estructura", enabled: true, adminOnly: false },
-  { href: "/settings/people", label: "Personas", enabled: true, adminOnly: true },
-  { href: "/settings/teachers", label: "Docentes", enabled: true, adminOnly: true },
+  { href: "/settings/people", label: "Staff", enabled: true, adminOnly: true },
+  { href: "/settings/families", label: "Alumnos y familias", enabled: true, adminOnly: true },
   { href: "/settings/import", label: "Importar", enabled: true, adminOnly: true },
 ];
 

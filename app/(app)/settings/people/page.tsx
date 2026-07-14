@@ -8,40 +8,38 @@ import { revokeInvitation, resendInvitation } from "./actions";
 import { Icon } from "@/components/icons";
 import { SubmitButton } from "@/components/SubmitButton";
 
+// Esta sección es "Staff": las familias (guardian) se gestionan en "Alumnos y
+// familias". Por eso guardian no está entre los roles invitables acá.
 const INVITABLE: RoleKey[] = [
-  "principal", "coordinator", "support_staff", "teacher", "guardian", "driver",
+  "principal", "coordinator", "support_staff", "teacher", "driver",
 ];
 
-export default async function PersonasPage() {
+export default async function StaffPage() {
   await requireAdmin();
   const supabase = await createClient();
 
-  const [{ data: invites }, { data: students }, { data: members }, structure] = await Promise.all([
+  const [{ data: invites }, { data: members }, structure] = await Promise.all([
     supabase
       .from("invitations")
       .select("id, email, full_name, role_key, status, created_at")
       .eq("status", "pending")
+      .neq("role_key", "guardian")
       .order("created_at", { ascending: false }),
-    supabase.from("students").select("id, full_name").order("full_name"),
     supabase.rpc("members_admin"),
     getStructure(),
   ]);
 
   const roleOptions = INVITABLE.map((r) => ({ value: r, label: ROLE_LABELS[r] }));
-  const studentOptions = (students ?? []).map((s) => ({
-    value: s.id as string,
-    label: s.full_name as string,
-  }));
+  // Solo staff: las familias/alumnos viven en su propia sección.
+  const staff = ((members ?? []) as Member[]).filter(
+    (m) => m.role_key !== "guardian" && m.role_key !== "student",
+  );
 
   return (
     <div className="flex flex-col gap-6">
-      <InviteForm roles={roleOptions} levels={structure.levels} students={studentOptions} />
+      <InviteForm roles={roleOptions} levels={structure.levels} students={[]} />
 
-      <MembersList
-        members={(members ?? []) as Member[]}
-        levels={structure.levels}
-        roleLabels={ROLE_LABELS}
-      />
+      <MembersList members={staff} levels={structure.levels} roleLabels={ROLE_LABELS} />
 
       <section>
         <h2 className="mb-3 font-display text-base font-700 text-ink">

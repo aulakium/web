@@ -229,7 +229,7 @@ export async function commitImport(
     }
   }
 
-  revalidatePath("/settings/people");
+  revalidatePath("/settings/families");
   revalidatePath("/settings/structure");
   return { ...base, done: true };
 }
