@@ -12,6 +12,20 @@ const nextConfig: NextConfig = {
       static: 180,
     },
   },
+  // Redirect del dominio viejo → nuevo. Todo lo que llegue a colequium.com (o
+  // www.colequium.com) se manda 308 (permanente, bueno para SEO) a aulakium.com,
+  // conservando la ruta. Requiere que colequium.com esté asignado a este proyecto
+  // en Vercel. No matchea aulakium.com, así que no hay loop.
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "(www\\.)?colequium\\.com" }],
+        destination: "https://aulakium.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
