@@ -5,8 +5,9 @@ import { NativeBack } from "@/components/NativeBack";
 import { NativeSplash } from "@/components/NativeSplash";
 import "./globals.css";
 
-// ID de Google Analytics (configurable por env; default al de Aulakium).
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-HR68KHV4PH";
+// ID de Google Analytics (configurable por env; default a la propiedad de Aulakium
+// aulakium.com — G-YG4Y9W8TJC. El ID no es secreto: viaja en el HTML de la página).
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-YG4Y9W8TJC";
 
 // Fuente global: Outfit (limpia, geométrica). Una sola familia para títulos y texto.
 const outfit = Outfit({
