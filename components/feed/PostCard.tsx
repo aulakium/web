@@ -588,7 +588,7 @@ export function PostCard({
         ) : null}
       </div>
 
-      {/* Lightbox propio: muestra la imagen dentro de Colequium (sin abrir Supabase).
+      {/* Lightbox propio: muestra la imagen dentro de Aulakium (sin abrir Supabase).
           Se monta en <body> (portal) para no quedar atrapado por el transform de la tarjeta. */}
       {lightbox !== null && images[lightbox] && typeof document !== "undefined"
         ? createPortal(

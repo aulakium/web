@@ -6,7 +6,7 @@ import { Reveal } from "@/components/landing/Reveal";
 import { BLOG_POSTS } from "@/lib/blog";
 
 export const metadata: Metadata = {
-  title: "Ideas para tu comunidad — Colequium",
+  title: "Ideas para tu comunidad — Aulakium",
   description: "Notas sobre comunicación escolar, organización y comunidad para colegios de LatAm y Brasil.",
 };
 

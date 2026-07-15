@@ -1,4 +1,4 @@
-/** Los 9 módulos de Colequium, con la audiencia a la que le aportan valor.
+/** Los 9 módulos de Aulakium, con la audiencia a la que le aportan valor.
  *  Fuente única para la sección de la landing y la página /ventajas (filtrable). */
 
 export type FeatureAudience = "colegio" | "docentes" | "familias";

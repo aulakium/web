@@ -4,7 +4,7 @@ import { Icon } from "@/components/icons";
 
 export const metadata = {
   title: "Política de privacidad",
-  description: "Cómo Colequium trata los datos de colegios, familias y docentes.",
+  description: "Cómo Aulakium trata los datos de colegios, familias y docentes.",
 };
 
 const UPDATED = "30 de junio de 2026";
@@ -26,10 +26,10 @@ export default function PrivacidadPage() {
       <div className="legal mt-8 flex flex-col gap-6 text-[15px] leading-relaxed text-ink/75">
         <section>
           <p>
-            Colequium es una plataforma de comunicación escolar que usan los colegios para
+            Aulakium es una plataforma de comunicación escolar que usan los colegios para
             comunicarse con las familias y los docentes. Esta política explica qué datos
             tratamos, con qué fin y qué derechos tienes. Para los datos de los alumnos, el
-            <strong> colegio es el responsable</strong> y Colequium actúa como{" "}
+            <strong> colegio es el responsable</strong> y Aulakium actúa como{" "}
             <strong>encargado del tratamiento</strong> en su nombre.
           </p>
         </section>
@@ -108,8 +108,8 @@ export default function PrivacidadPage() {
         <Block title="8. Contacto">
           <p>
             Por cualquier consulta sobre privacidad, escríbenos a{" "}
-            <a className="font-700 text-brand hover:text-ink" href="mailto:hola@colequium.com">
-              hola@colequium.com
+            <a className="font-700 text-brand hover:text-ink" href="mailto:hola@aulakium.com">
+              hola@aulakium.com
             </a>.
           </p>
         </Block>

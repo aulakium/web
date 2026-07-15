@@ -5,7 +5,7 @@ import { NativeBack } from "@/components/NativeBack";
 import { NativeSplash } from "@/components/NativeSplash";
 import "./globals.css";
 
-// ID de Google Analytics (configurable por env; default al de Colequium).
+// ID de Google Analytics (configurable por env; default al de Aulakium).
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-HR68KHV4PH";
 
 // Fuente global: Outfit (limpia, geométrica). Una sola familia para títulos y texto.
@@ -26,24 +26,24 @@ const DESCRIPTION =
   "La comunidad escolar, conectada en un solo lugar. Avisos, calendario, mensajes y solicitudes entre el colegio, las familias y los docentes. Para LatAm y Brasil.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://colequium.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://aulakium.com"),
   title: {
-    default: "Colequium — La comunidad escolar, conectada",
-    template: "%s · Colequium",
+    default: "Aulakium — La comunidad escolar, conectada",
+    template: "%s · Aulakium",
   },
   description: DESCRIPTION,
-  applicationName: "Colequium",
+  applicationName: "Aulakium",
   openGraph: {
     type: "website",
-    siteName: "Colequium",
-    title: "Colequium — La comunidad escolar, conectada",
+    siteName: "Aulakium",
+    title: "Aulakium — La comunidad escolar, conectada",
     description: DESCRIPTION,
     url: "/",
     locale: "es_MX",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Colequium — La comunidad escolar, conectada",
+    title: "Aulakium — La comunidad escolar, conectada",
     description: DESCRIPTION,
   },
 };

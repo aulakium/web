@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 /**
- * Ícono de marca: la manzana de Colequium (mismo asset que el ícono de la app).
+ * Ícono de marca: la manzana de Aulakium (mismo asset que el ícono de la app).
  * Reutilizable como lockup junto al wordmark y como marca suelta (rail, topbar).
  * `iconClassName` se mantiene por compatibilidad con llamadas previas (ignorado).
  */
@@ -24,7 +24,7 @@ export function BrandIcon({
   );
 }
 
-/** Lockup de marca Colequium: manzana naranja + wordmark cursivo. Si se pasa
+/** Lockup de marca Aulakium: manzana naranja + wordmark cursivo. Si se pasa
  *  `href`, todo el lockup es un link (ej. volver al inicio desde el login). */
 export function Wordmark({
   theme = "light",
@@ -35,13 +35,13 @@ export function Wordmark({
   className?: string;
   href?: string;
 }) {
-  const src = theme === "dark" ? "/logo-colequium-white.webp" : "/logo-colequium.webp";
+  const src = theme === "dark" ? "/logo-aulakium-white.webp" : "/logo-aulakium.webp";
   const content = (
     <>
       <BrandIcon />
       <Image
         src={src}
-        alt="Colequium"
+        alt="Aulakium"
         width={2554}
         height={638}
         priority
@@ -54,7 +54,7 @@ export function Wordmark({
     return (
       <Link
         href={href}
-        aria-label="Colequium — ir al inicio"
+        aria-label="Aulakium — ir al inicio"
         className={`inline-flex items-center gap-2.5 ${className}`}
       >
         {content}

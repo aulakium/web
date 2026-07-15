@@ -8,7 +8,7 @@ import { SHOW_PRICING } from "@/lib/site-flags";
 // "Planes" se oculta hasta definir el pricing (SHOW_PRICING).
 // Anclas absolutas (/#...) para que funcionen también fuera de la landing.
 const ITEMS = [
-  { href: "/por-que-colequium", label: "¿Por qué?" },
+  { href: "/por-que-aulakium", label: "¿Por qué?" },
   { href: "/ventajas", label: "Ventajas" },
   { href: "/#planes", label: "Planes" },
   { href: "/#recursos", label: "Recursos" },

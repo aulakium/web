@@ -17,7 +17,7 @@ export default async function AceptarPage() {
         <>
           <h1 className="font-display text-2xl font-700 text-ink">Activa tu cuenta</h1>
           <p className="mt-1 text-sm font-500 text-ink/55">
-            Crea una contraseña para entrar a tu colegio en Colequium.
+            Crea una contraseña para entrar a tu colegio en Aulakium.
           </p>
           <AceptarForm email={user.email ?? ""} />
         </>

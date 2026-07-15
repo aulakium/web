@@ -103,9 +103,9 @@ export default function LoginPage() {
       </form>
 
       <p className="mt-8 text-center text-sm font-500 text-ink/50">
-        ¿Tu colegio todavía no usa Colequium?{" "}
+        ¿Tu colegio todavía no usa Aulakium?{" "}
         <a
-          href="mailto:hola@colequium.com?subject=Quiero%20Colequium%20en%20mi%20colegio"
+          href="mailto:hola@aulakium.com?subject=Quiero%20Aulakium%20en%20mi%20colegio"
           className="font-700 text-brand hover:text-ink"
         >
           Escríbenos

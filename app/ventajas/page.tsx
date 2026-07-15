@@ -7,7 +7,7 @@ import { FeaturesExplorer } from "@/components/landing/FeaturesExplorer";
 export const metadata = {
   title: "Ventajas",
   description:
-    "Todo lo del colegio en una sola app. Explorá las ventajas de Colequium por audiencia: para el colegio, para docentes y para las familias.",
+    "Todo lo del colegio en una sola app. Explorá las ventajas de Aulakium por audiencia: para el colegio, para docentes y para las familias.",
 };
 
 export default function VentajasPage() {

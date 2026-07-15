@@ -4,7 +4,7 @@ import { Icon } from "@/components/icons";
 
 export const metadata = {
   title: "Eliminar tu cuenta",
-  description: "Cómo eliminar tu cuenta de Colequium y qué datos se borran.",
+  description: "Cómo eliminar tu cuenta de Aulakium y qué datos se borran.",
 };
 
 export default function EliminarCuentaPage() {
@@ -20,7 +20,7 @@ export default function EliminarCuentaPage() {
 
       <h1 className="font-display text-3xl font-700 text-ink">Eliminar tu cuenta</h1>
       <p className="mt-2 text-sm font-500 text-ink/55">
-        Aplica a la cuenta de Colequium (com.colequium.app).
+        Aplica a la cuenta de Aulakium (com.aulakium.app).
       </p>
 
       <div className="mt-8 flex flex-col gap-6 text-[15px] leading-relaxed text-ink/75">
@@ -29,7 +29,7 @@ export default function EliminarCuentaPage() {
             Puedes eliminar tu cuenta en cualquier momento, sin pasar por soporte:
           </p>
           <ol className="ml-5 mt-2 list-decimal space-y-1.5">
-            <li>Abre Colequium e inicia sesión.</li>
+            <li>Abre Aulakium e inicia sesión.</li>
             <li>Ve a <strong>Perfil</strong>.</li>
             <li>Toca <strong>Eliminar mi cuenta</strong> y confirma.</li>
           </ol>
@@ -39,8 +39,8 @@ export default function EliminarCuentaPage() {
         <Block title="Si no puedes acceder a la app">
           <p>
             Escríbenos desde el correo de tu cuenta a{" "}
-            <a className="font-700 text-brand hover:text-ink" href="mailto:hola@colequium.com?subject=Eliminar%20mi%20cuenta">
-              hola@colequium.com
+            <a className="font-700 text-brand hover:text-ink" href="mailto:hola@aulakium.com?subject=Eliminar%20mi%20cuenta">
+              hola@aulakium.com
             </a>{" "}
             con el asunto «Eliminar mi cuenta» y la procesamos en un máximo de 30 días.
           </p>

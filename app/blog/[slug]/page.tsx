@@ -17,9 +17,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const post = getPost(slug);
-  if (!post) return { title: "Artículo — Colequium" };
+  if (!post) return { title: "Artículo — Aulakium" };
   return {
-    title: `${post.title} — Colequium`,
+    title: `${post.title} — Aulakium`,
     description: post.excerpt,
     openGraph: { title: post.title, description: post.excerpt, type: "article" },
   };
@@ -120,7 +120,7 @@ export default async function BlogArticle({
         <div className="mt-12 rounded-[2rem] bg-gradient-to-br from-navy to-navy-deep px-7 py-9 text-center">
           <h3 className="font-display text-2xl font-700 text-white">¿Quieres esto en tu colegio?</h3>
           <p className="mx-auto mt-2 max-w-sm text-sm font-400 text-white/70">
-            Coordinamos una demo y te mostramos Colequium funcionando con tu comunidad.
+            Coordinamos una demo y te mostramos Aulakium funcionando con tu comunidad.
           </p>
           <Link
             href="/#contacto"

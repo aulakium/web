@@ -30,7 +30,7 @@ export default function AuthLayout({
         </div>
 
         <p className="relative text-sm text-white/50">
-          © {2026} Colequium · Plataforma de comunicación escolar
+          © {2026} Aulakium · Plataforma de comunicación escolar
         </p>
       </div>
 

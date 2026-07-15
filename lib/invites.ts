@@ -47,10 +47,10 @@ export async function sendInvite(opts: {
 
   const emailed = await sendEmail(
     opts.email,
-    `Te invitaron a ${opts.communityName} en Colequium`,
+    `Te invitaron a ${opts.communityName} en Aulakium`,
     emailShell({
       heading: `Te damos la bienvenida a ${opts.communityName}`,
-      lead: "Tu colegio usa <b>Colequium</b> para comunicarse. Para activar tu cuenta y crear tu contraseña, haz clic en el botón:",
+      lead: "Tu colegio usa <b>Aulakium</b> para comunicarse. Para activar tu cuenta y crear tu contraseña, haz clic en el botón:",
       button: "Activar mi cuenta",
       link,
     }),
@@ -76,10 +76,10 @@ export async function sendPasswordReset(email: string): Promise<boolean> {
 
   return await sendEmail(
     email,
-    "Recupera tu contraseña de Colequium",
+    "Recupera tu contraseña de Aulakium",
     emailShell({
       heading: "Recupera tu contraseña",
-      lead: "Recibimos una solicitud para restablecer tu contraseña en <b>Colequium</b>. Haz clic para crear una nueva. Si no fuiste tú, puedes ignorar este correo.",
+      lead: "Recibimos una solicitud para restablecer tu contraseña en <b>Aulakium</b>. Haz clic para crear una nueva. Si no fuiste tú, puedes ignorar este correo.",
       button: "Crear nueva contraseña",
       link,
     }),

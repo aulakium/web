@@ -4,7 +4,7 @@ import { Icon } from "@/components/icons";
 
 export const metadata = {
   title: "Términos del servicio",
-  description: "Condiciones de uso de la plataforma Colequium.",
+  description: "Condiciones de uso de la plataforma Aulakium.",
 };
 
 const UPDATED = "30 de junio de 2026";
@@ -26,7 +26,7 @@ export default function TerminosPage() {
       <div className="mt-8 flex flex-col gap-6 text-[15px] leading-relaxed text-ink/75">
         <Block title="1. El servicio">
           <p>
-            Colequium es una plataforma de comunicación escolar que los colegios contratan
+            Aulakium es una plataforma de comunicación escolar que los colegios contratan
             para comunicarse con las familias y los docentes. Al usar la aplicación, aceptas
             estos términos.
           </p>
@@ -41,7 +41,7 @@ export default function TerminosPage() {
         </Block>
 
         <Block title="3. Uso aceptable">
-          <p>Te comprometes a no usar Colequium para:</p>
+          <p>Te comprometes a no usar Aulakium para:</p>
           <ul className="ml-5 mt-2 list-disc space-y-1.5">
             <li>publicar contenido ilegal, ofensivo, acosador o que vulnere derechos de terceros;</li>
             <li>suplantar a otra persona o acceder a datos que no te corresponden;</li>
@@ -67,8 +67,8 @@ export default function TerminosPage() {
 
         <Block title="6. Responsabilidad">
           <p>
-            En la medida que permita la ley, Colequium no será responsable por daños
-            indirectos o incidentales derivados del uso del servicio. Colequium es una
+            En la medida que permita la ley, Aulakium no será responsable por daños
+            indirectos o incidentales derivados del uso del servicio. Aulakium es una
             herramienta de comunicación; las decisiones académicas y administrativas son del
             colegio.
           </p>
@@ -101,8 +101,8 @@ export default function TerminosPage() {
         <Block title="10. Contacto">
           <p>
             Escríbenos a{" "}
-            <a className="font-700 text-brand hover:text-ink" href="mailto:hola@colequium.com">
-              hola@colequium.com
+            <a className="font-700 text-brand hover:text-ink" href="mailto:hola@aulakium.com">
+              hola@aulakium.com
             </a>.
           </p>
         </Block>

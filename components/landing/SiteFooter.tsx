@@ -3,12 +3,12 @@ import { Icon } from "@/components/icons";
 import { SHOW_PRICING } from "@/lib/site-flags";
 
 const HREFS: Record<string, string> = {
-  "¿Por qué Colequium": "/por-que-colequium",
+  "¿Por qué Aulakium": "/por-que-aulakium",
   Ventajas: "/ventajas",
   Planes: "/#planes",
   Recursos: "/#recursos",
   Novedades: "/blog",
-  Contacto: "mailto:hola@colequium.com",
+  Contacto: "mailto:hola@aulakium.com",
   Privacidad: "/privacidad",
   Términos: "/terminos",
 };
@@ -18,7 +18,7 @@ export function SiteFooter() {
   const cols = [
     {
       h: "Producto",
-      items: ["¿Por qué Colequium", "Ventajas", "Planes", "Novedades"].filter(
+      items: ["¿Por qué Aulakium", "Ventajas", "Planes", "Novedades"].filter(
         (x) => SHOW_PRICING || x !== "Planes",
       ),
     },
@@ -52,8 +52,8 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-6 text-sm font-400 text-white/45 sm:flex-row">
-          <p>© 2026 Colequium · Comunicación escolar</p>
-          <span className="flex items-center gap-2"><Icon name="Mail" className="h-4 w-4" /> hola@colequium.com</span>
+          <p>© 2026 Aulakium · Comunicación escolar</p>
+          <span className="flex items-center gap-2"><Icon name="Mail" className="h-4 w-4" /> hola@aulakium.com</span>
         </div>
       </div>
     </footer>

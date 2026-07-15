@@ -5,9 +5,9 @@ import { SiteFooter } from "@/components/landing/SiteFooter";
 import { PillCTA } from "@/components/landing/PillCTA";
 
 export const metadata = {
-  title: "¿Por qué Colequium?",
+  title: "¿Por qué Aulakium?",
   description:
-    "Colequium reúne toda la comunicación del colegio en una app fácil de usar: reemplaza los grupos de chat, los papeles y los mails perdidos. Menos ruido, más claridad.",
+    "Aulakium reúne toda la comunicación del colegio en una app fácil de usar: reemplaza los grupos de chat, los papeles y los mails perdidos. Menos ruido, más claridad.",
 };
 
 /* Los 3 reemplazos: de → a. */
@@ -89,7 +89,7 @@ const DIFFERENTIATORS = [
 const FAQ = [
   {
     q: "Ya usamos WhatsApp y es gratis. ¿Para qué cambiar?",
-    a: "WhatsApp mezcla lo personal con lo escolar, genera ruido y desigualdad, y no protege los datos de los menores. Colequium es el canal oficial: ordenado, segmentado por curso y trazable.",
+    a: "WhatsApp mezcla lo personal con lo escolar, genera ruido y desigualdad, y no protege los datos de los menores. Aulakium es el canal oficial: ordenado, segmentado por curso y trazable.",
   },
   {
     q: "¿Es complicado de implementar?",
@@ -111,7 +111,7 @@ const STATS = [
   { big: "Multi-idioma", small: "para LatAm y Brasil" },
 ];
 
-export default function PorQueColequiumPage() {
+export default function PorQueAulakiumPage() {
   return (
     <div className="min-h-dvh bg-white text-ink antialiased">
       <SiteHeader />
@@ -126,7 +126,7 @@ export default function PorQueColequiumPage() {
         <div className="mx-auto max-w-4xl px-5 py-16 text-center text-white lg:py-24">
           <Reveal>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm font-600 text-white/85 backdrop-blur">
-              <span className="h-2 w-2 rounded-full bg-cta" /> ¿Por qué Colequium?
+              <span className="h-2 w-2 rounded-full bg-cta" /> ¿Por qué Aulakium?
             </span>
             <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-700 leading-[1.1] tracking-tight sm:text-5xl">
               Menos ruido,{" "}
@@ -134,7 +134,7 @@ export default function PorQueColequiumPage() {
               para toda la comunidad
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg font-400 leading-relaxed text-white/75">
-              Colequium reúne toda la comunicación del colegio en una sola app fácil de usar, le da a
+              Aulakium reúne toda la comunicación del colegio en una sola app fácil de usar, le da a
               cada familia la información de sus hijos —clara y en su idioma— y reemplaza los grupos
               de chat, los papeles y los mails perdidos.
             </p>
@@ -193,7 +193,7 @@ export default function PorQueColequiumPage() {
               Beneficios concretos para tu colegio
             </h2>
             <p className="mt-3 font-400 text-ink/60">
-              Ocho razones por las que las instituciones eligen Colequium.
+              Ocho razones por las que las instituciones eligen Aulakium.
             </p>
           </Reveal>
           <div className="mt-14 grid gap-5 sm:grid-cols-2">
@@ -220,7 +220,7 @@ export default function PorQueColequiumPage() {
           <Reveal className="mx-auto max-w-2xl text-center">
             <span className="rounded-full bg-brand/10 px-4 py-1.5 text-sm font-700 text-brand">Diferenciadores</span>
             <h2 className="mt-4 text-3xl font-700 tracking-tight text-ink sm:text-4xl">
-              Lo que hace distinta a Colequium
+              Lo que hace distinta a Aulakium
             </h2>
           </Reveal>
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

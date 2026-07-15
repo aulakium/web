@@ -159,7 +159,7 @@ export default function LabHome() {
             </div>
           </Reveal>
           <Reveal delay={100} className="order-1 lg:order-2">
-            <span className="rounded-full bg-brand/10 px-4 py-1.5 text-sm font-700 text-brand">Sobre Colequium</span>
+            <span className="rounded-full bg-brand/10 px-4 py-1.5 text-sm font-700 text-brand">Sobre Aulakium</span>
             <h2 className="mt-4 text-3xl font-700 tracking-tight text-ink sm:text-4xl">Comunicación clara para toda la comunidad</h2>
             <p className="mt-4 font-400 leading-relaxed text-ink/65">
               Reconstruimos, con tecnología y diseño modernos, la forma en que el
@@ -226,7 +226,7 @@ export default function LabHome() {
               Hecho por gente que conoce la escuela por dentro
             </h2>
             <p className="mt-4 text-lg font-400 leading-relaxed text-ink/65">
-              Detrás de Colequium hay un equipo con{" "}
+              Detrás de Aulakium hay un equipo con{" "}
               <span className="font-700 text-ink">más de 30 años de experiencia en la industria educativa</span>.
               No es software genérico: cada decisión está pensada desde cómo trabaja, de verdad, un colegio.
             </p>

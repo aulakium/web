@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { NextRequest } from "next/server";
 
 /**
- * Sirve un documento del colegio a través del dominio de Colequium.
+ * Sirve un documento del colegio a través del dominio de Aulakium.
  * En vez de enviar al usuario a la URL firmada de Supabase (que mostraría el
  * dominio de almacenamiento), descargamos el archivo en el server —con la
  * sesión del usuario, así RLS decide si puede verlo— y lo transmitimos. La

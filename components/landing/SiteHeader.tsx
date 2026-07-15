@@ -14,7 +14,7 @@ export function SiteHeader() {
         <Wordmark theme="light" href="/" />
         <ul className="hidden items-center gap-8 text-sm font-600 text-ink/70 md:flex">
           <li>
-            <Link href="/por-que-colequium" className="transition-colors hover:text-brand">
+            <Link href="/por-que-aulakium" className="transition-colors hover:text-brand">
               ¿Por qué?
             </Link>
           </li>
