@@ -42,8 +42,8 @@ export function Wordmark({
       <Image
         src={src}
         alt="Aulakium"
-        width={2554}
-        height={638}
+        width={767}
+        height={227}
         priority
         className="h-9 w-auto"
       />
